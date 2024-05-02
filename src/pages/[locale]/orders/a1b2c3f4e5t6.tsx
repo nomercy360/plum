@@ -83,9 +83,15 @@ function FailedOrder() {
 }
 
 function OrderLayout({ children }: { children: React.ReactNode }) {
+  const router = useRouter();
+
   return (
     <div className="flex flex-col items-center justify-start bg-white">
-      <NavbarCart />
+      <NavbarCart>
+        <button onClick={() => router.back()}>
+          <Icons.close className="size-5 fill-black" />
+        </button>
+      </NavbarCart>
       <div className="flex flex-col items-center justify-between p-8 sm:justify-center">
         <div></div>
         {children}

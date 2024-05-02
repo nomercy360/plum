@@ -113,13 +113,9 @@ export default function ProductPage({ product }: { product: Product }) {
             <p className="mt-2 text-sm text-gray-light sm:text-base">
               {t('careInstructions')}
             </p>
-            <Link
-              href="/secret-store"
-              className="mt-5 flex h-10 w-full flex-row items-center justify-between rounded-3xl bg-violet/10 px-3"
-            >
-                              <span className="text-sm text-black">
-                                {t('newsletterDiscount')}
-                              </span>
+            <Link href="/secret-store"
+                  className="w-full mt-5 flex h-10 flex-row items-center justify-between rounded-3xl px-3 bg-violet/10">
+              <span className="text-sm text-black">{t('newsletterDiscount')}</span>
               <span className="text-sm text-violet">{t('subscribe')}</span>
             </Link>
           </div>

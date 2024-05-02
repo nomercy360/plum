@@ -34,5 +34,12 @@
   "approx": "Approx",
   "total": "Total",
   "agree": "By clicking checkout, you are agreeing with Privacy Policy & Terms",
-  "addMeasurementsDescription2": "Adding measurements is not necessary, but it will help us to make your dress fit perfectly"
+  "addMeasurementsDescription2": "Adding measurements is not necessary, but it will help us to make your dress fit perfectly",
+  "addPromoCode": "Add promo code",
+  "apply": "Apply",
+  "height": "Height, cm",
+  "sleeve": "Sleeve, cm",
+  "chest": "Chest, cm",
+  "waist": "Waist, cm",
+  "hips": "Hips, cm"
 }

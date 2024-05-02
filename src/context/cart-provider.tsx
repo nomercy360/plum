@@ -47,7 +47,6 @@ const CartProvider = ({ children }: { children: React.ReactNode }) => {
   }, []);
 
   const addToCart = (item: ICartItem) => {
-    console.log('Adding to cart: ', item);
     const existingItem = cart.find((i) => i.id === item.id);
     if (existingItem) {
       setCart(() => {

@@ -8,7 +8,6 @@ const LanguageSwitchLink = ({...rest}: any) => {
 
     let href = rest.href || router.asPath
     let pName = router.pathname
-    console.log('router.query', router.query)
     const locale = router.query.locale === 'en' ? 'ru' : 'en'
 
     Object.keys(router.query).forEach((k) => {

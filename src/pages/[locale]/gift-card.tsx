@@ -4,6 +4,7 @@ import { useTranslation } from 'next-i18next';
 import { getStaticPaths, makeStaticProps } from '@/lib/getStatic';
 import { useState } from 'react';
 import { useRouter } from 'next/router';
+import ExportedImage from 'next-image-export-optimizer';
 
 export default function GiftCard(props: {
   isOpen: boolean;
@@ -30,62 +31,74 @@ export default function GiftCard(props: {
 
   return (
     <div
-      className="items center fixed left-0 top-0 z-50 flex h-screen w-full justify-center overflow-auto bg-white/10 backdrop-blur-sm sm:pt-28">
+      className="items-center flex h-screen w-full justify-center">
+      <div className="fixed h-screen w-full overflow-hidden m-0">
+        <ExportedImage
+          alt="Mountains"
+          src="/images/gift-card/bg.png"
+          placeholder="blur"
+          fill
+          sizes="100vw"
+          style={{
+            objectFit: 'cover',
+          }}
+        />
+      </div>
       <div
-        className="relative flex h-full min-h-fit w-full max-w-7xl flex-col items-center justify-between bg-[url(/images/gift-card-bg-mobile.webp)] bg-cover bg-center px-5 py-7 sm:rounded-t-2xl sm:bg-[url(/images/gift-card-bg.webp)]">
+        className="relative flex h-full min-h-fit w-full flex-col items-center justify-between bg-cover bg-center px-5 py-7 sm:rounded-t-2xl">
         <button
           onClick={router.back}
           className="absolute right-5 top-5">
           <Icons.close className="size-5 text-white" />
         </button>
-        <div className="flex max-w-sm flex-col items-center justify-center text-center text-white">
-          <div className="flex flex-row items-center gap-2">
+        <div className="flex max-w-sm flex-col items-center justify-center text-center">
+          <div className="flex flex-row items-center gap-2 text-white">
             <Icons.logo className="h-6 w-24 text-white sm:w-32" />
             <span className="text-xl">{t('gift')}</span>
           </div>
-          <p className="mt-2.5 text-sm sm:text-base">
+          <p className="mt-2.5 text-sm sm:text-base text-white">
             {t('giftCardDescription')}
           </p>
-        </div>
-        <div className="mt-14 flex w-[280px] flex-col items-center gap-4">
-          <input
-            className="h-11 w-full rounded-lg bg-gray px-3 text-sm focus:outline-neutral-200 sm:text-base"
-            placeholder={t('yourEmail')}
-            value={email}
-            onInput={(e) => setEmail(e.currentTarget.value)}
-          />
-          <input
-            className="h-11 w-full rounded-lg bg-gray px-3 text-sm focus:outline-neutral-200 sm:text-base"
-            placeholder={t('recipientEmail')}
-            value={recipientEmail}
-            onInput={(e) => setRecipientEmail(e.currentTarget.value)}
-          />
-          <input
-            className="h-11 w-full rounded-lg bg-gray px-3 text-sm focus:outline-neutral-200 sm:text-base"
-            placeholder={t('receivingDate')}
-            value={receivingDate}
-            onInput={(e) => setReceivingDate(e.currentTarget.value)}
-          />
-          <input
-            className="h-11 w-full rounded-lg bg-gray px-3 text-sm focus:outline-neutral-200 sm:text-base"
-            placeholder={t('receivingTime')}
-            value={receivingTime}
-            onInput={(e) => setReceivingTime(e.currentTarget.value)}
-          />
-          <div className="flex h-11 w-full flex-row items-center justify-between rounded-lg bg-white pl-3 pr-1.5">
-            <p className="text-sm text-black sm:text-base">${amount}</p>
-            <StepperButton
-              onIncrease={increaseAmount}
-              onDecrease={decreaseAmount}
+          <div className="mt-14 flex w-[280px] flex-col items-center gap-4">
+            <input
+              className="h-11 w-full rounded-lg bg-gray px-3 text-sm focus:outline-neutral-200 sm:text-base"
+              placeholder={t('yourEmail')}
+              value={email}
+              onInput={(e) => setEmail(e.currentTarget.value)}
             />
+            <input
+              className="h-11 w-full rounded-lg bg-gray px-3 text-sm focus:outline-neutral-200 sm:text-base"
+              placeholder={t('recipientEmail')}
+              value={recipientEmail}
+              onInput={(e) => setRecipientEmail(e.currentTarget.value)}
+            />
+            <input
+              className="h-11 w-full rounded-lg bg-gray px-3 text-sm focus:outline-neutral-200 sm:text-base"
+              placeholder={t('receivingDate')}
+              value={receivingDate}
+              onInput={(e) => setReceivingDate(e.currentTarget.value)}
+            />
+            <input
+              className="h-11 w-full rounded-lg bg-gray px-3 text-sm focus:outline-neutral-200 sm:text-base"
+              placeholder={t('receivingTime')}
+              value={receivingTime}
+              onInput={(e) => setReceivingTime(e.currentTarget.value)}
+            />
+            <div className="flex h-11 w-full flex-row items-center justify-between rounded-lg bg-white pl-3 pr-1.5">
+              <p className="text-sm text-black sm:text-base">${amount}</p>
+              <StepperButton
+                onIncrease={increaseAmount}
+                onDecrease={decreaseAmount}
+              />
+            </div>
+            <button className="mt-4 text-black h-11 w-full rounded-3xl bg-gray text-sm sm:text-base">
+              {t('checkout')} ${amount}
+            </button>
           </div>
-          <button className="h-11 w-full rounded-3xl bg-gray text-sm sm:text-base">
-            {t('checkout')} • ${amount}
-          </button>
-          <p className="text-center text-xs text-white">
-            {t('giftCardTerms')}
-          </p>
         </div>
+        <p className="text-center text-xs text-white mb-8 max-w-xs">
+          {t('giftCardTerms')}
+        </p>
       </div>
     </div>
   );

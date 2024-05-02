@@ -2,9 +2,13 @@ import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import { useTranslation } from 'next-i18next';
 import { getStaticPaths, makeStaticProps } from '@/lib/getStatic';
+import Icons from '@/components/Icons';
+import { router } from 'next/client';
+import nextI18NextConfig from '../../../next-i18next.config.js';
 
-export default function Terms() {
+export default function Terms(props: any) {
   const { t } = useTranslation(['policy']);
+
   return (
     <div>
       <main
@@ -104,7 +108,8 @@ export default function Terms() {
           <p className="mt-7 text-sm sm:text-base">{t('company.title')} </p>
           <p className="text-sm sm:text-base">{t('company.vat')}</p>
           <p className="text-sm sm:text-base">{t('company.address')}</p>
-          <p className="mt-8 text-sm sm:text-base">support@plumplum.co</p>
+          <p className="mt-8 text-sm sm:text-base mb-10">support@plumplum.co</p>
+          {props._nextI18Next.initialLocale ==='ru' && <Icons.payment className="w-full"/>}
         </div>
         <Footer />
       </main>

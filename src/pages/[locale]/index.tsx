@@ -6,6 +6,7 @@ import Navbar from '@/components/Navbar';
 import Link from '@/components/Link';
 
 import { products } from '@/lib/api';
+import ExportedImage from 'next-image-export-optimizer';
 
 export type Product = {
   id: number;
@@ -35,10 +36,12 @@ export default function Home({ products }: { products: Product[] }) {
               key={product.id}
               className="flex flex-col items-start justify-start"
               href={`/products/${product.handle}`}>
-              <img
+              <ExportedImage
                 alt=""
                 className="w-full rounded-lg object-cover"
                 src={product.image}
+                width={370}
+                height={520}
               />
               <p className="mb-1 mt-2.5 text-sm sm:mt-4 sm:text-base">
                 {product.name}

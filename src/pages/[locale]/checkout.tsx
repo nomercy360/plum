@@ -115,12 +115,28 @@ export default function Checkout() {
     <div className="min-h-screen bg-white sm:bg-gray">
       {getCartTotal() > 0 ? (
         <div>
-          <NavbarCart />
+          <NavbarCart>
+            {step == 'bag' && (
+              <button onClick={() => router.back()}>
+                <Icons.close className="size-5 fill-black" />
+              </button>
+            )}
+            {step == 'deliveryInfo' && (
+              <button onClick={() => setStep('bag')}>
+                <Icons.close className="size-5 fill-black" />
+              </button>
+            )}
+            {step == 'measurements' && (
+              <button onClick={() => setStep('bag')}>
+                <Icons.close className="size-5 fill-black" />
+              </button>
+            )}
+          </NavbarCart>
           <main className="mt-8 flex w-full items-start justify-center">
             <div className="flex w-full max-w-2xl flex-col rounded-xl bg-white sm:h-screen">
               {step == 'bag' && (
-                <div className="flex flex-col rounded-t-xl bg-white p-5">
-                  <div className="flex flex-row items-center justify-between">
+                <div className="w-full flex flex-col rounded-t-xl bg-white">
+                  <div className="flex flex-row items-center justify-between  p-5">
                     <p className="text-lg sm:text-xl">
                       ${total} for {getCartTotal()} items
                     </p>
@@ -130,7 +146,7 @@ export default function Checkout() {
                       {t('clearCart')}
                     </button>
                   </div>
-                  <div className="mt-8 flex flex-col gap-5">
+                  <div className="mt-8 flex flex-col gap-5 p-5">
                     {getCartItems().map((item) => (
                       <div
                         key={item.id}
@@ -192,18 +208,20 @@ export default function Checkout() {
                     t={t}
                   />
                   <div
-                    className="mt-10 flex w-full flex-col items-center justify-between gap-5 sm:flex-row sm:justify-start">
+                    className="p-5 mt-10 flex w-full flex-col items-center justify-between gap-5 sm:flex-row sm:justify-start">
                     {discount == 0 ? (
                       <div className="flex h-11 w-full flex-row items-center rounded-lg bg-gray px-3">
                         <input
                           className="w-full bg-transparent focus:outline-none"
-                          placeholder="Add promo-code"
+                          placeholder={t('addPromoCode')}
                           type="text"
                           onInput={(e) =>
                             setPromoCode(e.currentTarget.value)
                           }
                         />
-                        <button onClick={fetchDiscount}>Apply</button>
+                        <button onClick={fetchDiscount}>
+                          {t('apply')}
+                        </button>
                       </div>
                     ) : (
 
@@ -232,42 +250,58 @@ export default function Checkout() {
                 </div>)}
               {step == 'deliveryInfo' && (
                 <div
-                  className="flex flex-col items-center rounded-t-xl bg-white p-5 text-center sm:items-start sm:text-start">
-                  <p className="mb-1 text-lg text-black sm:text-xl">
+                  className="flex flex-col items-center rounded-t-xl bg-white text-center sm:items-start sm:text-start">
+                  <p className="px-5 pt-5 mb-1 text-lg text-black sm:text-xl">
                     {t('addDeliveryInfo')}
                   </p>
-                  <p className="mb-8 text-sm text-gray-light">
+                  <p className="px-5 mb-8 text-sm text-gray-light">
                     {t('addDeliveryInfoDescription')}
                   </p>
-                  <div className="mb-8 flex w-full flex-col gap-4">
+                  <div className="px-5 mb-8 flex w-full flex-col gap-4">
                     <input
                       className="h-11 w-full rounded-lg bg-gray px-3 text-sm focus:outline-neutral-200 sm:text-base"
                       placeholder={t('name')}
+                      autoFocus
+                      autoComplete="off"
+                      autoCorrect="off"
+                      autoCapitalize="words"
+                      required
                       onInput={(e) => setName(e.currentTarget.value)}
                     />
                     <input
                       className="h-11 w-full rounded-lg bg-gray px-3 text-sm focus:outline-neutral-200 sm:text-base"
                       placeholder={t('email')}
+                      type="email"
+                      autoComplete="email"
+                      autoCorrect="off"
+                      autoCapitalize="off"
+                      required
                       onInput={(e) => setEmail(e.currentTarget.value)}
                     />
                     <input
                       className="h-11 w-full rounded-lg bg-gray px-3 text-sm focus:outline-neutral-200 sm:text-base"
+                      type="tel"
+                      autoComplete="tel"
                       placeholder={t('phone')}
                       onInput={(e) => setPhone(e.currentTarget.value)}
                     />
                     <input
                       className="h-11 w-full rounded-lg bg-gray px-3 text-sm focus:outline-neutral-200 sm:text-base"
                       placeholder={t('country')}
+                      autoComplete="country"
+                      required
                       onInput={(e) => setCountry(e.currentTarget.value)}
                     />
                     <div className="flex w-full flex-row items-center justify-start rounded-lg bg-gray">
                       <input
+                        autoComplete="address"
                         className="h-11 w-full bg-transparent px-3 text-sm focus:outline-neutral-200 sm:text-base"
                         placeholder={t('address')}
                         onInput={(e) => setAddress(e.currentTarget.value)}
                       />
                       <div className="h-8 w-0.5 bg-neutral-200"></div>
                       <input
+                        autoComplete="postal-code"
                         className="h-11 w-24 bg-transparent px-3 text-sm focus:outline-neutral-200 sm:text-base"
                         placeholder={t('zip')}
                         onInput={(e) => setZip(e.currentTarget.value)}
@@ -275,7 +309,7 @@ export default function Checkout() {
                     </div>
                   </div>
                   <Divider></Divider>
-                  <div className="flex flex-col items-center p-5">
+                  <div className="w-full flex flex-col items-center">
                     <TotalCostInfo
                       total={total}
                       measurementFilled={isMeasurementsFilled()}
@@ -283,18 +317,11 @@ export default function Checkout() {
                       discount={discount}
                       t={t}
                     />
-                    <div className="mt-10 flex w-full flex-row items-center justify-between">
-                      <button
-                        className="h-11 w-24 rounded-3xl bg-gray text-black"
-                        onClick={() => setStep('bag')}>
-                        Back
-                      </button>
-                      <button
-                        className={`h-11 w-56 flex-shrink-0 rounded-3xl text-white ${isFormValid ? 'bg-black' : 'bg-black/60 cursor-not-allowed'}`}
-                        onClick={placeOrder}>
-                        Checkout • <span className="text-gray">${total}</span>
-                      </button>
-                    </div>
+                    <button
+                      className={`mt-4 h-11 w-56 flex-shrink-0 rounded-3xl mb-10 text-white ${isFormValid ? 'bg-black' : 'bg-black/60 cursor-not-allowed'}`}
+                      onClick={placeOrder}>
+                      Checkout • <span className="text-gray">${total}</span>
+                    </button>
                   </div>
                 </div>
               )}
@@ -311,7 +338,7 @@ export default function Checkout() {
                   <div className="mb-8 flex w-full flex-col gap-4">
                     <input
                       className="h-11 w-full rounded-lg bg-gray px-3 text-sm focus:outline-neutral-200 sm:text-base"
-                      placeholder="Height, cm"
+                      placeholder={t('height')}
                       type="number"
                       autoFocus
                       autoComplete="off"
@@ -323,7 +350,7 @@ export default function Checkout() {
                     />
                     <input
                       className="h-11 w-full rounded-lg bg-gray px-3 text-sm focus:outline-neutral-200 sm:text-base"
-                      placeholder="Sleeve length, cm"
+                      placeholder={t('sleeve')}
                       type="number"
                       autoComplete="off"
                       autoCorrect="off"
@@ -334,7 +361,7 @@ export default function Checkout() {
                     />
                     <input
                       className="h-11 w-full rounded-lg bg-gray px-3 text-sm focus:outline-neutral-200 sm:text-base"
-                      placeholder="Waist, cm"
+                      placeholder={t('waist')}
                       type="number"
                       autoComplete="off"
                       autoCorrect="off"
@@ -345,7 +372,7 @@ export default function Checkout() {
                     />
                     <input
                       className="h-11 w-full rounded-lg bg-gray px-3 text-sm focus:outline-neutral-200 sm:text-base"
-                      placeholder="Chest, cm"
+                      placeholder={t('chest')}
                       type="number"
                       autoComplete="off"
                       autoCorrect="off"
@@ -356,7 +383,7 @@ export default function Checkout() {
                     />
                     <input
                       className="h-11 w-full rounded-lg bg-gray px-3 text-sm focus:outline-neutral-200 sm:text-base"
-                      placeholder="Hips, cm"
+                      placeholder={t('hips')}
                       type="number"
                       autoComplete="off"
                       autoCorrect="off"
@@ -399,7 +426,7 @@ const TotalCostInfo = (props: {
   t: any;
 }) => {
   return (
-    <div className="flex w-full flex-col gap-3">
+    <div className="p-5 flex w-full flex-col gap-3">
       <div className="flex w-full flex-row items-center justify-between">
         <p className="text-sm text-gray-light sm:text-base">
           {props.t('subtotal')}
@@ -441,8 +468,8 @@ const TotalCostInfo = (props: {
         <p className="text-base text-black sm:text-lg">${props.total}</p>
       </div>
       <div className="flex w-full flex-row items-center justify-between">
-        <p className="text-xs text-gray-light">{props.t('agree')}</p>
-        <Icons.infoCircle className="size-3.5" />
+        <p className="text-xs text-gray-light sm:text-center text-start">{props.t('agree')}</p>
+        <Icons.infoCircle className="size-3.5 shrink-0" />
       </div>
     </div>
   );
