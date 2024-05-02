@@ -1,0 +1,70 @@
+{
+  "title": "abc",
+  "privacy": {
+    "title": "Privacy policy",
+    "point1": {
+      "title": "Collection of Information",
+      "description": "We may collect personal information such as name, address, email, and payment details when you make a purchase on our e-commerce platform. Additionally, we may collect non-personal information such as IP addresses and browsing history for analytical purposes."
+    },
+    "point2": {
+      "title": "Use of Information:",
+      "description": "Your information is primarily used to process your orders, improve our services, and communicate with you regarding your purchases. We may also use your information for marketing purposes with your consent."
+    },
+    "point3": {
+      "title": "Protection of Information:",
+      "description": "We employ industry-standard security measures to protect your personal information from unauthorized access, disclosure, alteration, or destruction."
+    },
+    "point4": {
+      "title": "Sharing of Information:",
+      "description": "We may share your information with third-party service providers who assist us in operating our website and fulfilling orders. Your information may also be disclosed if required by law or to protect our rights and property."
+    },
+    "point5": {
+      "title": "Cookies:",
+      "description": "Our website may use cookies to enhance your browsing experience and personalize content. You can choose to disable cookies in your browser settings, although this may affect the functionality of our website."
+    },
+    "point6": {
+      "title": "Third-Party Links:",
+      "description": "Our website may contain links to third-party websites. We are not responsible for the privacy practices or content of these websites."
+    },
+    "point7": {
+      "title": "Updates to Privacy Policy:",
+      "description": "We reserve the right to update our privacy policy periodically. Any changes will be posted on this page, and your continued use of our website constitutes acceptance of these changes."
+    }
+  },
+  "tos": {
+    "title": "Terms of service",
+    "point1": {
+      "title": "Acceptance of Terms:",
+      "description": "By accessing or using our website, you agree to be bound by these terms and conditions. If you do not agree with any part of these terms, you may not use our services."
+    },
+    "point2": {
+      "title": "Product Descriptions:",
+      "description": "We make every effort to accurately display the colors and details of our products. However, we cannot guarantee that your device's display will accurately represent the products. We reserve the right to modify or discontinue any product without prior notice."
+    },
+    "point3": {
+      "title": "Pricing and Payment:",
+      "description": "All prices are listed in United States Dollars (USD) and are inclusive of VAT. Payment can be made through secure payment gateways, and we accept various payment methods. We reserve the right to change prices at any time without prior notice."
+    },
+    "point4": {
+      "title": "Shipping and Delivery: ",
+      "description": "We aim to process and ship orders in a timely manner. However, delivery times may vary depending on your location and other factors beyond our control. We are not responsible for any delays or damages caused by shipping carriers."
+    },
+    "point5": {
+      "title": "Returns and Exchanges:",
+      "description": "We accept returns and exchanges within a specified period, provided that the items are unused and in their original condition. Customers are responsible for return shipping costs unless the return is due to a defect or error on our part."
+    },
+    "point6": {
+      "title": "Intellectual Property:",
+      "description": "All content on our website, including images, logos, and text, is the property of our company and is protected by copyright and other intellectual property laws. You may not use, reproduce, or distribute any content from our website without prior written consent."
+    },
+    "point7": {
+      "title": "Governing Law:",
+      "description": "These terms and conditions are governed by the laws of Georgia. Any disputes arising from or related to these terms shall be resolved through arbitration in accordance with the laws of Georgia."
+    }
+  },
+  "company": {
+    "title": "Individual Entrepreneur: Nikita Beketov",
+    "vat": "VAT: 316368220",
+    "address": "Address: Georgia, Rustavi city, micro / district VIII, N 5a, basement"
+  }
+}
