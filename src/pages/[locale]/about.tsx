@@ -9,7 +9,7 @@ export default function Contacts() {
     <div>
       <main
         className={`flex min-h-screen flex-col items-center justify-between bg-white`}>
-        <Navbar theme={'light'} />
+        <Navbar />
         <div className="mb-11 mt-8 max-w-xs p-5 text-center sm:mb-28 sm:mt-28 sm:p-0">
           <p className="mb-4 text-lg sm:text-xl">{t('contacts')}</p>
           <div className="mt-10 space-y-1 text-sm sm:text-base">

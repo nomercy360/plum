@@ -8,6 +8,11 @@ import { CartContext } from '@/context/cart-provider';
 import { useTranslation } from 'next-i18next';
 import { getStaticPaths, makeStaticProps } from '@/lib/getStatic';
 import { useRouter } from 'next/router';
+import ExportedImage from 'next-image-export-optimizer';
+import { LocaleContext } from '@/context/locale-provider';
+import Link from '@/components/Link';
+
+import countries from '@/lib/countries.json';
 
 export default function Checkout() {
   const {
@@ -17,6 +22,12 @@ export default function Checkout() {
     increaseQuantity,
     decreaseQuantity,
   } = useContext(CartContext);
+
+  const {
+    currency, currencySign, currentLanguage,
+  } = useContext(LocaleContext);
+
+
   const { t } = useTranslation(['checkout', 'common']);
 
   const [shippingOption, setShippingOption] = useState('standard');
@@ -47,9 +58,13 @@ export default function Checkout() {
 
   const router = useRouter();
 
+  const getItemPrice = (item: any) => {
+    return item.prices.find((p: any) => p.currency === currency)?.amount;
+  };
+
   useEffect(() => {
     let total = getCartItems().reduce(
-      (acc, item) => acc + item.price * item.quantity,
+      (acc, item) => acc + getItemPrice(item) * item.quantity,
       0,
     );
 
@@ -77,8 +92,21 @@ export default function Checkout() {
 
 
   const placeOrder = async () => {
-    await new Promise((resolve) => setTimeout(resolve, 600));
-    await router.push('/orders/a1b2c3f4e5t6');
+    const order = {
+      name,
+      email,
+      address,
+      country,
+      zip,
+      phone,
+      total,
+      items: getCartItems(),
+      measurements,
+    };
+
+    console.log(order);
+
+    //  await router.push('/orders/a1b2c3f4e5t6');
   };
 
   const [measurements, setMeasurements] = useState({
@@ -111,26 +139,30 @@ export default function Checkout() {
     return Object.values(measurements).some((value) => value !== '');
   };
 
+  function getWordEnding(count: number) {
+    if (count % 10 === 1 && count % 100 !== 11) {
+      return 'товар';
+    } else if ([2, 3, 4].includes(count % 10) && ![12, 13, 14].includes(count % 100)) {
+      return 'товара';
+    } else {
+      return 'товаров';
+    }
+  }
+
+  function getTranslation(key: string, count: number) {
+    const translation = t(key, { total: count });
+    const ending = getWordEnding(count);
+    return translation.replace('{{ending}}', ending);
+  }
+
   return (
     <div className="min-h-screen bg-white sm:bg-gray">
       {getCartTotal() > 0 ? (
         <div>
           <NavbarCart>
-            {step == 'bag' && (
-              <button onClick={() => router.back()}>
-                <Icons.close className="size-5 fill-black" />
-              </button>
-            )}
-            {step == 'deliveryInfo' && (
-              <button onClick={() => setStep('bag')}>
-                <Icons.close className="size-5 fill-black" />
-              </button>
-            )}
-            {step == 'measurements' && (
-              <button onClick={() => setStep('bag')}>
-                <Icons.close className="size-5 fill-black" />
-              </button>
-            )}
+            <button onClick={() => router.back()}>
+              <Icons.close className="size-5 fill-black" />
+            </button>
           </NavbarCart>
           <main className="mt-8 flex w-full items-start justify-center">
             <div className="flex w-full max-w-2xl flex-col rounded-xl bg-white sm:h-screen">
@@ -138,7 +170,7 @@ export default function Checkout() {
                 <div className="w-full flex flex-col rounded-t-xl bg-white">
                   <div className="flex flex-row items-center justify-between  p-5">
                     <p className="text-lg sm:text-xl">
-                      ${total} for {getCartTotal()} items
+                      {getTranslation('yourBag', getCartTotal())}
                     </p>
                     <button
                       className="h-8 text-gray-light"
@@ -152,18 +184,20 @@ export default function Checkout() {
                         key={item.id}
                         className="flex flex-row items-center justify-between gap-3">
                         <div className="flex flex-row items-center gap-3">
-                          <img
+                          <ExportedImage
                             alt=""
-                            className="size-10 rounded-full object-cover"
-                            src="/images/thumb.png"
+                            className="size-10 rounded-full object-cover shrink-0"
+                            src={item.image}
+                            width={40}
+                            height={40}
                           />
                           <div className="flex flex-col">
                             <p className="text-sm sm:text-base">
-                              {item.name}{' '}
+                              {item.name[currentLanguage]}{' '}
                               {item.quantity > 1 && `x ${item.quantity}`}
                             </p>
-                            <p className="text-xs text-gray-light sm:text-sm ">
-                              Total ${item.price}
+                            <p className="mt-0.5 text-xs text-gray-light sm:text-sm">
+                              Total {getItemPrice(item)}{currencySign}
                             </p>
                           </div>
                         </div>
@@ -177,7 +211,7 @@ export default function Checkout() {
                       className="flex flex-row items-center justify-between text-start"
                       onClick={() => setStep('measurements')}>
                       <div className="flex flex-row items-center justify-start gap-3">
-                        <div className="flex size-10 items-center justify-center rounded-full bg-gray">
+                        <div className="flex size-10 items-center justify-center rounded-full bg-gray shrink-0">
                           <Icons.tShirt className="size-6" />
                         </div>
                         <div>
@@ -186,7 +220,7 @@ export default function Checkout() {
                               ? t('measurementsAdded')
                               : t('addMeasurements')}
                           </p>
-                          <p className="text-xs text-gray-light">
+                          <p className="mt-0.5 text-xs text-gray-light">
                             {isMeasurementsFilled()
                               ? t('measurementsAddedDescription')
                               : t('addMeasurementsDescription')}
@@ -206,6 +240,7 @@ export default function Checkout() {
                     discountPercent={discount}
                     discount={discount}
                     t={t}
+                    currencySign={currencySign}
                   />
                   <div
                     className="p-5 mt-10 flex w-full flex-col items-center justify-between gap-5 sm:flex-row sm:justify-start">
@@ -244,13 +279,13 @@ export default function Checkout() {
                       className="h-11 w-full flex-shrink-0 rounded-3xl bg-black text-white sm:w-56"
                       onClick={() => setStep('deliveryInfo')}>
                       {t('continue')} •{' '}
-                      <span className="text-gray">${total}</span>
+                      <span className="text-gray">{total}{currencySign}</span>
                     </button>
                   </div>
                 </div>)}
               {step == 'deliveryInfo' && (
                 <div
-                  className="flex flex-col items-center rounded-t-xl bg-white text-center sm:items-start sm:text-start">
+                  className="flex flex-col items-center rounded-t-xl bg-white text-center sm:items-start sm:text-start sm:pb-0 pb-10">
                   <p className="px-5 pt-5 mb-1 text-lg text-black sm:text-xl">
                     {t('addDeliveryInfo')}
                   </p>
@@ -259,7 +294,7 @@ export default function Checkout() {
                   </p>
                   <div className="px-5 mb-8 flex w-full flex-col gap-4">
                     <input
-                      className="h-11 w-full rounded-lg bg-gray px-3 text-sm focus:outline-neutral-200 sm:text-base"
+                      className="placeholder:text-dark-gray h-11 w-full rounded-lg bg-gray px-3 text-sm focus:outline-neutral-200 sm:text-base"
                       placeholder={t('name')}
                       autoFocus
                       autoComplete="off"
@@ -269,7 +304,7 @@ export default function Checkout() {
                       onInput={(e) => setName(e.currentTarget.value)}
                     />
                     <input
-                      className="h-11 w-full rounded-lg bg-gray px-3 text-sm focus:outline-neutral-200 sm:text-base"
+                      className="placeholder:text-dark-gray h-11 w-full rounded-lg bg-gray px-3 text-sm focus:outline-neutral-200 sm:text-base"
                       placeholder={t('email')}
                       type="email"
                       autoComplete="email"
@@ -279,30 +314,36 @@ export default function Checkout() {
                       onInput={(e) => setEmail(e.currentTarget.value)}
                     />
                     <input
-                      className="h-11 w-full rounded-lg bg-gray px-3 text-sm focus:outline-neutral-200 sm:text-base"
+                      className="placeholder:text-dark-gray h-11 w-full rounded-lg bg-gray px-3 text-sm focus:outline-neutral-200 sm:text-base"
                       type="tel"
                       autoComplete="tel"
                       placeholder={t('phone')}
                       onInput={(e) => setPhone(e.currentTarget.value)}
                     />
-                    <input
-                      className="h-11 w-full rounded-lg bg-gray px-3 text-sm focus:outline-neutral-200 sm:text-base"
-                      placeholder={t('country')}
-                      autoComplete="country"
-                      required
-                      onInput={(e) => setCountry(e.currentTarget.value)}
-                    />
+                    <div className="flex w-full flex-row items-center justify-start rounded-lg bg-gray">
+                      <select
+                        className="h-11 w-full bg-transparent px-3 text-sm focus:outline-neutral-200 sm:text-base"
+                        onChange={(e) => setCountry(e.currentTarget.value)}
+                        value={country}>
+                        <option value="">{t('country')}</option>
+                        {countries.map((country) => (
+                          <option key={country.code} value={country.code}>
+                            {country.name}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
                     <div className="flex w-full flex-row items-center justify-start rounded-lg bg-gray">
                       <input
                         autoComplete="address"
-                        className="h-11 w-full bg-transparent px-3 text-sm focus:outline-neutral-200 sm:text-base"
+                        className="placeholder:text-dark-gray h-11 w-full bg-transparent px-3 text-sm focus:outline-neutral-200 sm:text-base"
                         placeholder={t('address')}
                         onInput={(e) => setAddress(e.currentTarget.value)}
                       />
-                      <div className="h-8 w-0.5 bg-neutral-200"></div>
+                      <div className="h-8 w-0.5 bg-dark-gray"></div>
                       <input
                         autoComplete="postal-code"
-                        className="h-11 w-24 bg-transparent px-3 text-sm focus:outline-neutral-200 sm:text-base"
+                        className="placeholder:text-dark-gray h-11 w-24 bg-transparent px-3 text-sm focus:outline-neutral-200 sm:text-base"
                         placeholder={t('zip')}
                         onInput={(e) => setZip(e.currentTarget.value)}
                       />
@@ -316,12 +357,20 @@ export default function Checkout() {
                       discountPercent={discount}
                       discount={discount}
                       t={t}
+                      currencySign={currencySign}
                     />
-                    <button
-                      className={`mt-4 h-11 w-56 flex-shrink-0 rounded-3xl mb-10 text-white ${isFormValid ? 'bg-black' : 'bg-black/60 cursor-not-allowed'}`}
-                      onClick={placeOrder}>
-                      Checkout • <span className="text-gray">${total}</span>
-                    </button>
+                    <div className="mt-10 flex w-full flex-row items-center justify-center sm:justify-between px-5">
+                      <button
+                        className="h-11 w-24 rounded-3xl bg-gray text-black sm:block hidden"
+                        onClick={() => setStep('bag')}>
+                        {t('back')}
+                      </button>
+                      <button
+                        className={`h-11 w-56 flex-shrink-0 rounded-3xl text-white ${isFormValid ? 'bg-black' : 'bg-black/60 cursor-not-allowed'}`}
+                        onClick={placeOrder}>
+                        {t('checkout')} <span className="text-gray">{total}{currencySign}</span>
+                      </button>
+                    </div>
                   </div>
                 </div>
               )}
@@ -337,7 +386,7 @@ export default function Checkout() {
                   </p>
                   <div className="mb-8 flex w-full flex-col gap-4">
                     <input
-                      className="h-11 w-full rounded-lg bg-gray px-3 text-sm focus:outline-neutral-200 sm:text-base"
+                      className="h-11 w-full rounded-lg bg-gray px-3 text-sm focus:outline-neutral-200 sm:text-base placeholder:text-dark-gray"
                       placeholder={t('height')}
                       type="number"
                       autoFocus
@@ -349,7 +398,7 @@ export default function Checkout() {
                       }
                     />
                     <input
-                      className="h-11 w-full rounded-lg bg-gray px-3 text-sm focus:outline-neutral-200 sm:text-base"
+                      className="h-11 w-full rounded-lg bg-gray px-3 text-sm focus:outline-neutral-200 sm:text-base placeholder:text-dark-gray"
                       placeholder={t('sleeve')}
                       type="number"
                       autoComplete="off"
@@ -360,7 +409,7 @@ export default function Checkout() {
                       }
                     />
                     <input
-                      className="h-11 w-full rounded-lg bg-gray px-3 text-sm focus:outline-neutral-200 sm:text-base"
+                      className="h-11 w-full rounded-lg bg-gray px-3 text-sm focus:outline-neutral-200 sm:text-base placeholder:text-dark-gray"
                       placeholder={t('waist')}
                       type="number"
                       autoComplete="off"
@@ -371,7 +420,7 @@ export default function Checkout() {
                       }
                     />
                     <input
-                      className="h-11 w-full rounded-lg bg-gray px-3 text-sm focus:outline-neutral-200 sm:text-base"
+                      className="h-11 w-full rounded-lg bg-gray px-3 text-sm focus:outline-neutral-200 sm:text-base placeholder:text-dark-gray"
                       placeholder={t('chest')}
                       type="number"
                       autoComplete="off"
@@ -382,7 +431,7 @@ export default function Checkout() {
                       }
                     />
                     <input
-                      className="h-11 w-full rounded-lg bg-gray px-3 text-sm focus:outline-neutral-200 sm:text-base"
+                      className="h-11 w-full rounded-lg bg-gray px-3 text-sm focus:outline-neutral-200 sm:text-base placeholder:text-dark-gray"
                       placeholder={t('hips')}
                       type="number"
                       autoComplete="off"
@@ -424,6 +473,7 @@ const TotalCostInfo = (props: {
   discountPercent: number;
   discount: number;
   t: any;
+  currencySign: string;
 }) => {
   return (
     <div className="p-5 flex w-full flex-col gap-3">
@@ -431,7 +481,7 @@ const TotalCostInfo = (props: {
         <p className="text-sm text-gray-light sm:text-base">
           {props.t('subtotal')}
         </p>
-        <p className="text-sm text-gray-light sm:text-base">${props.total}</p>
+        <p className="text-sm text-gray-light sm:text-base">{props.total}{props.currencySign}</p>
       </div>
       {props.discount > 0 && (
         <div className="flex w-full flex-row items-center justify-between">
@@ -439,7 +489,7 @@ const TotalCostInfo = (props: {
             {props.t('discount')}
           </p>
           <p className="text-sm text-gray-light sm:text-base">
-            -${props.discount} ({props.discountPercent}%)
+            -{props.discount} ({props.discountPercent}%)
           </p>
         </div>
       )}
@@ -458,18 +508,20 @@ const TotalCostInfo = (props: {
           {props.t('worldwide')}
         </p>
         <p className="text-sm text-gray-light sm:text-base">
-          {props.t('approx')} $30
+          {props.t('approx')} 30{props.currencySign}
         </p>
       </div>
       <div className="mt-4 flex w-full flex-row items-center justify-between">
         <p className="text-base text-black sm:text-lg">
           {props.t('total')}
         </p>
-        <p className="text-base text-black sm:text-lg">${props.total}</p>
+        <p className="text-base text-black sm:text-lg">{props.total}{props.currencySign}</p>
       </div>
       <div className="flex w-full flex-row items-center justify-between">
         <p className="text-xs text-gray-light sm:text-center text-start">{props.t('agree')}</p>
-        <Icons.infoCircle className="size-3.5 shrink-0" />
+        <Link href="/terms">
+          <Icons.infoCircle className="size-3.5 shrink-0" />
+        </Link>
       </div>
     </div>
   );

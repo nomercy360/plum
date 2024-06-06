@@ -1,11 +1,9 @@
 import React, { createContext, useEffect, useState } from 'react';
 
 type ICartItem = {
-  id: number;
-  name: string;
-  price: number;
+  product_id: number;
   quantity: number;
-  size: string;
+  variant_id: number;
 };
 
 interface ICart {
@@ -47,11 +45,11 @@ const CartProvider = ({ children }: { children: React.ReactNode }) => {
   }, []);
 
   const addToCart = (item: ICartItem) => {
-    const existingItem = cart.find((i) => i.id === item.id);
+    const existingItem = cart.find((i) => i.product_id === item.product_id);
     if (existingItem) {
       setCart(() => {
         const newCart = cart.map((i) =>
-          i.id === item.id ? { ...i, quantity: i.quantity + 1 } : i,
+          i.product_id === item.product_id ? { ...i, quantity: i.quantity + 1 } : i,
         );
         writeCartToLocalStorage(newCart);
         return newCart;
@@ -67,20 +65,20 @@ const CartProvider = ({ children }: { children: React.ReactNode }) => {
   };
 
   const decreaseQuantity = (id: number) => {
-    const item = cart.find((i) => i.id === id);
+    const item = cart.find((i) => i.product_id === id);
     if (!item) return;
 
     if (item.quantity > 1) {
       setCart(() => {
         const newCart = cart.map((i) =>
-          i.id === id ? { ...i, quantity: i.quantity - 1 } : i,
+          i.product_id === id ? { ...i, quantity: i.quantity - 1 } : i,
         );
         writeCartToLocalStorage(newCart);
         return newCart;
       });
     } else {
       setCart(() => {
-        const newCart = cart.filter((i) => i.id !== id);
+        const newCart = cart.filter((i) => i.product_id !== id);
         writeCartToLocalStorage(newCart);
         return newCart;
       });
@@ -97,7 +95,7 @@ const CartProvider = ({ children }: { children: React.ReactNode }) => {
   const increaseQuantity: (id: number) => void = (id: number) => {
     setCart(() => {
         const newCart = cart.map((i) =>
-          i.id === id ? { ...i, quantity: i.quantity + 1 } : i,
+          i.product_id === id ? { ...i, quantity: i.quantity + 1 } : i,
         );
         writeCartToLocalStorage(newCart);
         return newCart;

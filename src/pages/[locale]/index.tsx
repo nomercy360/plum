@@ -2,59 +2,127 @@ import { useTranslation } from 'next-i18next';
 
 import { getI18nProps, getStaticPaths } from '@/lib/getStatic';
 import Footer from '@/components/Footer';
-import Navbar from '@/components/Navbar';
+import { NavbarHome } from '@/components/Navbar';
 import Link from '@/components/Link';
 
-import { products } from '@/lib/api';
 import ExportedImage from 'next-image-export-optimizer';
+import SubscribeForm from '@/components/SubscribeForm';
+import { useContext } from 'react';
+import { LocaleContext } from '@/context/locale-provider';
+import { products } from '@/lib/api';
 
 export type Product = {
   id: number;
   name: string;
-  price: number;
+  description: string;
+  price: string;
+  currency: string;
   image: string;
   handle: string;
-  sizes: string[];
+  variants: { id: number, name: string, available: boolean }[];
   images: string[];
-  description: string;
 }
 
 export default function Home({ products }: { products: Product[] }) {
   const { t } = useTranslation(['common']);
 
+  const {
+    currency, currencySign, currentLanguage,
+  } = useContext(LocaleContext);
+
+  const getProductPrice = (item: any) => {
+    const price = item.prices.find((price: any) => price.currency === currency);
+    return price ? price.amount : item.prices[0].amount;
+  };
+
+  const getProductName = (item: any) => {
+    return item.name[currentLanguage];
+  };
+
+  //first 4
+  const productsFirstSection = products.slice(0, 4);
+  // fifth
+  const productsSecondSection = products[4];
+  // next 4
+  const productsThirdSection = products.slice(5, 9);
+  // next 1
+  const productsFourthSection = products[9];
+  // next 4
+  const productsFifthSection = products.slice(10, 14);
+
   return (
     <div>
       <main className="flex min-h-screen flex-col items-center justify-between bg-white p-2 pb-24 sm:pb-44">
         <div
-          className="h-[600px] w-full rounded-lg bg-[url(/images/hero-mobile.webp)] bg-cover bg-center sm:bg-[url(/images/hero.webp)]">
-          <Navbar theme={'dark'} />
+          className="sm:aspect-auto aspect-square sm:h-[560px] w-full rounded-lg bg-[url(/images/hero-mobile.webp)] bg-cover bg-center sm:bg-[url(/images/hero.webp)]">
+          <NavbarHome />
         </div>
         <div
-          className="mb-10 mt-4 grid grid-cols-2 gap-4 px-2 sm:mb-20 sm:mt-16 sm:grid-cols-4 sm:gap-10 sm:px-10">
-          {products.map((product) =>
-            <Link
-              key={product.id}
-              className="flex flex-col items-start justify-start"
-              href={`/products/${product.handle}`}>
-              <ExportedImage
-                alt=""
-                className="w-full rounded-lg object-cover"
-                src={product.image}
-                width={370}
-                height={520}
-              />
-              <p className="mb-1 mt-2.5 text-sm sm:mt-4 sm:text-base">
-                {product.name}
-              </p>
-              <p className="text-xs text-gray-light sm:text-base">
-                ${product.price}
-              </p>
-            </Link>,
-          )}
+          className="lg:grid hidden grid-cols-2 mb-20 mt-16 gap-10 px-10">
+          <div className="grid grid-cols-2 gap-10">
+            {productsFirstSection.map((product) => <ProductCard key={product.id} product={product} />)}
+          </div>
+          <ProductCard product={productsSecondSection} />
+          <div className="col-span-2 grid grid-cols-4 gap-10">
+            {productsThirdSection.map((product) => <ProductCard key={product.id} product={product} />)}
+          </div>
+          <ProductCard product={productsFourthSection} />
+          <div className="grid grid-cols-2 gap-10">
+            {productsFifthSection.map((product) => <ProductCard key={product.id} product={product} />)}
+          </div>
         </div>
+        <div className="grid lg:hidden mb-10 mt-4 grid-cols-2 gap-4">
+          {products.map((product) => (
+            // every fifth product
+            product.id % 5 === 0 ?
+              <div key={product.id} className="col-span-2 row-span-2">
+                <ProductCard product={product} />
+              </div> :
+              <ProductCard key={product.id} product={product} />
+          ))}
+        </div>
+        <SubscribeForm style="light" />
       </main>
       <Footer />
     </div>
+  );
+}
+
+function ProductCard({ product }: { product: Product }) {
+  const {
+    currency, currencySign, currentLanguage,
+  } = useContext(LocaleContext);
+
+  const getProductPrice = (item: any) => {
+    const price = item.prices.find((price: any) => price.currency === currency);
+    return price ? price.amount : item.prices[0].amount;
+  };
+
+  const getProductName = (item: any) => {
+    return item.name[currentLanguage];
+  };
+
+  return (
+    <Link
+      key={product.id}
+      className="flex flex-col items-start justify-start"
+      href={`/products/${product.handle}`}>
+      <ExportedImage
+        alt=""
+        className="size-full rounded-lg object-cover aspect-[5/7]"
+        src={product.image}
+        width={370}
+        height={520}
+      />
+      <div className="min-h-16">
+        <p className="mb-1 text-sm sm:mt-4 mt-2 sm:text-base">
+          {getProductName(product)}
+        </p>
+        <p className="text-xs text-gray-light sm:text-base">
+          {getProductPrice(product)}{currencySign}
+        </p>
+      </div>
+    </Link>
   );
 }
 

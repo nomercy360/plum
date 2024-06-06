@@ -4,26 +4,52 @@ import { useContext } from 'react';
 import Link from '@/components/Link';
 import LanguageSwitchLink from '@/components/LanguageSwitchButton';
 
-export default function Navbar(props: { theme: 'dark' | 'light' }) {
+export default function Navbar() {
   const { getCartTotal } = useContext(CartContext);
 
   return (
     <div className="w-full">
       <nav
-        className={`flex h-14 w-full flex-row items-center justify-between bg-transparent p-6 text-base ${props.theme === 'dark' ? 'text-white' : 'text-black'}`}>
+        className="flex h-16 w-full flex-row items-center justify-between bg-transparent p-6 text-base text-black">
         <Link href="/">
           <Icons.logo
-            className={`h-6 w-32 ${props.theme === 'dark' ? 'text-white' : 'fill-black stroke-black'}`}
+            className="h-6 w-32 text-[#141414]"
           />
         </Link>
         <div className="flex flex-row items-center justify-between gap-3">
-          <LanguageSwitchLink theme={props.theme} />
+          <LanguageSwitchLink theme="light" />
           <Link className="py-1" href="/gift-card">
             <Icons.gift
-              className={`h-5 w-5 sm:h-5 sm:w-6 ${props.theme === 'dark' ? 'text-white' : 'text-black'}`}
+              className="h-5 w-5 sm:h-5 sm:w-6 text-black"
             />
           </Link>
-          <CartButton cartItems={getCartTotal()} theme={props.theme} />
+          <CartButton cartItems={getCartTotal()} theme="light" />
+        </div>
+      </nav>
+    </div>
+  );
+}
+
+export function NavbarHome() {
+  const { getCartTotal } = useContext(CartContext);
+
+  return (
+    <div className="w-full">
+      <nav
+        className="flex h-12 w-full flex-row items-center justify-between bg-transparent p-4 text-base text-white">
+        <Link href="/">
+          <Icons.logo
+            className="h-6 w-32 text-white"
+          />
+        </Link>
+        <div className="flex flex-row items-center justify-between gap-3">
+          <LanguageSwitchLink theme="dark" />
+          <Link className="py-1" href="/gift-card">
+            <Icons.gift
+              className="h-5 w-5 sm:h-5 sm:w-6 text-white"
+            />
+          </Link>
+          <CartButton cartItems={getCartTotal()} theme="dark" />
         </div>
       </nav>
     </div>
@@ -33,14 +59,14 @@ export default function Navbar(props: { theme: 'dark' | 'light' }) {
 const CartButton = (props: { cartItems: number; theme: 'dark' | 'light' }) => {
   return (
     <Link href="/checkout">
-      <div className="relative flex h-5 w-5 items-center justify-center sm:h-5 sm:w-6">
+      <div className="relative flex sm:size-6 size-5 items-center justify-center">
         <span
-          className={`absolute -bottom-1 left-0 flex size-3 items-center justify-center rounded-full text-[8px] text-white ${props.cartItems === 0 ? 'bg-button' : 'bg-violet'}`}
+          className={`absolute leading-none pt-px flex flex-row mx-auto -bottom-1 text-center left-0 size-3 sm:size-3.5 items-center justify-center rounded-full text-[8px] ${props.cartItems === 0 ? props.theme == 'light' ? 'bg-black text-white' : 'bg-white text-black' : 'bg-violet text-white'}`}
         >
           {props.cartItems}
         </span>
         <Icons.cart
-          className={`h-5 w-5 sm:h-5 sm:w-6 ${props.theme === 'dark' ? 'text-white' : 'text-black'}`} />
+          className={`size-5 sm:size-6 ${props.theme === 'dark' ? 'text-white' : 'text-black'}`} />
       </div>
     </Link>
   );
