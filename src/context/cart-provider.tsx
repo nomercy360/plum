@@ -1,106 +1,168 @@
 import React, { createContext, useEffect, useState } from 'react';
 
-type ICartItem = {
+type CartItem = {
   product_id: number;
   quantity: number;
   variant_id: number;
+  variant_name: string;
+  price: number;
+  product_name: string;
+  image_url: string;
 };
 
-interface ICart {
-  cart: Array<ICartItem>;
-  addToCart: (item: ICartItem) => void;
-  decreaseQuantity: (id: number) => void;
-  increaseQuantity: (id: number) => void;
-  clearCart: () => void;
-  getCartTotal: () => number;
-  getCartItems: () => Array<ICartItem>;
+type CartDiscount = {
+  code: string;
+  is_active: boolean;
+  type: string;
+  usage_limit: number;
+  usage_count: number;
+  starts_at: string;
+  ends_at: string;
+  value: number;
+};
+
+type Cart = {
+  count: number;
+  items: Array<CartItem>;
+  id: number;
+  total: number;
+  subtotal: number;
+  discount?: CartDiscount;
+  currency: string;
 }
 
-const writeCartToLocalStorage = (cart: Array<ICartItem>) => {
-  localStorage.setItem('plum-cart-state', JSON.stringify(cart));
-};
+interface ICart {
+  cart: Cart;
+  addToCart: (item: CartItem) => void;
+  decreaseQuantity: (id: number) => void;
+  increaseQuantity: (id: number) => void;
+  applyDiscount: (code: string) => void;
+  clearCart: () => void;
+  getCartItems: () => Array<CartItem>;
+}
+
+
+async function fetchDiscount(cartID: number, promoCode: string) {
+  const response = await fetch(`http://localhost:8080/api/cart/${cartID}/discounts`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ code: promoCode }),
+  });
+
+  if (response.status === 200) {
+    return response.json();
+  } else {
+    throw new Error('Error applying discount');
+  }
+}
+
+async function fetchDeleteDiscount(cartID: number) {
+  const response = await fetch(`http://localhost:8080/api/cart/${cartID}/discounts`, {
+    method: 'DELETE',
+  });
+
+  if (response.status === 200) {
+    return response.json();
+  } else {
+    throw new Error('Error deleting discount');
+  }
+}
 
 export const CartContext = createContext<ICart>({
-  cart: [],
+  cart: {} as Cart,
   addToCart: () => {
   },
   decreaseQuantity: () => {
   },
   increaseQuantity: () => {
   },
+  applyDiscount: () => {
+  },
   clearCart: () => {
   },
-  getCartTotal: () => 0,
   getCartItems: () => [],
 });
 
+async function fetchCart(id: number) {
+  const response = await fetch(`http://localhost:8080/api/cart/${id}`);
+
+  switch (response.status) {
+    case 404:
+      return [];
+    case 200:
+      break;
+    default:
+      throw new Error('Error fetching cart');
+  }
+
+  return response.json();
+}
+
+async function fetchAddToCart(id: number, item: CartItem) {
+  const response = await fetch(`http://localhost:8080/api/cart/${id}/products`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(item),
+  });
+
+  switch (response.status) {
+    case 200:
+      return response.json();
+    default:
+      throw new Error('Error appending to cart');
+  }
+}
+
 const CartProvider = ({ children }: { children: React.ReactNode }) => {
-  const [cart, setCart] = useState<Array<ICartItem>>([]);
+  const [cart, setCart] = useState<Cart>({} as Cart);
 
   useEffect(() => {
-    const storageValue = localStorage.getItem('plum-cart-state');
-    if (storageValue) {
-      setCart(JSON.parse(storageValue));
+    const cartID = localStorage.getItem('plum-cart-id');
+    if (!cartID) {
+      setCart({ count: 0, items: [], id: 0, total: 0, subtotal: 0, discount: {} as CartDiscount, currency: 'USD' });
     }
+
+    fetchCart(Number(cartID)).then((cart) => {
+      setCart(cart);
+    });
+
   }, []);
 
-  const addToCart = (item: ICartItem) => {
-    const existingItem = cart.find((i) => i.product_id === item.product_id);
-    if (existingItem) {
-      setCart(() => {
-        const newCart = cart.map((i) =>
-          i.product_id === item.product_id ? { ...i, quantity: i.quantity + 1 } : i,
-        );
-        writeCartToLocalStorage(newCart);
-        return newCart;
-      });
-    } else {
-      setCart(() => {
-        writeCartToLocalStorage([...cart, item]);
-        return [...cart, item];
-      });
+  const addToCart = async (item: CartItem) => {
+    const resp = await fetchAddToCart(cart.id, item);
+    if (resp) {
+      setCart(() => resp);
     }
-
-    // localStorage.setItem('plum-cart-state', JSON.stringify(cart))
   };
 
   const decreaseQuantity = (id: number) => {
-    const item = cart.find((i) => i.product_id === id);
-    if (!item) return;
 
-    if (item.quantity > 1) {
-      setCart(() => {
-        const newCart = cart.map((i) =>
-          i.product_id === id ? { ...i, quantity: i.quantity - 1 } : i,
-        );
-        writeCartToLocalStorage(newCart);
-        return newCart;
-      });
-    } else {
-      setCart(() => {
-        const newCart = cart.filter((i) => i.product_id !== id);
-        writeCartToLocalStorage(newCart);
-        return newCart;
-      });
-    }
   };
 
   const clearCart = () => {
-    setCart(() => {
-      localStorage.removeItem('plum-cart-state');
-      return [];
-    });
+
   };
 
   const increaseQuantity: (id: number) => void = (id: number) => {
-    setCart(() => {
-        const newCart = cart.map((i) =>
-          i.product_id === id ? { ...i, quantity: i.quantity + 1 } : i,
-        );
-        writeCartToLocalStorage(newCart);
-        return newCart;
-      },
-    );
+
+  };
+
+  const applyDiscount = async (code: string) => {
+    if (code === '') {
+      const resp = await fetchDeleteDiscount(cart.id);
+      if (resp) {
+        setCart(() => resp);
+      }
+    } else {
+      const resp = await fetchDiscount(cart.id, code);
+      if (resp) {
+        setCart(() => resp);
+      }
+    }
   };
 
 
@@ -111,9 +173,9 @@ const CartProvider = ({ children }: { children: React.ReactNode }) => {
         addToCart,
         increaseQuantity,
         decreaseQuantity,
+        applyDiscount,
         clearCart,
-        getCartTotal: () => cart.reduce((acc, item) => acc + item.quantity, 0),
-        getCartItems: () => cart,
+        getCartItems: () => cart.items,
       }}
     >
       {children}

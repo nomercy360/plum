@@ -151,9 +151,7 @@ export const getStaticPaths = () => {
 async function fetchProduct(handle: string) {
   const resp = await fetch(`http://localhost:8080/api/products/${handle}?locale=en`);
 
-  const data = await resp.json();
-  console.log(data);
-  return data;
+  return await resp.json();
 }
 
 export const getStaticProps = async (ctx: any) => {

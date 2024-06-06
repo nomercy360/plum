@@ -14,13 +14,39 @@ import Link from '@/components/Link';
 
 import countries from '@/lib/countries.json';
 
+
+type Measurements = {
+  height?: string;
+  sleeve?: string;
+  waist?: string;
+  chest?: string;
+  hips?: string;
+};
+
+async function checkoutRequest(data: any) {
+  const response = await fetch('http://localhost:8080/api/checkout', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(data),
+  });
+
+  if (response.status === 201) {
+    return response.json();
+  } else {
+    throw new Error('Error fetching checkout');
+  }
+}
+
 export default function Checkout() {
   const {
+    cart,
     getCartItems,
-    getCartTotal,
     clearCart,
     increaseQuantity,
     decreaseQuantity,
+    applyDiscount,
   } = useContext(CartContext);
 
   const {
@@ -31,13 +57,11 @@ export default function Checkout() {
   const { t } = useTranslation(['checkout', 'common']);
 
   const [shippingOption, setShippingOption] = useState('standard');
-  const [discount, setDiscount] = useState(0);
   const [promoCode, setPromoCode] = useState('');
 
   const fetchDiscount = async () => {
     if (!promoCode) return;
-    await new Promise((resolve) => setTimeout(resolve, 400));
-    setDiscount(10);
+    applyDiscount(promoCode);
   };
 
   const [name, setName] = useState('');
@@ -47,7 +71,6 @@ export default function Checkout() {
   const [zip, setZip] = useState('');
   const [phone, setPhone] = useState('');
 
-  const [total, setTotal] = useState(0);
   const [shippingCost, setShippingCost] = useState(30);
 
   const [step, setStep] = useState<'bag' | 'deliveryInfo' | 'measurements'>(
@@ -57,22 +80,6 @@ export default function Checkout() {
   const [isFormValid, setIsFormValid] = useState(false);
 
   const router = useRouter();
-
-  const getItemPrice = (item: any) => {
-    return item.prices.find((p: any) => p.currency === currency)?.amount;
-  };
-
-  useEffect(() => {
-    let total = getCartItems().reduce(
-      (acc, item) => acc + getItemPrice(item) * item.quantity,
-      0,
-    );
-
-    total += shippingCost;
-    total -= (total * discount) / 100;
-    setTotal(total);
-  }, [shippingCost, discount]);
-
 
   useEffect(() => {
     setShippingCost(shippingOption === 'standard' ? 30 : 50);
@@ -99,23 +106,20 @@ export default function Checkout() {
       country,
       zip,
       phone,
-      total,
-      items: getCartItems(),
-      measurements,
+      provider: 'bepaid',
+      cart_id: cart.id,
+      metadata: {
+        measurements,
+      },
     };
 
-    console.log(order);
+    const resp = await checkoutRequest(order);
+    // get payment_link and redirect to it in new tab
 
-    //  await router.push('/orders/a1b2c3f4e5t6');
+    window.open(resp.payment_link, '_blank');
   };
 
-  const [measurements, setMeasurements] = useState({
-    height: '',
-    sleeve: '',
-    waist: '',
-    chest: '',
-    hips: '',
-  });
+  const [measurements, setMeasurements] = useState<Measurements>({} as Measurements);
 
   const updateMeasurements = (key: string, value: string) => {
     setMeasurements((prev) => ({ ...prev, [key]: value }));
@@ -157,7 +161,7 @@ export default function Checkout() {
 
   return (
     <div className="min-h-screen bg-white sm:bg-gray">
-      {getCartTotal() > 0 ? (
+      {cart.count > 0 ? (
         <div>
           <NavbarCart>
             <button onClick={() => router.back()}>
@@ -170,7 +174,7 @@ export default function Checkout() {
                 <div className="w-full flex flex-col rounded-t-xl bg-white">
                   <div className="flex flex-row items-center justify-between  p-5">
                     <p className="text-lg sm:text-xl">
-                      {getTranslation('yourBag', getCartTotal())}
+                      {getTranslation('yourBag', cart.count)}
                     </p>
                     <button
                       className="h-8 text-gray-light"
@@ -181,29 +185,29 @@ export default function Checkout() {
                   <div className="mt-8 flex flex-col gap-5 p-5">
                     {getCartItems().map((item) => (
                       <div
-                        key={item.id}
+                        key={item.variant_id}
                         className="flex flex-row items-center justify-between gap-3">
                         <div className="flex flex-row items-center gap-3">
                           <ExportedImage
                             alt=""
                             className="size-10 rounded-full object-cover shrink-0"
-                            src={item.image}
+                            src={item.image_url}
                             width={40}
                             height={40}
                           />
                           <div className="flex flex-col">
                             <p className="text-sm sm:text-base">
-                              {item.name[currentLanguage]}{' '}
+                              {item.product_name}{' '}
                               {item.quantity > 1 && `x ${item.quantity}`}
                             </p>
                             <p className="mt-0.5 text-xs text-gray-light sm:text-sm">
-                              Total {getItemPrice(item)}{currencySign}
+                              Total {item.price}{cart.currency}
                             </p>
                           </div>
                         </div>
                         <StepperButton
-                          onIncrease={() => increaseQuantity(item.id)}
-                          onDecrease={() => decreaseQuantity(item.id)}
+                          onIncrease={() => increaseQuantity(item.variant_id)}
+                          onDecrease={() => decreaseQuantity(item.variant_id)}
                         />
                       </div>
                     ))}
@@ -235,16 +239,16 @@ export default function Checkout() {
                   <Divider></Divider>
                   <div className="flex flex-col items-center p-5"></div>
                   <TotalCostInfo
-                    total={total}
+                    total={cart.total}
                     measurementFilled={isMeasurementsFilled()}
-                    discountPercent={discount}
-                    discount={discount}
+                    discountPercent={cart.discount?.value || 0}
+                    subtotal={cart.subtotal}
                     t={t}
                     currencySign={currencySign}
                   />
                   <div
                     className="p-5 mt-10 flex w-full flex-col items-center justify-between gap-5 sm:flex-row sm:justify-start">
-                    {discount == 0 ? (
+                    {!cart.discount ? (
                       <div className="flex h-11 w-full flex-row items-center rounded-lg bg-gray px-3">
                         <input
                           className="w-full bg-transparent focus:outline-none"
@@ -265,12 +269,12 @@ export default function Checkout() {
                         <div className="flex flex-row items-center justify-start gap-2.5">
                           <Icons.check className="size-4 fill-light-green text-light-green" />
                           <p className="text-sm text-light-green">
-                            {discount}% {t('discountApplied')}
+                            {}% {t('discountApplied')}
                           </p>
                         </div>
                         <button
                           className="text-light-green"
-                          onClick={() => setDiscount(0)}>
+                          onClick={() => applyDiscount('')}>
                           <Icons.close className="size-4 fill-light-green" />
                         </button>
                       </div>
@@ -279,7 +283,7 @@ export default function Checkout() {
                       className="h-11 w-full flex-shrink-0 rounded-3xl bg-black text-white sm:w-56"
                       onClick={() => setStep('deliveryInfo')}>
                       {t('continue')} •{' '}
-                      <span className="text-gray">{total}{currencySign}</span>
+                      <span className="text-gray">{cart.total}{cart.currency}</span>
                     </button>
                   </div>
                 </div>)}
@@ -352,10 +356,10 @@ export default function Checkout() {
                   <Divider></Divider>
                   <div className="w-full flex flex-col items-center">
                     <TotalCostInfo
-                      total={total}
+                      total={cart.total}
                       measurementFilled={isMeasurementsFilled()}
-                      discountPercent={discount}
-                      discount={discount}
+                      discountPercent={cart.discount?.value || 0}
+                      subtotal={cart.subtotal}
                       t={t}
                       currencySign={currencySign}
                     />
@@ -368,7 +372,7 @@ export default function Checkout() {
                       <button
                         className={`h-11 w-56 flex-shrink-0 rounded-3xl text-white ${isFormValid ? 'bg-black' : 'bg-black/60 cursor-not-allowed'}`}
                         onClick={placeOrder}>
-                        {t('checkout')} <span className="text-gray">{total}{currencySign}</span>
+                        {t('checkout')} <span className="text-gray">{cart.total}{currencySign}</span>
                       </button>
                     </div>
                   </div>
@@ -470,11 +474,13 @@ export default function Checkout() {
 const TotalCostInfo = (props: {
   total: number;
   measurementFilled: boolean;
+  subtotal: number;
   discountPercent: number;
-  discount: number;
   t: any;
   currencySign: string;
 }) => {
+  const discount = props.subtotal - props.total;
+
   return (
     <div className="p-5 flex w-full flex-col gap-3">
       <div className="flex w-full flex-row items-center justify-between">
@@ -483,13 +489,13 @@ const TotalCostInfo = (props: {
         </p>
         <p className="text-sm text-gray-light sm:text-base">{props.total}{props.currencySign}</p>
       </div>
-      {props.discount > 0 && (
+      {props.discountPercent > 0 && (
         <div className="flex w-full flex-row items-center justify-between">
           <p className="text-sm text-gray-light sm:text-base">
             {props.t('discount')}
           </p>
           <p className="text-sm text-gray-light sm:text-base">
-            -{props.discount} ({props.discountPercent}%)
+            -{discount} ({props.discountPercent}%)
           </p>
         </div>
       )}

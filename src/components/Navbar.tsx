@@ -5,7 +5,7 @@ import Link from '@/components/Link';
 import LanguageSwitchLink from '@/components/LanguageSwitchButton';
 
 export default function Navbar() {
-  const { getCartTotal } = useContext(CartContext);
+  const { cart } = useContext(CartContext);
 
   return (
     <div className="w-full">
@@ -23,7 +23,7 @@ export default function Navbar() {
               className="h-5 w-5 sm:h-5 sm:w-6 text-black"
             />
           </Link>
-          <CartButton cartItems={getCartTotal()} theme="light" />
+          <CartButton cartItems={cart.count} theme="light" />
         </div>
       </nav>
     </div>
@@ -31,7 +31,7 @@ export default function Navbar() {
 }
 
 export function NavbarHome() {
-  const { getCartTotal } = useContext(CartContext);
+  const { cart } = useContext(CartContext);
 
   return (
     <div className="w-full">
@@ -49,7 +49,7 @@ export function NavbarHome() {
               className="h-5 w-5 sm:h-5 sm:w-6 text-white"
             />
           </Link>
-          <CartButton cartItems={getCartTotal()} theme="dark" />
+          <CartButton cartItems={cart.count} theme="dark" />
         </div>
       </nav>
     </div>
