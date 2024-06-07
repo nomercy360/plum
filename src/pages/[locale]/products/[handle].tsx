@@ -144,7 +144,7 @@ export const getStaticPaths = () => {
 };
 
 async function fetchProduct(handle: string, locale: string) {
-  const resp = await fetch(`http://localhost:8080/api/products/${handle}?locale=en`,
+  const resp = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/products/${handle}?locale=en`,
     {
       headers: {
         'Accept-Language': locale,

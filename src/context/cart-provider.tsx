@@ -65,7 +65,7 @@ async function fetchAPI({ endpoint, method = 'GET', body = null, locale = 'en' }
     options.body = JSON.stringify(body);
   }
 
-  const response = await fetch(`http://localhost:8080/api/${endpoint}`, options);
+  const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/${endpoint}`, options);
 
   if (!response.ok && response.status !== 404) {
     throw new Error('Network response was not ok');

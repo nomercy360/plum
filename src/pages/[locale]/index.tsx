@@ -109,12 +109,14 @@ function ProductCard({ product }: { product: Product }) {
 }
 
 async function fetchProducts(locale: string) {
-  const resp = await fetch(`http://localhost:8080/api/products`,
+  const resp = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/products`,
     {
       headers: {
         'Accept-Language': locale,
       },
     });
+
+  console.log('resp', resp);
 
   return await resp.json();
 }
