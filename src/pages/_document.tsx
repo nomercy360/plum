@@ -1,4 +1,4 @@
-import { Html, Head, Main, NextScript } from "next/document";
+import { Html, Head, Main, NextScript } from 'next/document';
 
 export default function Document() {
   return (
@@ -12,10 +12,11 @@ export default function Document() {
         <meta name="og:title" content="PLUM®" />
         <meta name="og:description" content="Dresses & things" />
         <meta name="og:image" content="https://plumplum.co/images/og.png" />
+        <meta name="facebook-domain-verification" content="bahudlkogyzobajn9gkyr24k91b2iq" />
       </Head>
       <body>
-        <Main />
-        <NextScript />
+      <Main />
+      <NextScript />
       </body>
     </Html>
   );

@@ -2,7 +2,7 @@ import PhotoGallery from '@/components/PhotoGallery';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import ProductRecommendations from '@/components/ProductRecommendations';
-import { useContext, useEffect, useState } from 'react';
+import { useContext, useEffect, useMemo, useState } from 'react';
 import { CartContext } from '@/context/cart-provider';
 import Link from '@/components/Link';
 import { useTranslation } from 'next-i18next';
@@ -12,7 +12,7 @@ import i18nextConfig from '../../../../next-i18next.config';
 
 export default function ProductPage({ product }: { product: Product }) {
   const { t } = useTranslation(['product', 'common']);
-  const { addToCart } = useContext(CartContext);
+  const { addToCart, cart } = useContext(CartContext);
   const [selectedSize, setSelectedSize] = useState<number>(0);
   const [wasAddedToCart, setWasAddedToCart] = useState(false);
 
@@ -40,6 +40,10 @@ export default function ProductPage({ product }: { product: Product }) {
       setWasAddedToCart(false);
     }
   };
+
+  const isVariantInCart = useMemo(() => {
+    return cart.items?.some((item) => item.variant_id === selectedSize);
+  }, [cart, selectedSize]);
 
   return (
     <div>
@@ -72,10 +76,11 @@ export default function ProductPage({ product }: { product: Product }) {
               </div>
               {!wasAddedToCart ? (
                 <button
-                  className="flex h-11 min-w-[140px] flex-row items-center justify-between gap-2 rounded-full bg-black px-3.5 text-base text-white"
-                  onClick={handleAddToCart}>
-                  <p className="text-white">{t('addToBag')}</p>
-                  <p className="text-gray-light">{product.price}{product.currency}</p>
+                  className={`flex h-11 min-w-[150px] flex-row items-center justify-center gap-2 rounded-full px-3.5 text-base text-white ${isVariantInCart ? 'bg-dark-gray' : 'bg-black'}`}
+                  onClick={handleAddToCart}
+                  disabled={isVariantInCart}>
+                  <p className="text-white">{isVariantInCart ? t('alreadyInBag') : t('addToBag')}</p>
+                  {!isVariantInCart && <p className="text-white">{product.price}{product.currency}</p>}
                 </button>
               ) : (
                 <div

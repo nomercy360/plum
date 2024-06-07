@@ -197,7 +197,7 @@ export default function Checkout() {
                           />
                           <div className="flex flex-col">
                             <p className="text-sm sm:text-base">
-                              {item.product_name}{' '}
+                              {item.product_name}{' '}{`(${item.variant_name})`}{' '}
                               {item.quantity > 1 && `x ${item.quantity}`}
                             </p>
                             <p className="mt-0.5 text-xs text-gray-light sm:text-sm">

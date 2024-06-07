@@ -133,13 +133,22 @@ const CartProvider = ({ children }: { children: React.ReactNode }) => {
 
 
   const updateCartItem = async (id: number, quantity: number) => {
+    let cartResp;
     if (quantity === 0) {
+      cartResp = await fetchAPI({ endpoint: `cart/${cart.id}/items/${id}`, method: 'DELETE', locale: currentLanguage });
+    } else if (quantity < 0) {
       return;
+    } else {
+      cartResp = await fetchAPI({
+        endpoint: `cart/${cart.id}/items/${id}`,
+        method: 'PUT',
+        body: { quantity },
+        locale: currentLanguage,
+      });
     }
 
-    const resp = await fetchAPI({ endpoint: `cart/${cart.id}/items/${id}`, method: 'PUT', body: { quantity } });
-    if (resp) {
-      setCart(() => resp);
+    if (cartResp) {
+      setCart(() => cartResp);
     }
   };
 
