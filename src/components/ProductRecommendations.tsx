@@ -1,25 +1,31 @@
-import { Suspense, useContext } from 'react';
+import { Suspense, useContext, useEffect, useState } from 'react';
 import Link from '@/components/Link';
 import ExportedImage from 'next-image-export-optimizer';
 import { LocaleContext } from '@/context/locale-provider';
-import languageDetector from '@/lib/languageDetector';
-import i18nextConfig from '../../next-i18next.config';
+import { Product } from '@/pages/[locale]';
 
-export default function ProductRecommendations(props: { products: any[] }) {
+export default function ProductRecommendations(props: { productID: number }) {
   const {
-    currency, currencySign, currentLanguage,
+    currencySign,
   } = useContext(LocaleContext);
 
-  const getProductPrice = (item: any) => {
-    const price = item.prices.find((price: any) => price.currency === currency);
-    return price ? price.amount : item.prices[0].amount;
+  const [products, setProducts] = useState<Product[]>([]);
+
+
+  const fetchRelatedProducts = async () => {
+    const resp = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/products`);
+    return await resp.json().then((data) => data.filter((p: Product) => p.id !== props.productID).slice(0, 4));
   };
+
+  useEffect(() => {
+    fetchRelatedProducts().then((data) => setProducts(data));
+  }, []);
 
   return (
     <Suspense fallback={<LoaderSkeleton />}>
       <div
         className="flex w-screen flex-row gap-3 overflow-x-auto p-5 sm:grid sm:w-full sm:grid-cols-4 sm:gap-10 sm:overflow-x-hidden sm:p-14">
-        {props.products.map((product) => (
+        {products.map((product) => (
             <Link
               key={product.id}
               className="flex min-w-[170px] flex-col items-start justify-start"
@@ -32,10 +38,10 @@ export default function ProductRecommendations(props: { products: any[] }) {
                 height={520}
               />
               <p className="mb-1 mt-2.5 text-sm sm:mt-4 sm:text-base">
-                {product.name[currentLanguage]}
+                {product.name}
               </p>
               <p className="text-xs text-gray-light sm:text-base">
-                {getProductPrice(product)}{currencySign}
+                {product.price}{currencySign}
               </p>
             </Link>
           ),

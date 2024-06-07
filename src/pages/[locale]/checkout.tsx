@@ -23,11 +23,12 @@ type Measurements = {
   hips?: string;
 };
 
-async function checkoutRequest(data: any) {
+async function checkoutRequest(data: any, locale: string = 'en') {
   const response = await fetch(process.env.NEXT_PUBLIC_API_URL + '/checkout', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
+      'Accept-Language': locale,
     },
     body: JSON.stringify(data),
   });
@@ -112,7 +113,7 @@ export default function Checkout() {
       },
     };
 
-    const resp = await checkoutRequest(order);
+    const resp = await checkoutRequest(order, currentLanguage);
     // get payment_link and redirect to it in new tab
 
     window.open(resp.payment_link, '_blank');

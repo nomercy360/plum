@@ -1,13 +1,12 @@
 import PhotoGallery from '@/components/PhotoGallery';
 import Navbar from '@/components/Navbar';
-import { products } from '@/lib/api';
 import Footer from '@/components/Footer';
 import ProductRecommendations from '@/components/ProductRecommendations';
 import { useContext, useEffect, useState } from 'react';
 import { CartContext } from '@/context/cart-provider';
 import Link from '@/components/Link';
 import { useTranslation } from 'next-i18next';
-import { Product } from '@/pages/[locale]';
+import { fetchProducts, Product } from '@/pages/[locale]';
 import { getI18nProps } from '@/lib/getStatic';
 import i18nextConfig from '../../../../next-i18next.config';
 
@@ -121,7 +120,7 @@ export default function ProductPage({ product }: { product: Product }) {
           <p className="mb-2 text-sm uppercase sm:mb-12 sm:text-base">
             {t('youMayAlsoLike')}
           </p>
-          <ProductRecommendations products={products.filter((p) => p.id !== product.id).slice(0, 4)} />
+          <ProductRecommendations productID={product.id} />
         </section>
       </main>
       <Footer />
@@ -129,22 +128,8 @@ export default function ProductPage({ product }: { product: Product }) {
   );
 }
 
-export const getStaticPaths = () => {
-  const getPaths = () =>
-    i18nextConfig.i18n.locales.flatMap((locale) =>
-      products.map((product) => ({
-        params: { locale, handle: product.handle },
-      })),
-    );
-
-  return {
-    fallback: false,
-    paths: getPaths(),
-  };
-};
-
 async function fetchProduct(handle: string, locale: string) {
-  const resp = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/products/${handle}?locale=en`,
+  const resp = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/products/${handle}`,
     {
       headers: {
         'Accept-Language': locale,
@@ -165,3 +150,29 @@ export const getStaticProps = async (ctx: any) => {
     },
   };
 };
+
+
+export const getStaticPaths = async () => {
+  const getPaths = async () => {
+    const locales = i18nextConfig.i18n.locales;
+    const paths = [];
+
+    for (const locale of locales) {
+      const products = await fetchProducts(locale);
+      const localePaths = products.map((product: Product) => ({
+        params: { locale, handle: product.handle },
+      }));
+      paths.push(...localePaths);
+    }
+
+    return paths;
+  };
+
+  const paths = await getPaths();
+
+  return {
+    fallback: false,
+    paths,
+  };
+};
+

@@ -58,7 +58,7 @@ export default function PhotoGallery(props: { images: string[] }) {
                 <ExportedImage
                   key={image}
                   alt=""
-                  className="w-full rounded-lg object-cover"
+                  className="size-full rounded-lg object-cover aspect-[5/7]"
                   src={image}
                   width={370}
                   height={520}

@@ -9,7 +9,6 @@ import ExportedImage from 'next-image-export-optimizer';
 import SubscribeForm from '@/components/SubscribeForm';
 import { useContext } from 'react';
 import { LocaleContext } from '@/context/locale-provider';
-import { products } from '@/lib/api';
 
 export type Product = {
   id: number;
@@ -108,16 +107,13 @@ function ProductCard({ product }: { product: Product }) {
   );
 }
 
-async function fetchProducts(locale: string) {
+export async function fetchProducts(locale: string) {
   const resp = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/products`,
     {
       headers: {
         'Accept-Language': locale,
       },
     });
-
-  console.log('resp', resp);
-
   return await resp.json();
 }
 
