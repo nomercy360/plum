@@ -263,7 +263,6 @@ export default function Checkout() {
                         </button>
                       </div>
                     ) : (
-
                       <div
                         className="flex h-11 w-full flex-row items-center justify-between rounded-lg bg-light-green/10 px-3">
                         <div className="flex flex-row items-center justify-start gap-2.5">
@@ -371,6 +370,7 @@ export default function Checkout() {
                       </button>
                       <button
                         className={`h-11 w-56 flex-shrink-0 rounded-3xl text-white ${isFormValid ? 'bg-black' : 'bg-black/60 cursor-not-allowed'}`}
+                        disabled={!isFormValid}
                         onClick={placeOrder}>
                         {t('checkout')} <span className="text-gray">{cart.total}{currencySign}</span>
                       </button>

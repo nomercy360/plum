@@ -1,4 +1,5 @@
-import React, { createContext, useEffect, useState } from 'react';
+import React, { createContext, useContext, useEffect, useState } from 'react';
+import { LocaleContext } from '@/context/locale-provider';
 
 type CartItem = {
   product_id: number;
@@ -41,33 +42,30 @@ interface ICart {
   getCartItems: () => Array<CartItem>;
 }
 
-
-async function fetchDiscount(cartID: number, promoCode: string) {
-  const response = await fetch(`http://localhost:8080/api/cart/${cartID}/discounts`, {
-    method: 'POST',
+async function fetchAPI({ endpoint, method = 'GET', body = null, locale = 'en' }: {
+  endpoint: string,
+  method?: string,
+  body?: any,
+  locale: string
+}) {
+  const options: RequestInit = {
+    method,
     headers: {
       'Content-Type': 'application/json',
+      'Accept-Language': locale,
     },
-    body: JSON.stringify({ code: promoCode }),
-  });
-
-  if (response.status === 200) {
-    return response.json();
-  } else {
-    throw new Error('Error applying discount');
+  };
+  if (body) {
+    options.body = JSON.stringify(body);
   }
-}
 
-async function fetchDeleteDiscount(cartID: number) {
-  const response = await fetch(`http://localhost:8080/api/cart/${cartID}/discounts`, {
-    method: 'DELETE',
-  });
+  const response = await fetch(`http://localhost:8080/api/${endpoint}`, options);
 
-  if (response.status === 200) {
-    return response.json();
-  } else {
-    throw new Error('Error deleting discount');
+  if (!response.ok) {
+    throw new Error(`Error: ${response.statusText}`);
   }
+
+  return response.json();
 }
 
 export const CartContext = createContext<ICart>({
@@ -85,59 +83,48 @@ export const CartContext = createContext<ICart>({
   getCartItems: () => [],
 });
 
-async function fetchCart(id: number) {
-  const response = await fetch(`http://localhost:8080/api/cart/${id}`);
-
-  switch (response.status) {
-    case 404:
-      return [];
-    case 200:
-      break;
-    default:
-      throw new Error('Error fetching cart');
-  }
-
-  return response.json();
-}
-
-async function fetchAddToCart(id: number, item: CartItem) {
-  const response = await fetch(`http://localhost:8080/api/cart/${id}/products`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(item),
-  });
-
-  switch (response.status) {
-    case 200:
-      return response.json();
-    default:
-      throw new Error('Error appending to cart');
-  }
-}
-
 const CartProvider = ({ children }: { children: React.ReactNode }) => {
+  const {
+    currentLanguage,
+  } = useContext(LocaleContext);
+
   const [cart, setCart] = useState<Cart>({} as Cart);
 
   useEffect(() => {
     const cartID = localStorage.getItem('plum-cart-id');
     if (!cartID) {
-      setCart({ count: 0, items: [], id: 0, total: 0, subtotal: 0, discount: {} as CartDiscount, currency: 'USD' });
+      setCart({ count: 0 } as Cart);
+      return;
     }
 
-    fetchCart(Number(cartID)).then((cart) => {
-      setCart(cart);
+    fetchAPI({
+        endpoint: `cart/${cartID}`,
+        locale: currentLanguage,
+      },
+    ).then((cart) => {
+      if (!cart.id) {
+        localStorage.removeItem('plum-cart-id');
+      } else {
+        setCart(cart);
+      }
     });
 
-  }, []);
+  }, [currentLanguage]);
 
   const addToCart = async (item: CartItem) => {
-    const resp = await fetchAddToCart(cart.id, item);
-    if (resp) {
-      setCart(() => resp);
+    if (!cart.id) {
+      const newCart = await fetchAPI({ endpoint: 'cart', method: 'POST', body: item, locale: currentLanguage });
+      if (newCart) {
+        setCart(() => newCart);
+        localStorage.setItem('plum-cart-id', String(newCart.id));
+        return;
+      }
     }
+
+    const resp = await fetchAPI({ endpoint: `cart/${cart.id}/products`, method: 'POST', body: item });
+    setCart(() => resp);
   };
+
 
   const decreaseQuantity = (id: number) => {
 
@@ -153,15 +140,13 @@ const CartProvider = ({ children }: { children: React.ReactNode }) => {
 
   const applyDiscount = async (code: string) => {
     if (code === '') {
-      const resp = await fetchDeleteDiscount(cart.id);
+      const resp = await fetchAPI({ endpoint: `cart/${cart.id}/discounts`, method: 'DELETE' });
       if (resp) {
         setCart(() => resp);
       }
     } else {
-      const resp = await fetchDiscount(cart.id, code);
-      if (resp) {
-        setCart(() => resp);
-      }
+      const resp = await fetchAPI({ endpoint: `cart/${cart.id}/discounts`, method: 'POST', body: { code } });
+      setCart(() => resp);
     }
   };
 

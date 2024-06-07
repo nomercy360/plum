@@ -10,17 +10,12 @@ import { useTranslation } from 'next-i18next';
 import { Product } from '@/pages/[locale]';
 import { getI18nProps } from '@/lib/getStatic';
 import i18nextConfig from '../../../../next-i18next.config';
-import { LocaleContext } from '@/context/locale-provider';
 
 export default function ProductPage({ product }: { product: Product }) {
   const { t } = useTranslation(['product', 'common']);
   const { addToCart } = useContext(CartContext);
   const [selectedSize, setSelectedSize] = useState<number>(0);
   const [wasAddedToCart, setWasAddedToCart] = useState(false);
-
-  const {
-    currency, currencySign, currentLanguage,
-  } = useContext(LocaleContext);
 
   const handleAddToCart = () => {
     const item = {
@@ -148,8 +143,13 @@ export const getStaticPaths = () => {
   };
 };
 
-async function fetchProduct(handle: string) {
-  const resp = await fetch(`http://localhost:8080/api/products/${handle}?locale=en`);
+async function fetchProduct(handle: string, locale: string) {
+  const resp = await fetch(`http://localhost:8080/api/products/${handle}?locale=en`,
+    {
+      headers: {
+        'Accept-Language': locale,
+      },
+    });
 
   return await resp.json();
 }
@@ -161,7 +161,7 @@ export const getStaticProps = async (ctx: any) => {
         'product',
         'common',
       ])),
-      product: await fetchProduct(ctx.params.handle),
+      product: await fetchProduct(ctx.params.handle, ctx.params.locale),
     },
   };
 };

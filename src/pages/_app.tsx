@@ -17,16 +17,16 @@ const baseFont = localFont({ src: './PPPangramSansRounded-NarrowSemibold.woff2' 
 
 function App({ Component, pageProps }: AppProps) {
   return (
-    <CartProvider>
-      <LocaleProvider>
+    <LocaleProvider>
+      <CartProvider>
         <style jsx global>{`
             html {
                 font-family: ${baseFont.style.fontFamily};
             }
         `}</style>
         <Component {...pageProps} />
-      </LocaleProvider>
-    </CartProvider>
+      </CartProvider>
+    </LocaleProvider>
   );
 }
 
