@@ -13,31 +13,22 @@ import { products } from '@/lib/api';
 
 export type Product = {
   id: number;
+  handle: string;
   name: string;
   description: string;
-  price: string;
-  currency: string;
+  variants: {
+    id: number;
+    name: string;
+    quantity: number;
+  }[];
   image: string;
-  handle: string;
-  variants: { id: number, name: string, available: boolean }[];
   images: string[];
-}
+  currency: string;
+  price: number;
+};
 
 export default function Home({ products }: { products: Product[] }) {
   const { t } = useTranslation(['common']);
-
-  const {
-    currency, currencySign, currentLanguage,
-  } = useContext(LocaleContext);
-
-  const getProductPrice = (item: any) => {
-    const price = item.prices.find((price: any) => price.currency === currency);
-    return price ? price.amount : item.prices[0].amount;
-  };
-
-  const getProductName = (item: any) => {
-    return item.name[currentLanguage];
-  };
 
   //first 4
   const productsFirstSection = products.slice(0, 4);
@@ -90,17 +81,8 @@ export default function Home({ products }: { products: Product[] }) {
 
 function ProductCard({ product }: { product: Product }) {
   const {
-    currency, currencySign, currentLanguage,
+    currencySign,
   } = useContext(LocaleContext);
-
-  const getProductPrice = (item: any) => {
-    const price = item.prices.find((price: any) => price.currency === currency);
-    return price ? price.amount : item.prices[0].amount;
-  };
-
-  const getProductName = (item: any) => {
-    return item.name[currentLanguage];
-  };
 
   return (
     <Link
@@ -116,14 +98,25 @@ function ProductCard({ product }: { product: Product }) {
       />
       <div className="min-h-16">
         <p className="mb-1 text-sm sm:mt-4 mt-2 sm:text-base">
-          {getProductName(product)}
+          {product.name}
         </p>
         <p className="text-xs text-gray-light sm:text-base">
-          {getProductPrice(product)}{currencySign}
+          {product.price}{currencySign}
         </p>
       </div>
     </Link>
   );
+}
+
+async function fetchProducts(locale: string) {
+  const resp = await fetch(`http://localhost:8080/api/products`,
+    {
+      headers: {
+        'Accept-Language': locale,
+      },
+    });
+
+  return await resp.json();
 }
 
 
@@ -134,7 +127,7 @@ export const getStaticProps = async (ctx: any) => {
       ...(await getI18nProps(ctx, [
         'common',
       ])),
-      products,
+      products: await fetchProducts(ctx.params.locale),
     },
   };
 };

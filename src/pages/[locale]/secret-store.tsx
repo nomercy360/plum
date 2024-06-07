@@ -1,5 +1,4 @@
 import Icons from '@/components/Icons';
-import StepperButton from '@/components/StepperButton';
 import { useTranslation } from 'next-i18next';
 import { getStaticPaths, makeStaticProps } from '@/lib/getStatic';
 import { useState } from 'react';
@@ -11,8 +10,6 @@ export default function SecretStore(props: {
   isOpen: boolean;
   setIsOpen: (value: boolean) => void;
 }) {
-
-  const [email, setEmail] = useState('');
 
   const { t } = useTranslation(['common']);
   const router = useRouter();

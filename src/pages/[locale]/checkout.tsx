@@ -44,8 +44,7 @@ export default function Checkout() {
     cart,
     getCartItems,
     clearCart,
-    increaseQuantity,
-    decreaseQuantity,
+    updateCartItem,
     applyDiscount,
   } = useContext(CartContext);
 
@@ -206,8 +205,14 @@ export default function Checkout() {
                           </div>
                         </div>
                         <StepperButton
-                          onIncrease={() => increaseQuantity(item.variant_id)}
-                          onDecrease={() => decreaseQuantity(item.variant_id)}
+                          onIncrease={() => updateCartItem(
+                            item.id,
+                            item.quantity + 1,
+                          )}
+                          onDecrease={() => updateCartItem(
+                            item.id,
+                            item.quantity - 1,
+                          )}
                         />
                       </div>
                     ))}
@@ -268,7 +273,7 @@ export default function Checkout() {
                         <div className="flex flex-row items-center justify-start gap-2.5">
                           <Icons.check className="size-4 fill-light-green text-light-green" />
                           <p className="text-sm text-light-green">
-                            {}% {t('discountApplied')}
+                            {cart.discount.value}% {t('discountApplied')}
                           </p>
                         </div>
                         <button
@@ -495,7 +500,7 @@ const TotalCostInfo = (props: {
             {props.t('discount')}
           </p>
           <p className="text-sm text-gray-light sm:text-base">
-            -{discount} ({props.discountPercent}%)
+            -{discount}{props.currencySign} ({props.discountPercent}%)
           </p>
         </div>
       )}
