@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { LocaleContext } from '@/context/locale-provider';
 
-type CartItem = {
+export type CartItem = {
   id: number;
   product_id: number;
   quantity: number;
@@ -46,6 +46,7 @@ interface ICart {
   applyDiscount: (code: string) => void;
   clearCart: () => void;
   getCartItems: () => Array<CartItem>;
+  restoreCart: () => void;
 }
 
 async function fetchAPI({ endpoint, method = 'GET', body = null, locale = 'en' }: {
@@ -87,6 +88,8 @@ export const CartContext = createContext<ICart>({
   clearCart: () => {
   },
   getCartItems: () => [],
+  restoreCart: () => {
+  },
 });
 
 const CartProvider = ({ children }: { children: React.ReactNode }) => {
@@ -127,7 +130,12 @@ const CartProvider = ({ children }: { children: React.ReactNode }) => {
       }
     }
 
-    const resp = await fetchAPI({ endpoint: `cart/${cart.id}/items`, method: 'POST', body: item });
+    const resp = await fetchAPI({
+      endpoint: `cart/${cart.id}/items`,
+      method: 'POST',
+      body: item,
+      locale: currentLanguage,
+    });
     setCart(() => resp);
   };
 
@@ -153,7 +161,24 @@ const CartProvider = ({ children }: { children: React.ReactNode }) => {
   };
 
   const clearCart = () => {
+    localStorage.setItem('plum-restore-cart-id', String(cart.id));
+    localStorage.removeItem('plum-cart-id');
+    setCart({ count: 0 } as Cart);
+  };
 
+  const restoreCart = async () => {
+    const cartID = localStorage.getItem('plum-restore-cart-id');
+    if (!cartID) {
+      return;
+    }
+
+    const cartResp = await fetchAPI({ endpoint: `cart/${cartID}`, locale: currentLanguage });
+    if (cartResp) {
+      setCart(() => cartResp);
+      localStorage.setItem('plum-cart-id', String(cartResp.id));
+    }
+
+    localStorage.removeItem('plum-restore-cart-id');
   };
 
   const applyDiscount = async (code: string) => {
@@ -179,6 +204,7 @@ const CartProvider = ({ children }: { children: React.ReactNode }) => {
         updateCartItem,
         applyDiscount,
         clearCart,
+        restoreCart,
         getCartItems: () => cart.items,
       }}
     >

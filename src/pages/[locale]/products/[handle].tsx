@@ -9,6 +9,7 @@ import { useTranslation } from 'next-i18next';
 import { fetchProducts, Product } from '@/pages/[locale]';
 import { getI18nProps } from '@/lib/getStatic';
 import i18nextConfig from '../../../../next-i18next.config';
+import { sendGTMEvent } from '@next/third-parties/google';
 
 export default function ProductPage({ product }: { product: Product }) {
   const { t } = useTranslation(['product', 'common']);
@@ -25,6 +26,23 @@ export default function ProductPage({ product }: { product: Product }) {
 
     addToCart(item);
     setWasAddedToCart(true);
+
+    sendGTMEvent({
+      event: 'add_to_cart',
+      ecommerce: {
+        currency: product.currency,
+        items: [
+          {
+            item_id: product.id,
+            item_name: product.name,
+            item_category: 'Dresses',
+            item_brand: 'Plum',
+            price: product.price,
+            quantity: 1,
+          },
+        ],
+      },
+    });
   };
 
   useEffect(() => {
@@ -41,9 +59,32 @@ export default function ProductPage({ product }: { product: Product }) {
     }
   };
 
+  useEffect(() => {
+    sendGTMEvent({
+      event: 'view_item',
+      ecommerce: {
+        currency: product.currency,
+        items: [
+          {
+            item_id: product.id,
+            item_name: product.name,
+            item_category: 'Dresses',
+            item_brand: 'Plum',
+            price: product.price,
+            quantity: 1,
+          },
+        ],
+      },
+    });
+  }, [product]);
+
   const isVariantInCart = useMemo(() => {
     return cart.items?.some((item) => item.variant_id === selectedSize);
   }, [cart, selectedSize]);
+
+  const availability = useMemo(() => {
+    return product.variants.find((variant) => variant.id === selectedSize)?.available;
+  }, [product, selectedSize]);
 
   return (
     <div>
@@ -56,7 +97,8 @@ export default function ProductPage({ product }: { product: Product }) {
             className="flex w-full flex-col items-start text-start text-black sm:w-[360px] sm:min-w-[360px]">
             <div
               className="mb-3 flex pt-px tracking-wide h-6 items-center justify-center rounded-full bg-violet/10 px-2 text-xs uppercase text-violet">
-              {t('piecesLeft')}
+              {availability && availability > 1 ? t('piecesLeft', { count: product.variants.find((variant) => variant.id === selectedSize)?.available })
+                : t('lastPiece')}
             </div>
             <p className="mb-1 text-lg text-black sm:text-xl">{product.name} </p>
             <p className="text-sm text-gray-light sm:text-base">

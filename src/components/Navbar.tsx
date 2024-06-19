@@ -3,70 +3,60 @@ import { CartContext } from '@/context/cart-provider';
 import { useContext } from 'react';
 import Link from '@/components/Link';
 import LanguageSwitchLink from '@/components/LanguageSwitchButton';
+import { useRouter } from 'next/router';
 
 export default function Navbar() {
   const { cart } = useContext(CartContext);
 
   return (
-    <div className="w-full">
-      <nav
-        className="flex h-16 w-full flex-row items-center justify-between bg-transparent p-6 text-base text-black">
-        <Link href="/">
-          <Icons.logo
-            className="h-6 w-32 text-[#141414]"
-          />
-        </Link>
-        <div className="flex flex-row items-center justify-between gap-3">
-          <LanguageSwitchLink theme="light" />
-          <Link className="py-1" href="/gift-card">
-            <Icons.gift
-              className="h-5 w-5 sm:h-5 sm:w-6 text-black"
-            />
-          </Link>
-          <CartButton cartItems={cart.count} theme="light" />
-        </div>
-      </nav>
-    </div>
+    <nav
+      className="p-5 flex w-full flex-row items-center justify-between bg-transparent text-base text-black">
+      <Link href="/">
+        <Icons.logo
+          className="h-6 w-32 text-black"
+        />
+      </Link>
+      <div className="flex flex-row items-center justify-between gap-3">
+        <LanguageSwitchLink theme="light" />
+        <CartButton cartItems={cart.count} theme="light" />
+      </div>
+    </nav>
   );
 }
 
-export function NavbarHome() {
+export function NavbarCart() {
   const { cart } = useContext(CartContext);
 
+  const router = useRouter();
+
   return (
-    <div className="w-full">
-      <nav
-        className="flex h-12 w-full flex-row items-center justify-between bg-transparent p-4 text-base text-white">
-        <Link href="/">
-          <Icons.logo
-            className="h-6 w-32 text-white"
-          />
-        </Link>
-        <div className="flex flex-row items-center justify-between gap-3">
-          <LanguageSwitchLink theme="dark" />
-          <Link className="py-1" href="/gift-card">
-            <Icons.gift
-              className="h-5 w-5 sm:h-5 sm:w-6 text-white"
-            />
-          </Link>
-          <CartButton cartItems={cart.count} theme="dark" />
-        </div>
-      </nav>
-    </div>
+    <nav
+      className="p-5 flex w-full flex-row items-center justify-between bg-transparent text-base text-black">
+      <Link href="/">
+        <Icons.logo
+          className="h-6 w-32 text-black"
+        />
+      </Link>
+      <div className="flex flex-row items-center justify-between gap-3">
+        <LanguageSwitchLink theme="light" />
+        <button className="items-center flex justify-center size-5 bg-black rounded-full"
+                onClick={() => router.back()}>
+          <Icons.close className="shrink-0 text-white size-2.5" />
+        </button>
+      </div>
+    </nav>
   );
 }
+
 
 const CartButton = (props: { cartItems: number; theme: 'dark' | 'light' }) => {
   return (
-    <Link href="/checkout">
-      <div className="relative flex sm:size-6 size-5 items-center justify-center">
-        <span
-          className={`absolute leading-none pt-px flex flex-row mx-auto -bottom-1 text-center left-0 size-3 sm:size-3.5 items-center justify-center rounded-full text-[8px] ${props.cartItems === 0 ? props.theme == 'light' ? 'bg-black text-white' : 'bg-white text-black' : 'bg-violet text-white'}`}
-        >
+    <Link href="/checkout" className="flex flex-row items-center justify-start gap-1">
+      <span className="uppercase text-base text-black">bag</span>
+      <div className="text-white flex justify-center items-center size-5 text-xxs bg-black rounded-full shrink-0">
+        <span className="mt-px">
           {props.cartItems}
         </span>
-        <Icons.cart
-          className={`size-5 sm:size-6 ${props.theme === 'dark' ? 'text-white' : 'text-black'}`} />
       </div>
     </Link>
   );

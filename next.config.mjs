@@ -1,7 +1,7 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   output: 'export',
-  trailingSlash: true,
+  trailingSlash: false,
   transpilePackages: ['next-image-export-optimizer'],
   images: {
     loader: 'custom',

@@ -7,7 +7,7 @@ import { LocaleContext } from '@/context/locale-provider';
 
 const LanguageSwitchLink = ({ ...rest }: any) => {
   const router = useRouter();
-  const { toggleCurrency } = useContext(LocaleContext);
+  const { toggleCurrency, currency } = useContext(LocaleContext);
 
   let href = rest.href || router.asPath;
   let pName = router.pathname;
@@ -36,10 +36,15 @@ const LanguageSwitchLink = ({ ...rest }: any) => {
     <Link
       href={href}
       onClick={() => onClick()}
+      className="flex flex-row gap-1 items-center justify-start rounded-full"
     >
-      <Icons.translate
-        className={`h-5 w-5 sm:h-6 sm:w-6 text-black ${rest.theme === 'dark' ? 'text-white' : 'text-black'}`}
-      />
+      <span className="sr-only">Switch language</span>
+      <span className="uppercase text-black">{currency}</span>
+      <span className="bg-black rounded-full size-5 flex items-center justify-center">
+        <Icons.translate
+          className={`size-2.5 text-white`}
+        />
+      </span>
     </Link>
   );
 };

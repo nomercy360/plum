@@ -1,10 +1,9 @@
 import Icons from '@/components/Icons';
 import Divider from '@/components/Divider';
 import EmptyCart from '@/components/EmptyCart';
-import NavbarCart from '@/components/NavbarCart';
 import StepperButton from '@/components/StepperButton';
 import { useContext, useEffect, useState } from 'react';
-import { CartContext } from '@/context/cart-provider';
+import { CartContext, CartItem } from '@/context/cart-provider';
 import { useTranslation } from 'next-i18next';
 import { getStaticPaths, makeStaticProps } from '@/lib/getStatic';
 import { useRouter } from 'next/router';
@@ -13,7 +12,8 @@ import { LocaleContext } from '@/context/locale-provider';
 import Link from '@/components/Link';
 
 import countries from '@/lib/countries.json';
-
+import { sendGTMEvent } from '@next/third-parties/google';
+import { NavbarCart } from '@/components/Navbar';
 
 type Measurements = {
   height?: string;
@@ -21,6 +21,19 @@ type Measurements = {
   waist?: string;
   chest?: string;
   hips?: string;
+};
+
+export const cartItemsToGTM = (items: CartItem[]) => {
+  return items.map((item) => {
+    return {
+      item_id: item.id,
+      item_name: item.product_name,
+      item_category: 'Dresses',
+      item_brand: 'Plum',
+      price: item.price,
+      quantity: item.quantity,
+    };
+  });
 };
 
 async function checkoutRequest(data: any, locale: string = 'en') {
@@ -97,6 +110,29 @@ export default function Checkout() {
     setIsFormValid(isValid);
   }, [name, email, address, country, zip, phone]);
 
+  useEffect(() => {
+    if (cart.count > 0) {
+      sendGTMEvent({
+        event: 'view_cart',
+        ecommerce: {
+          currency: currency,
+          items: cartItemsToGTM(cart.items),
+        },
+      });
+    }
+  }, [cart]);
+
+  async function toDeliveryInfo() {
+    setStep('deliveryInfo');
+    sendGTMEvent({
+      event: 'begin_checkout',
+      ecommerce: {
+        currency: currency,
+        items: cartItemsToGTM(cart.items),
+      },
+    });
+  }
+
 
   const placeOrder = async () => {
     const order = {
@@ -115,6 +151,15 @@ export default function Checkout() {
 
     const resp = await checkoutRequest(order, currentLanguage);
     // get payment_link and redirect to it in new tab
+
+    sendGTMEvent({
+      event: 'add_payment_info',
+      payment_type: 'Credit Card',
+      ecommerce: {
+        currency: cart.currency,
+        items: cartItemsToGTM(cart.items),
+      },
+    });
 
     window.open(resp.payment_link, '_blank');
   };
@@ -159,20 +204,66 @@ export default function Checkout() {
     return translation.replace('{{ending}}', ending);
   }
 
+  function decreaseQuantity(product: CartItem) {
+    const item = cart.items.find((item) => item.variant_id === product.variant_id);
+
+    if (item) {
+      updateCartItem(product.id, item.quantity - 1);
+      // push to gtm
+      sendGTMEvent({
+        event: 'remove_from_cart',
+        ecommerce: {
+          currency: cart.currency,
+          items: [
+            {
+              item_id: product.id,
+              item_name: product.product_name,
+              item_category: 'Dresses',
+              item_brand: 'Plum',
+              price: product.price,
+              quantity: 1,
+            },
+          ],
+        },
+      });
+    }
+  }
+
+  function increaseQuantity(product: CartItem) {
+    const item = cart.items.find((item) => item.variant_id === product.variant_id);
+
+    if (item) {
+      updateCartItem(product.id, item.quantity + 1);
+      // push to gtm
+      sendGTMEvent({
+        event: 'add_to_cart',
+        ecommerce: {
+          currency: cart.currency,
+          items: [
+            {
+              item_id: product.id,
+              item_name: product.product_name,
+              item_category: 'Dresses',
+              item_brand: 'Plum',
+              price: product.price,
+              quantity: 1,
+            },
+          ],
+        },
+      });
+    }
+  }
+
   return (
-    <div className="min-h-screen bg-white sm:bg-gray">
+    <div className="min-h-screen bg-gray">
       {cart.count > 0 ? (
         <div>
-          <NavbarCart>
-            <button onClick={() => router.back()}>
-              <Icons.close className="size-5 fill-black" />
-            </button>
-          </NavbarCart>
+          <NavbarCart />
           <main className="mt-8 flex w-full items-start justify-center">
             <div className="flex w-full max-w-2xl flex-col rounded-xl bg-white sm:h-screen">
               {step == 'bag' && (
-                <div className="w-full flex flex-col rounded-t-xl bg-white">
-                  <div className="flex flex-row items-center justify-between  p-5">
+                <div className="w-full flex flex-col justify-between sm:rounded-t-xl bg-white">
+                  <div className="flex flex-row items-center justify-between px-5 pt-5">
                     <p className="text-lg sm:text-xl">
                       {getTranslation('yourBag', cart.count)}
                     </p>
@@ -182,7 +273,7 @@ export default function Checkout() {
                       {t('clearCart')}
                     </button>
                   </div>
-                  <div className="mt-8 flex flex-col gap-5 p-5">
+                  <div className="mt-8 flex flex-col gap-5 pb-5 px-5">
                     {getCartItems().map((item) => (
                       <div
                         key={item.variant_id}
@@ -206,14 +297,8 @@ export default function Checkout() {
                           </div>
                         </div>
                         <StepperButton
-                          onIncrease={() => updateCartItem(
-                            item.id,
-                            item.quantity + 1,
-                          )}
-                          onDecrease={() => updateCartItem(
-                            item.id,
-                            item.quantity - 1,
-                          )}
+                          onIncrease={() => increaseQuantity(item)}
+                          onDecrease={() => decreaseQuantity(item)}
                         />
                       </div>
                     ))}
@@ -243,7 +328,6 @@ export default function Checkout() {
                     </button>
                   </div>
                   <Divider></Divider>
-                  <div className="flex flex-col items-center p-5"></div>
                   <TotalCostInfo
                     total={cart.total}
                     measurementFilled={isMeasurementsFilled()}
@@ -253,7 +337,7 @@ export default function Checkout() {
                     currencySign={currencySign}
                   />
                   <div
-                    className="p-5 mt-10 flex w-full flex-col items-center justify-between gap-5 sm:flex-row sm:justify-start">
+                    className="px-5 mt-10 flex w-full flex-col items-center justify-between gap-5 sm:flex-row sm:justify-start">
                     {!cart.discount ? (
                       <div className="flex h-11 w-full flex-row items-center rounded-lg bg-gray px-3">
                         <input
@@ -286,7 +370,7 @@ export default function Checkout() {
                     )}
                     <button
                       className="h-11 w-full flex-shrink-0 rounded-3xl bg-black text-white sm:w-56"
-                      onClick={() => setStep('deliveryInfo')}>
+                      onClick={() => toDeliveryInfo()} disabled={!cart.total}>
                       {t('continue')} •{' '}
                       <span className="text-gray">{cart.total}{cart.currency}</span>
                     </button>
@@ -295,10 +379,10 @@ export default function Checkout() {
               {step == 'deliveryInfo' && (
                 <div
                   className="flex flex-col items-center rounded-t-xl bg-white text-center sm:items-start sm:text-start sm:pb-0 pb-10">
-                  <p className="px-5 pt-5 mb-1 text-lg text-black sm:text-xl">
+                  <p className="px-5 pt-5 mb-2 text-lg text-black sm:text-xl">
                     {t('addDeliveryInfo')}
                   </p>
-                  <p className="px-5 mb-8 text-sm text-gray-light">
+                  <p className="leading-snug px-5 mb-8 text-sm text-gray-light">
                     {t('addDeliveryInfoDescription')}
                   </p>
                   <div className="px-5 mb-8 flex w-full flex-col gap-4">
@@ -377,7 +461,7 @@ export default function Checkout() {
                       <button
                         className={`h-11 w-56 flex-shrink-0 rounded-3xl text-white ${isFormValid ? 'bg-black' : 'bg-black/60 cursor-not-allowed'}`}
                         disabled={!isFormValid}
-                        onClick={placeOrder}>
+                        onClick={() => placeOrder()}>
                         {t('checkout')} <span className="text-gray">{cart.total}{currencySign}</span>
                       </button>
                     </div>
@@ -387,11 +471,11 @@ export default function Checkout() {
 
               {step == 'measurements' && (
                 <div
-                  className="flex flex-col items-center rounded-t-xl bg-white p-5 text-center sm:items-start sm:text-start">
-                  <p className="mb-1 text-lg text-black sm:text-xl">
+                  className="flex flex-col items-center rounded-t-xl bg-white pt-5 px-5 text-center sm:items-start sm:text-start">
+                  <p className="mb-2 text-lg text-black sm:text-xl">
                     {t('addMeasurements')}
                   </p>
-                  <p className="mb-8 max-w-xs text-sm text-gray-light sm:max-w-4xl">
+                  <p className="leading-snug mb-8 max-w-xs text-sm text-gray-light sm:max-w-4xl">
                     {t('addMeasurementsDescription2')}
                   </p>
                   <div className="mb-8 flex w-full flex-col gap-4">
@@ -488,7 +572,7 @@ const TotalCostInfo = (props: {
   const discount = props.subtotal - props.total;
 
   return (
-    <div className="p-5 flex w-full flex-col gap-3">
+    <div className="px-5 flex w-full flex-col gap-3">
       <div className="flex w-full flex-row items-center justify-between">
         <p className="text-sm text-gray-light sm:text-base">
           {props.t('subtotal')}

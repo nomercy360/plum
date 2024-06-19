@@ -8,7 +8,7 @@
   "addMeasurementsDescription": "Add tailoring measurements. It’s absolutely free!",
   "discountApplied": "discount applied",
   "titleOrderSuccess": "Plum has received your order. So what’s next?",
-  "textOrderSuccess": "Check n***@proton.me for the order confirmation letter. Once the order is ready, we will send you a tracking number. If you want to be in the know about all our new drops, why not give us a follow on Instagram?",
+  "textOrderSuccess": "Check {{email}} for the order confirmation letter. Once the order is ready, we will send you a tracking number. If you want to be in the know about all our new drops, why not give us a follow on Instagram?",
   "subscribeInstagramButton": "Subscribe to Instagram",
   "continue": "Continue",
   "back": "Back",

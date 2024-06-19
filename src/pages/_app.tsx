@@ -5,6 +5,8 @@ import nextI18NextConfig from '../../next-i18next.config.js';
 import CartProvider from '@/context/cart-provider';
 import localFont from 'next/font/local';
 import LocaleProvider from '@/context/locale-provider';
+import { GoogleTagManager } from '@next/third-parties/google';
+
 
 const emptyInitialI18NextConfig: UserConfig = {
   i18n: {
@@ -25,6 +27,7 @@ function App({ Component, pageProps }: AppProps) {
             }
         `}</style>
         <Component {...pageProps} />
+        <GoogleTagManager gtmId="GTM-PNZ4JMKQ" dataLayerName="dataLayer" dataLayer={[]} />
       </CartProvider>
     </LocaleProvider>
   );

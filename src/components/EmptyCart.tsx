@@ -1,20 +1,20 @@
 import Icons from './Icons';
-import NavbarCart from './NavbarCart';
 import { useTranslation } from 'next-i18next';
 import { useRouter } from 'next/router';
+import { useContext } from 'react';
+import { CartContext } from '@/context/cart-provider';
+import { NavbarCart } from '@/components/Navbar';
 
 export default function EmptyCart() {
   const { t } = useTranslation('checkout');
 
   const router = useRouter();
 
+  const { restoreCart } = useContext(CartContext);
+
   return (
     <main className="flex h-screen w-full flex-col items-center justify-start bg-white">
-      <NavbarCart>
-        <button onClick={() => router.back()}>
-          <Icons.close className="size-5 fill-black" />
-        </button>
-      </NavbarCart>
+      <NavbarCart />
       <div className="flex h-full flex-col items-center justify-between p-8 sm:justify-center">
         <div></div>
         <div className="flex max-w-72 flex-col items-center justify-center text-center sm:max-w-sm">
@@ -25,9 +25,10 @@ export default function EmptyCart() {
           </p>
         </div>
         <div className="flex w-full flex-col items-center justify-center">
-          {/*<button className="mb-4 h-11 w-56 rounded-3xl bg-gray text-black">*/}
-          {/*  {t('restoreCart')}*/}
-          {/*</button>*/}
+          <button className="mb-4 h-11 w-56 rounded-3xl bg-gray text-black"
+                  onClick={restoreCart}>
+            {t('restoreCart')}
+          </button>
           <button
             className="h-11 w-56 rounded-3xl bg-black text-white"
             onClick={() => router.back()}>

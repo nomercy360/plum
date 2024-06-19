@@ -9,9 +9,10 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@next/third-parties": "^14.2.3",
     "clsx": "^2.1.1",
     "i18next": "^23.11.2",
-    "next": "14.2.2",
+    "next": "14.2.3",
     "next-i18next": "^15.3.0",
     "next-image-export-optimizer": "^1.12.3",
     "next-language-detector": "^1.1.0",

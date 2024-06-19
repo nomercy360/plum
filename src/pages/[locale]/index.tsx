@@ -2,13 +2,13 @@ import { useTranslation } from 'next-i18next';
 
 import { getI18nProps, getStaticPaths } from '@/lib/getStatic';
 import Footer from '@/components/Footer';
-import { NavbarHome } from '@/components/Navbar';
 import Link from '@/components/Link';
 
 import ExportedImage from 'next-image-export-optimizer';
 import SubscribeForm from '@/components/SubscribeForm';
 import { useContext } from 'react';
 import { LocaleContext } from '@/context/locale-provider';
+import Navbar from '@/components/Navbar';
 
 export type Product = {
   id: number;
@@ -18,7 +18,7 @@ export type Product = {
   variants: {
     id: number;
     name: string;
-    quantity: number;
+    available: number;
   }[];
   image: string;
   images: string[];
@@ -42,13 +42,10 @@ export default function Home({ products }: { products: Product[] }) {
 
   return (
     <div>
-      <main className="flex min-h-screen flex-col items-center justify-between bg-white p-2 pb-24 sm:pb-44">
+      <main className="flex min-h-screen flex-col items-center justify-between bg-white pb-24 sm:pb-44">
+        <Navbar />
         <div
-          className="sm:aspect-auto aspect-square sm:h-[560px] w-full rounded-lg bg-[url(/images/hero-mobile.webp)] bg-cover bg-center sm:bg-[url(/images/hero.webp)]">
-          <NavbarHome />
-        </div>
-        <div
-          className="lg:grid hidden grid-cols-2 mb-20 mt-16 gap-10 px-10">
+          className="lg:grid hidden grid-cols-2 mb-20 mt-14 gap-10 px-12">
           <div className="grid grid-cols-2 gap-10">
             {productsFirstSection.map((product) => <ProductCard key={product.id} product={product} />)}
           </div>
@@ -61,7 +58,7 @@ export default function Home({ products }: { products: Product[] }) {
             {productsFifthSection.map((product) => <ProductCard key={product.id} product={product} />)}
           </div>
         </div>
-        <div className="grid lg:hidden mb-10 mt-4 grid-cols-2 gap-4">
+        <div className="grid lg:hidden mb-10 mt-4 grid-cols-2 gap-4 px-5">
           {products.map((product) => (
             // every fifth product
             product.id % 5 === 0 ?
