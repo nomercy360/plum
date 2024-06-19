@@ -7,8 +7,7 @@ export default function Contacts() {
   const { t } = useTranslation(['common']);
   return (
     <div>
-      <main
-        className={`flex min-h-screen flex-col items-center justify-between bg-white`}>
+      <main className={`flex min-h-screen flex-col items-center justify-between bg-white`}>
         <Navbar />
         <div className="mb-11 mt-8 max-w-xs p-5 text-center sm:mb-28 sm:mt-28 sm:p-0">
           <p className="mb-4 text-lg sm:text-xl">{t('contacts')}</p>

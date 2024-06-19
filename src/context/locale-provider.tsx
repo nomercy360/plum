@@ -12,8 +12,7 @@ interface ICart {
 export const LocaleContext = createContext<ICart>({
   currency: 'USD',
   currencySign: '$',
-  toggleCurrency: () => {
-  },
+  toggleCurrency: () => {},
   currentLanguage: 'en',
 });
 
@@ -46,7 +45,6 @@ const LocaleProvider = ({ children }: { children: React.ReactNode }) => {
       setCurrentLanguage('en');
     }
   }, []);
-
 
   return (
     <LocaleContext.Provider value={{ currency, currencySign, toggleCurrency, currentLanguage }}>

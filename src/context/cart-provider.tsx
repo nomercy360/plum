@@ -31,7 +31,7 @@ type Cart = {
   subtotal: number;
   discount?: CartDiscount;
   currency: string;
-}
+};
 
 type AddToCartItem = {
   product_id: number;
@@ -43,17 +43,22 @@ interface ICart {
   cart: Cart;
   addToCart: (item: AddToCartItem) => void;
   updateCartItem: (id: number, quantity: number) => void;
-  applyDiscount: (code: string) => void;
+  applyDiscount: (code: string) => Promise<void>;
   clearCart: () => void;
   getCartItems: () => Array<CartItem>;
   restoreCart: () => void;
 }
 
-async function fetchAPI({ endpoint, method = 'GET', body = null, locale = 'en' }: {
-  endpoint: string,
-  method?: string,
-  body?: any,
-  locale?: string
+async function fetchAPI({
+  endpoint,
+  method = 'GET',
+  body = null,
+  locale = 'en',
+}: {
+  endpoint: string;
+  method?: string;
+  body?: any;
+  locale?: string;
 }) {
   const options: RequestInit = {
     method,
@@ -66,36 +71,21 @@ async function fetchAPI({ endpoint, method = 'GET', body = null, locale = 'en' }
     options.body = JSON.stringify(body);
   }
 
-  const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/${endpoint}`, options);
-
-  if (!response.ok && response.status !== 404) {
-    throw new Error('Network response was not ok');
-  } else if (response.status === 404) {
-    return null;
-  }
-
-  return response.json();
+  return fetch(`${process.env.NEXT_PUBLIC_API_URL}/${endpoint}`, options);
 }
 
 export const CartContext = createContext<ICart>({
   cart: {} as Cart,
-  addToCart: () => {
-  },
-  updateCartItem: () => {
-  },
-  applyDiscount: () => {
-  },
-  clearCart: () => {
-  },
+  addToCart: () => {},
+  updateCartItem: () => {},
+  applyDiscount: async () => {},
+  clearCart: () => {},
   getCartItems: () => [],
-  restoreCart: () => {
-  },
+  restoreCart: () => {},
 });
 
 const CartProvider = ({ children }: { children: React.ReactNode }) => {
-  const {
-    currentLanguage,
-  } = useContext(LocaleContext);
+  const { currentLanguage } = useContext(LocaleContext);
 
   const [cart, setCart] = useState<Cart>({} as Cart);
 
@@ -106,26 +96,33 @@ const CartProvider = ({ children }: { children: React.ReactNode }) => {
       return;
     }
 
-    fetchAPI({
-        endpoint: `cart/${cartID}`,
-        locale: currentLanguage,
-      },
-    ).then((cart) => {
-      if (!cart) {
-        localStorage.removeItem('plum-cart-id');
-      } else {
-        setCart(cart);
-      }
-    });
-
+    const cartResp = fetchAPI({
+      endpoint: `cart/${cartID}`,
+      locale: currentLanguage,
+    })
+      .then(resp => {
+        if (resp.status === 404) {
+          return null;
+        }
+        return resp.json();
+      })
+      .then(data => {
+        if (data.id) {
+          setCart(() => data);
+        } else {
+          localStorage.removeItem('plum-cart-id');
+        }
+      });
   }, [currentLanguage]);
 
   const addToCart = async (item: AddToCartItem) => {
     if (!cart.id) {
-      const newCart = await fetchAPI({ endpoint: 'cart', method: 'POST', body: item, locale: currentLanguage });
-      if (newCart) {
-        setCart(() => newCart);
-        localStorage.setItem('plum-cart-id', String(newCart.id));
+      const resp = await fetchAPI({ endpoint: 'cart', method: 'POST', body: item, locale: currentLanguage });
+      const data = await resp.json();
+
+      if (resp.ok && data.id) {
+        setCart(() => data);
+        localStorage.setItem('plum-cart-id', String(data.id));
         return;
       }
     }
@@ -136,9 +133,12 @@ const CartProvider = ({ children }: { children: React.ReactNode }) => {
       body: item,
       locale: currentLanguage,
     });
-    setCart(() => resp);
-  };
 
+    const data = await resp.json();
+    if (resp.ok) {
+      setCart(() => data);
+    }
+  };
 
   const updateCartItem = async (id: number, quantity: number) => {
     let cartResp;
@@ -155,8 +155,9 @@ const CartProvider = ({ children }: { children: React.ReactNode }) => {
       });
     }
 
-    if (cartResp) {
-      setCart(() => cartResp);
+    if (cartResp.ok) {
+      const data = await cartResp.json();
+      setCart(() => data);
     }
   };
 
@@ -173,9 +174,10 @@ const CartProvider = ({ children }: { children: React.ReactNode }) => {
     }
 
     const cartResp = await fetchAPI({ endpoint: `cart/${cartID}`, locale: currentLanguage });
-    if (cartResp) {
-      setCart(() => cartResp);
-      localStorage.setItem('plum-cart-id', String(cartResp.id));
+    if (cartResp.ok) {
+      const data = await cartResp.json();
+      setCart(() => data);
+      localStorage.setItem('plum-cart-id', String(data.id));
     }
 
     localStorage.removeItem('plum-restore-cart-id');
@@ -184,17 +186,22 @@ const CartProvider = ({ children }: { children: React.ReactNode }) => {
   const applyDiscount = async (code: string) => {
     if (code === '') {
       const resp = await fetchAPI({ endpoint: `cart/${cart.id}/discounts`, method: 'DELETE' });
-      if (resp) {
-        setCart(() => resp);
+      const data = await resp.json();
+
+      if (resp.ok) {
+        setCart(() => data);
       }
     } else {
       const resp = await fetchAPI({ endpoint: `cart/${cart.id}/discounts`, method: 'POST', body: { code } });
-      if (resp) {
-        setCart(() => resp);
+      const data = await resp.json();
+
+      if (resp.ok && data.discount) {
+        setCart(() => data);
+      } else {
+        throw new Error('Invalid discount code');
       }
     }
   };
-
 
   return (
     <CartContext.Provider

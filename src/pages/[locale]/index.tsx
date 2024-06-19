@@ -44,29 +44,36 @@ export default function Home({ products }: { products: Product[] }) {
     <div>
       <main className="flex min-h-screen flex-col items-center justify-between bg-white pb-24 sm:pb-44">
         <Navbar />
-        <div
-          className="lg:grid hidden grid-cols-2 mb-20 mt-14 gap-10 px-12">
+        <div className="mb-20 mt-14 hidden grid-cols-2 gap-10 px-12 lg:grid">
           <div className="grid grid-cols-2 gap-10">
-            {productsFirstSection.map((product) => <ProductCard key={product.id} product={product} />)}
+            {productsFirstSection.map(product => (
+              <ProductCard key={product.id} product={product} />
+            ))}
           </div>
           <ProductCard product={productsSecondSection} />
           <div className="col-span-2 grid grid-cols-4 gap-10">
-            {productsThirdSection.map((product) => <ProductCard key={product.id} product={product} />)}
+            {productsThirdSection.map(product => (
+              <ProductCard key={product.id} product={product} />
+            ))}
           </div>
           <ProductCard product={productsFourthSection} />
           <div className="grid grid-cols-2 gap-10">
-            {productsFifthSection.map((product) => <ProductCard key={product.id} product={product} />)}
+            {productsFifthSection.map(product => (
+              <ProductCard key={product.id} product={product} />
+            ))}
           </div>
         </div>
-        <div className="grid lg:hidden mb-10 mt-4 grid-cols-2 gap-4 px-5">
-          {products.map((product) => (
+        <div className="mb-10 mt-4 grid grid-cols-2 gap-4 px-5 lg:hidden">
+          {products.map(product =>
             // every fifth product
-            product.id % 5 === 0 ?
+            product.id % 5 === 0 ? (
               <div key={product.id} className="col-span-2 row-span-2">
                 <ProductCard product={product} />
-              </div> :
+              </div>
+            ) : (
               <ProductCard key={product.id} product={product} />
-          ))}
+            ),
+          )}
         </div>
         <SubscribeForm style="light" />
       </main>
@@ -76,28 +83,22 @@ export default function Home({ products }: { products: Product[] }) {
 }
 
 function ProductCard({ product }: { product: Product }) {
-  const {
-    currencySign,
-  } = useContext(LocaleContext);
+  const { currencySign } = useContext(LocaleContext);
 
   return (
-    <Link
-      key={product.id}
-      className="flex flex-col items-start justify-start"
-      href={`/products/${product.handle}`}>
+    <Link key={product.id} className="flex flex-col items-start justify-start" href={`/products/${product.handle}`}>
       <ExportedImage
         alt=""
-        className="size-full rounded-lg object-cover aspect-[5/7]"
+        className="aspect-[5/7] size-full rounded-lg object-cover"
         src={product.image}
         width={370}
         height={520}
       />
       <div className="min-h-16">
-        <p className="mb-1 text-sm sm:mt-4 mt-2 sm:text-base">
-          {product.name}
-        </p>
+        <p className="mb-1 mt-2 text-sm sm:mt-4 sm:text-base">{product.name}</p>
         <p className="text-xs text-gray-light sm:text-base">
-          {product.price}{currencySign}
+          {product.price}
+          {currencySign}
         </p>
       </div>
     </Link>
@@ -105,23 +106,19 @@ function ProductCard({ product }: { product: Product }) {
 }
 
 export async function fetchProducts(locale: string) {
-  const resp = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/products`,
-    {
-      headers: {
-        'Accept-Language': locale,
-      },
-    });
+  const resp = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/products`, {
+    headers: {
+      'Accept-Language': locale,
+    },
+  });
   return await resp.json();
 }
-
 
 export { getStaticPaths };
 export const getStaticProps = async (ctx: any) => {
   return {
     props: {
-      ...(await getI18nProps(ctx, [
-        'common',
-      ])),
+      ...(await getI18nProps(ctx, ['common'])),
       products: await fetchProducts(ctx.params.locale),
     },
   };

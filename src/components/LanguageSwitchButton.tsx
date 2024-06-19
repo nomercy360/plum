@@ -13,7 +13,7 @@ const LanguageSwitchLink = ({ ...rest }: any) => {
   let pName = router.pathname;
   const locale = router.query.locale === 'en' ? 'ru' : 'en';
 
-  Object.keys(router.query).forEach((k) => {
+  Object.keys(router.query).forEach(k => {
     if (k === 'locale') {
       pName = pName.replace(`[${k}]`, locale);
       return;
@@ -33,17 +33,11 @@ const LanguageSwitchLink = ({ ...rest }: any) => {
   };
 
   return (
-    <Link
-      href={href}
-      onClick={() => onClick()}
-      className="flex flex-row gap-1 items-center justify-start rounded-full"
-    >
+    <Link href={href} onClick={() => onClick()} className="flex flex-row items-center justify-start gap-1 rounded-full">
       <span className="sr-only">Switch language</span>
       <span className="uppercase text-black">{currency}</span>
-      <span className="bg-black rounded-full size-5 flex items-center justify-center">
-        <Icons.translate
-          className={`size-2.5 text-white`}
-        />
+      <span className="flex size-5 items-center justify-center rounded-full bg-black">
+        <Icons.translate className={`size-2.5 text-white`} />
       </span>
     </Link>
   );

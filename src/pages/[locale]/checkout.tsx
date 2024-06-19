@@ -24,7 +24,7 @@ type Measurements = {
 };
 
 export const cartItemsToGTM = (items: CartItem[]) => {
-  return items.map((item) => {
+  return items.map(item => {
     return {
       item_id: item.id,
       item_name: item.product_name,
@@ -54,27 +54,24 @@ async function checkoutRequest(data: any, locale: string = 'en') {
 }
 
 export default function Checkout() {
-  const {
-    cart,
-    getCartItems,
-    clearCart,
-    updateCartItem,
-    applyDiscount,
-  } = useContext(CartContext);
+  const { cart, getCartItems, clearCart, updateCartItem, applyDiscount } = useContext(CartContext);
 
-  const {
-    currency, currencySign, currentLanguage,
-  } = useContext(LocaleContext);
-
+  const { currency, currencySign, currentLanguage } = useContext(LocaleContext);
 
   const { t } = useTranslation(['checkout', 'common']);
 
   const [shippingOption, setShippingOption] = useState('standard');
   const [promoCode, setPromoCode] = useState('');
+  const [promoStatus, setPromoStatus] = useState<'success' | 'error' | 'idle' | 'fetching'>('idle');
 
   const fetchDiscount = async () => {
-    if (!promoCode) return;
-    applyDiscount(promoCode);
+    setPromoStatus('fetching');
+    try {
+      await applyDiscount(promoCode);
+      setPromoStatus('success');
+    } catch (e) {
+      setPromoStatus('error');
+    }
   };
 
   const [name, setName] = useState('');
@@ -86,9 +83,7 @@ export default function Checkout() {
 
   const [shippingCost, setShippingCost] = useState(30);
 
-  const [step, setStep] = useState<'bag' | 'deliveryInfo' | 'measurements'>(
-    'bag',
-  );
+  const [step, setStep] = useState<'bag' | 'deliveryInfo' | 'measurements'>('bag');
 
   const [isFormValid, setIsFormValid] = useState(false);
 
@@ -99,13 +94,7 @@ export default function Checkout() {
   }, [shippingOption]);
 
   useEffect(() => {
-    const isValid =
-      name !== '' &&
-      email !== '' &&
-      address !== '' &&
-      country !== '' &&
-      zip !== '' &&
-      phone !== '';
+    const isValid = name !== '' && email !== '' && address !== '' && country !== '' && zip !== '' && phone !== '';
 
     setIsFormValid(isValid);
   }, [name, email, address, country, zip, phone]);
@@ -132,7 +121,6 @@ export default function Checkout() {
       },
     });
   }
-
 
   const placeOrder = async () => {
     const order = {
@@ -167,7 +155,7 @@ export default function Checkout() {
   const [measurements, setMeasurements] = useState<Measurements>({} as Measurements);
 
   const updateMeasurements = (key: string, value: string) => {
-    setMeasurements((prev) => ({ ...prev, [key]: value }));
+    setMeasurements(prev => ({ ...prev, [key]: value }));
   };
 
   const afterMeasurements = (save: boolean) => {
@@ -185,7 +173,7 @@ export default function Checkout() {
   };
 
   const isMeasurementsFilled = () => {
-    return Object.values(measurements).some((value) => value !== '');
+    return Object.values(measurements).some(value => value !== '');
   };
 
   function getWordEnding(count: number) {
@@ -205,7 +193,7 @@ export default function Checkout() {
   }
 
   function decreaseQuantity(product: CartItem) {
-    const item = cart.items.find((item) => item.variant_id === product.variant_id);
+    const item = cart.items.find(item => item.variant_id === product.variant_id);
 
     if (item) {
       updateCartItem(product.id, item.quantity - 1);
@@ -230,7 +218,7 @@ export default function Checkout() {
   }
 
   function increaseQuantity(product: CartItem) {
-    const item = cart.items.find((item) => item.variant_id === product.variant_id);
+    const item = cart.items.find(item => item.variant_id === product.variant_id);
 
     if (item) {
       updateCartItem(product.id, item.quantity + 1);
@@ -254,172 +242,164 @@ export default function Checkout() {
     }
   }
 
+  const clearPromoCode = () => {
+    setPromoCode('');
+    setPromoStatus('idle');
+  };
+
   return (
-    <div className="min-h-screen bg-gray">
+    <div className="bg-gray sm:min-h-screen">
       {cart.count > 0 ? (
         <div>
           <NavbarCart />
           <main className="mt-8 flex w-full items-start justify-center">
-            <div className="flex w-full max-w-2xl flex-col rounded-xl bg-white sm:h-screen">
+            <div className="flex h-[calc(100vh-100px)] w-full max-w-2xl flex-col bg-white pb-10 sm:rounded-xl">
               {step == 'bag' && (
-                <div className="w-full flex flex-col justify-between sm:rounded-t-xl bg-white">
-                  <div className="flex flex-row items-center justify-between px-5 pt-5">
-                    <p className="text-lg sm:text-xl">
-                      {getTranslation('yourBag', cart.count)}
-                    </p>
-                    <button
-                      className="h-8 text-gray-light"
-                      onClick={() => clearCart()}>
-                      {t('clearCart')}
-                    </button>
-                  </div>
-                  <div className="mt-8 flex flex-col gap-5 pb-5 px-5">
-                    {getCartItems().map((item) => (
-                      <div
-                        key={item.variant_id}
-                        className="flex flex-row items-center justify-between gap-3">
-                        <div className="flex flex-row items-center gap-3">
-                          <ExportedImage
-                            alt=""
-                            className="size-10 rounded-full object-cover shrink-0"
-                            src={item.image_url}
-                            width={40}
-                            height={40}
+                <div className="flex h-full w-full flex-col justify-between bg-white sm:justify-start sm:rounded-t-xl">
+                  <div>
+                    <div className="flex flex-row items-center justify-between px-5 pt-5">
+                      <p className="text-lg sm:text-xl">{getTranslation('yourBag', cart.count)}</p>
+                      <button className="h-8 text-gray-light" onClick={() => clearCart()}>
+                        {t('clearCart')}
+                      </button>
+                    </div>
+                    <div className="mt-8 flex flex-col gap-5 px-5 pb-5 sm:pb-10">
+                      {getCartItems().map(item => (
+                        <div key={item.variant_id} className="flex flex-row items-center justify-between gap-3">
+                          <div className="flex flex-row items-center gap-3">
+                            <ExportedImage
+                              alt=""
+                              className="size-10 shrink-0 rounded-full object-cover"
+                              src={item.image_url}
+                              width={40}
+                              height={40}
+                            />
+                            <div className="flex flex-col">
+                              <p className="text-sm sm:text-base">
+                                {item.product_name} {`(${item.variant_name})`}{' '}
+                                {item.quantity > 1 && `x ${item.quantity}`}
+                              </p>
+                              <p className="mt-0.5 text-xs text-gray-light sm:text-sm">
+                                Total {item.price}
+                                {cart.currency}
+                              </p>
+                            </div>
+                          </div>
+                          <StepperButton
+                            onIncrease={() => increaseQuantity(item)}
+                            onDecrease={() => decreaseQuantity(item)}
                           />
-                          <div className="flex flex-col">
+                        </div>
+                      ))}
+                      <button
+                        className="flex flex-row items-center justify-between text-start"
+                        onClick={() => setStep('measurements')}
+                      >
+                        <div className="flex flex-row items-center justify-start gap-3">
+                          <div className="flex size-10 shrink-0 items-center justify-center rounded-full bg-gray">
+                            <Icons.tShirt className="size-6" />
+                          </div>
+                          <div>
                             <p className="text-sm sm:text-base">
-                              {item.product_name}{' '}{`(${item.variant_name})`}{' '}
-                              {item.quantity > 1 && `x ${item.quantity}`}
+                              {isMeasurementsFilled() ? t('measurementsAdded') : t('addMeasurements')}
                             </p>
-                            <p className="mt-0.5 text-xs text-gray-light sm:text-sm">
-                              Total {item.price}{cart.currency}
+                            <p className="mt-0.5 text-xs text-gray-light">
+                              {isMeasurementsFilled()
+                                ? t('measurementsAddedDescription')
+                                : t('addMeasurementsDescription')}
                             </p>
                           </div>
                         </div>
-                        <StepperButton
-                          onIncrease={() => increaseQuantity(item)}
-                          onDecrease={() => decreaseQuantity(item)}
+                        <div className="flex h-10 items-center justify-center px-2">
+                          <Icons.arrowRight className="h-3 w-2.5" />
+                        </div>
+                      </button>
+                    </div>
+                  </div>
+                  <div>
+                    <div className="block px-5 pb-6 sm:hidden">
+                      <PromoCode
+                        promoCode={promoCode}
+                        setPromoCode={setPromoCode}
+                        fetchDiscount={fetchDiscount}
+                        fetchStatus={promoStatus}
+                        clearPromoCode={clearPromoCode}
+                      />
+                    </div>
+                    <Divider></Divider>
+                    <TotalCostInfo
+                      total={cart.total}
+                      measurementFilled={isMeasurementsFilled()}
+                      discountPercent={cart.discount?.value || 0}
+                      subtotal={cart.subtotal}
+                      t={t}
+                      currencySign={currencySign}
+                    />
+                    <div className="mt-10 flex w-full flex-col items-end justify-between gap-5 px-5 sm:flex-row sm:justify-start">
+                      <div className="hidden w-full sm:block">
+                        <PromoCode
+                          promoCode={promoCode}
+                          setPromoCode={setPromoCode}
+                          fetchDiscount={fetchDiscount}
+                          fetchStatus={promoStatus}
+                          clearPromoCode={clearPromoCode}
                         />
                       </div>
-                    ))}
-                    <button
-                      className="flex flex-row items-center justify-between text-start"
-                      onClick={() => setStep('measurements')}>
-                      <div className="flex flex-row items-center justify-start gap-3">
-                        <div className="flex size-10 items-center justify-center rounded-full bg-gray shrink-0">
-                          <Icons.tShirt className="size-6" />
-                        </div>
-                        <div>
-                          <p className="text-sm sm:text-base">
-                            {isMeasurementsFilled()
-                              ? t('measurementsAdded')
-                              : t('addMeasurements')}
-                          </p>
-                          <p className="mt-0.5 text-xs text-gray-light">
-                            {isMeasurementsFilled()
-                              ? t('measurementsAddedDescription')
-                              : t('addMeasurementsDescription')}
-                          </p>
-                        </div>
-                      </div>
-                      <div className="flex h-10 items-center justify-center px-2">
-                        <Icons.arrowRight className="h-3 w-2.5" />
-                      </div>
-                    </button>
+                      <button
+                        className="h-11 w-full flex-shrink-0 rounded-3xl bg-black text-white sm:w-56"
+                        onClick={() => toDeliveryInfo()}
+                        disabled={!cart.total}
+                      >
+                        {t('continue')} •{' '}
+                        <span className="text-gray">
+                          {cart.total}
+                          {cart.currency}
+                        </span>
+                      </button>
+                    </div>
                   </div>
-                  <Divider></Divider>
-                  <TotalCostInfo
-                    total={cart.total}
-                    measurementFilled={isMeasurementsFilled()}
-                    discountPercent={cart.discount?.value || 0}
-                    subtotal={cart.subtotal}
-                    t={t}
-                    currencySign={currencySign}
-                  />
-                  <div
-                    className="px-5 mt-10 flex w-full flex-col items-center justify-between gap-5 sm:flex-row sm:justify-start">
-                    {!cart.discount ? (
-                      <div className="flex h-11 w-full flex-row items-center rounded-lg bg-gray px-3">
-                        <input
-                          className="w-full bg-transparent focus:outline-none"
-                          placeholder={t('addPromoCode')}
-                          type="text"
-                          onInput={(e) =>
-                            setPromoCode(e.currentTarget.value)
-                          }
-                        />
-                        <button onClick={fetchDiscount}>
-                          {t('apply')}
-                        </button>
-                      </div>
-                    ) : (
-                      <div
-                        className="flex h-11 w-full flex-row items-center justify-between rounded-lg bg-light-green/10 px-3">
-                        <div className="flex flex-row items-center justify-start gap-2.5">
-                          <Icons.check className="size-4 fill-light-green text-light-green" />
-                          <p className="text-sm text-light-green">
-                            {cart.discount.value}% {t('discountApplied')}
-                          </p>
-                        </div>
-                        <button
-                          className="text-light-green"
-                          onClick={() => applyDiscount('')}>
-                          <Icons.close className="size-4 fill-light-green" />
-                        </button>
-                      </div>
-                    )}
-                    <button
-                      className="h-11 w-full flex-shrink-0 rounded-3xl bg-black text-white sm:w-56"
-                      onClick={() => toDeliveryInfo()} disabled={!cart.total}>
-                      {t('continue')} •{' '}
-                      <span className="text-gray">{cart.total}{cart.currency}</span>
-                    </button>
-                  </div>
-                </div>)}
+                </div>
+              )}
               {step == 'deliveryInfo' && (
-                <div
-                  className="flex flex-col items-center rounded-t-xl bg-white text-center sm:items-start sm:text-start sm:pb-0 pb-10">
-                  <p className="px-5 pt-5 mb-2 text-lg text-black sm:text-xl">
-                    {t('addDeliveryInfo')}
-                  </p>
-                  <p className="leading-snug px-5 mb-8 text-sm text-gray-light">
-                    {t('addDeliveryInfoDescription')}
-                  </p>
-                  <div className="px-5 mb-8 flex w-full flex-col gap-4">
+                <div className="flex flex-col items-center rounded-t-xl bg-white pb-10 text-center sm:items-start sm:pb-0 sm:text-start">
+                  <p className="mb-2 px-5 pt-5 text-lg text-black sm:text-xl">{t('addDeliveryInfo')}</p>
+                  <p className="mb-8 px-5 text-sm leading-snug text-gray-light">{t('addDeliveryInfoDescription')}</p>
+                  <div className="mb-8 flex w-full flex-col gap-4 px-5">
                     <input
-                      className="placeholder:text-dark-gray h-11 w-full rounded-lg bg-gray px-3 text-sm focus:outline-neutral-200 sm:text-base"
+                      className="h-11 w-full rounded-lg bg-gray px-3 text-sm placeholder:text-dark-gray focus:outline-neutral-200 sm:text-base"
                       placeholder={t('name')}
                       autoFocus
                       autoComplete="off"
                       autoCorrect="off"
                       autoCapitalize="words"
                       required
-                      onInput={(e) => setName(e.currentTarget.value)}
+                      onInput={e => setName(e.currentTarget.value)}
                     />
                     <input
-                      className="placeholder:text-dark-gray h-11 w-full rounded-lg bg-gray px-3 text-sm focus:outline-neutral-200 sm:text-base"
+                      className="h-11 w-full rounded-lg bg-gray px-3 text-sm placeholder:text-dark-gray focus:outline-neutral-200 sm:text-base"
                       placeholder={t('email')}
                       type="email"
                       autoComplete="email"
                       autoCorrect="off"
                       autoCapitalize="off"
                       required
-                      onInput={(e) => setEmail(e.currentTarget.value)}
+                      onInput={e => setEmail(e.currentTarget.value)}
                     />
                     <input
-                      className="placeholder:text-dark-gray h-11 w-full rounded-lg bg-gray px-3 text-sm focus:outline-neutral-200 sm:text-base"
+                      className="h-11 w-full rounded-lg bg-gray px-3 text-sm placeholder:text-dark-gray focus:outline-neutral-200 sm:text-base"
                       type="tel"
                       autoComplete="tel"
                       placeholder={t('phone')}
-                      onInput={(e) => setPhone(e.currentTarget.value)}
+                      onInput={e => setPhone(e.currentTarget.value)}
                     />
                     <div className="flex w-full flex-row items-center justify-start rounded-lg bg-gray">
                       <select
                         className="h-11 w-full bg-transparent px-3 text-sm focus:outline-neutral-200 sm:text-base"
-                        onChange={(e) => setCountry(e.currentTarget.value)}
-                        value={country}>
+                        onChange={e => setCountry(e.currentTarget.value)}
+                        value={country}
+                      >
                         <option value="">{t('country')}</option>
-                        {countries.map((country) => (
+                        {countries.map(country => (
                           <option key={country.code} value={country.code}>
                             {country.name}
                           </option>
@@ -429,21 +409,21 @@ export default function Checkout() {
                     <div className="flex w-full flex-row items-center justify-start rounded-lg bg-gray">
                       <input
                         autoComplete="address"
-                        className="placeholder:text-dark-gray h-11 w-full bg-transparent px-3 text-sm focus:outline-neutral-200 sm:text-base"
+                        className="h-11 w-full bg-transparent px-3 text-sm placeholder:text-dark-gray focus:outline-neutral-200 sm:text-base"
                         placeholder={t('address')}
-                        onInput={(e) => setAddress(e.currentTarget.value)}
+                        onInput={e => setAddress(e.currentTarget.value)}
                       />
                       <div className="h-8 w-0.5 bg-dark-gray"></div>
                       <input
                         autoComplete="postal-code"
-                        className="placeholder:text-dark-gray h-11 w-24 bg-transparent px-3 text-sm focus:outline-neutral-200 sm:text-base"
+                        className="h-11 w-24 bg-transparent px-3 text-sm placeholder:text-dark-gray focus:outline-neutral-200 sm:text-base"
                         placeholder={t('zip')}
-                        onInput={(e) => setZip(e.currentTarget.value)}
+                        onInput={e => setZip(e.currentTarget.value)}
                       />
                     </div>
                   </div>
                   <Divider></Divider>
-                  <div className="w-full flex flex-col items-center">
+                  <div className="flex w-full flex-col items-center">
                     <TotalCostInfo
                       total={cart.total}
                       measurementFilled={isMeasurementsFilled()}
@@ -452,17 +432,23 @@ export default function Checkout() {
                       t={t}
                       currencySign={currencySign}
                     />
-                    <div className="mt-10 flex w-full flex-row items-center justify-center sm:justify-between px-5">
+                    <div className="mt-10 flex w-full flex-row items-center justify-center px-5 sm:justify-between">
                       <button
-                        className="h-11 w-24 rounded-3xl bg-gray text-black sm:block hidden"
-                        onClick={() => setStep('bag')}>
+                        className="hidden h-11 w-24 rounded-3xl bg-gray text-black sm:block"
+                        onClick={() => setStep('bag')}
+                      >
                         {t('back')}
                       </button>
                       <button
-                        className={`h-11 w-56 flex-shrink-0 rounded-3xl text-white ${isFormValid ? 'bg-black' : 'bg-black/60 cursor-not-allowed'}`}
+                        className={`h-11 w-56 flex-shrink-0 rounded-3xl text-white ${isFormValid ? 'bg-black' : 'cursor-not-allowed bg-black/60'}`}
                         disabled={!isFormValid}
-                        onClick={() => placeOrder()}>
-                        {t('checkout')} <span className="text-gray">{cart.total}{currencySign}</span>
+                        onClick={() => placeOrder()}
+                      >
+                        {t('checkout')}{' '}
+                        <span className="text-gray">
+                          {cart.total}
+                          {currencySign}
+                        </span>
                       </button>
                     </div>
                   </div>
@@ -470,82 +456,70 @@ export default function Checkout() {
               )}
 
               {step == 'measurements' && (
-                <div
-                  className="flex flex-col items-center rounded-t-xl bg-white pt-5 px-5 text-center sm:items-start sm:text-start">
-                  <p className="mb-2 text-lg text-black sm:text-xl">
-                    {t('addMeasurements')}
-                  </p>
-                  <p className="leading-snug mb-8 max-w-xs text-sm text-gray-light sm:max-w-4xl">
+                <div className="flex flex-col items-center rounded-t-xl bg-white px-5 pt-5 text-center sm:items-start sm:text-start">
+                  <p className="mb-2 text-lg text-black sm:text-xl">{t('addMeasurements')}</p>
+                  <p className="mb-8 max-w-xs text-sm leading-snug text-gray-light sm:max-w-4xl">
                     {t('addMeasurementsDescription2')}
                   </p>
                   <div className="mb-8 flex w-full flex-col gap-4">
                     <input
-                      className="h-11 w-full rounded-lg bg-gray px-3 text-sm focus:outline-neutral-200 sm:text-base placeholder:text-dark-gray"
+                      className="h-11 w-full rounded-lg bg-gray px-3 text-sm placeholder:text-dark-gray focus:outline-neutral-200 sm:text-base"
                       placeholder={t('height')}
                       type="number"
                       autoFocus
                       autoComplete="off"
                       autoCorrect="off"
                       value={measurements.height}
-                      onInput={(e) =>
-                        updateMeasurements('height', e.currentTarget.value)
-                      }
+                      onInput={e => updateMeasurements('height', e.currentTarget.value)}
                     />
                     <input
-                      className="h-11 w-full rounded-lg bg-gray px-3 text-sm focus:outline-neutral-200 sm:text-base placeholder:text-dark-gray"
+                      className="h-11 w-full rounded-lg bg-gray px-3 text-sm placeholder:text-dark-gray focus:outline-neutral-200 sm:text-base"
                       placeholder={t('sleeve')}
                       type="number"
                       autoComplete="off"
                       autoCorrect="off"
                       value={measurements.sleeve}
-                      onInput={(e) =>
-                        updateMeasurements('sleeve', e.currentTarget.value)
-                      }
+                      onInput={e => updateMeasurements('sleeve', e.currentTarget.value)}
                     />
                     <input
-                      className="h-11 w-full rounded-lg bg-gray px-3 text-sm focus:outline-neutral-200 sm:text-base placeholder:text-dark-gray"
+                      className="h-11 w-full rounded-lg bg-gray px-3 text-sm placeholder:text-dark-gray focus:outline-neutral-200 sm:text-base"
                       placeholder={t('waist')}
                       type="number"
                       autoComplete="off"
                       autoCorrect="off"
                       value={measurements.waist}
-                      onInput={(e) =>
-                        updateMeasurements('waist', e.currentTarget.value)
-                      }
+                      onInput={e => updateMeasurements('waist', e.currentTarget.value)}
                     />
                     <input
-                      className="h-11 w-full rounded-lg bg-gray px-3 text-sm focus:outline-neutral-200 sm:text-base placeholder:text-dark-gray"
+                      className="h-11 w-full rounded-lg bg-gray px-3 text-sm placeholder:text-dark-gray focus:outline-neutral-200 sm:text-base"
                       placeholder={t('chest')}
                       type="number"
                       autoComplete="off"
                       autoCorrect="off"
                       value={measurements.chest}
-                      onInput={(e) =>
-                        updateMeasurements('chest', e.currentTarget.value)
-                      }
+                      onInput={e => updateMeasurements('chest', e.currentTarget.value)}
                     />
                     <input
-                      className="h-11 w-full rounded-lg bg-gray px-3 text-sm focus:outline-neutral-200 sm:text-base placeholder:text-dark-gray"
+                      className="h-11 w-full rounded-lg bg-gray px-3 text-sm placeholder:text-dark-gray focus:outline-neutral-200 sm:text-base"
                       placeholder={t('hips')}
                       type="number"
                       autoComplete="off"
                       autoCorrect="off"
                       value={measurements.hips}
-                      onInput={(e) =>
-                        updateMeasurements('hips', e.currentTarget.value)
-                      }
+                      onInput={e => updateMeasurements('hips', e.currentTarget.value)}
                     />
                   </div>
-                  <div
-                    className="mt-10 flex w-full sm:max-w-none max-w-[220px] flex-col items-center justify-between gap-4 sm:flex-row sm:gap-0">
+                  <div className="mt-10 flex w-full max-w-[220px] flex-col items-center justify-between gap-4 sm:max-w-none sm:flex-row sm:gap-0">
                     <button
                       className="h-11 w-full rounded-3xl bg-gray text-black sm:w-24"
-                      onClick={() => afterMeasurements(false)}>
+                      onClick={() => afterMeasurements(false)}
+                    >
                       {t('skip')}
                     </button>
                     <button
                       className="h-11 w-full flex-shrink-0 rounded-3xl bg-black text-white sm:w-56"
-                      onClick={() => afterMeasurements(true)}>
+                      onClick={() => afterMeasurements(true)}
+                    >
                       {t('saveMeasurements')}
                     </button>
                   </div>
@@ -557,9 +531,92 @@ export default function Checkout() {
       ) : (
         <EmptyCart />
       )}
-    </div>);
+    </div>
+  );
 }
 
+const PromoCode = (props: {
+  promoCode: string;
+  setPromoCode: (value: string) => void;
+  fetchDiscount: () => void;
+  fetchStatus: 'success' | 'error' | 'idle' | 'fetching';
+  clearPromoCode: () => void;
+}) => {
+  const { t } = useTranslation('checkout');
+  const { cart, applyDiscount } = useContext(CartContext);
+
+  return (
+    <>
+      {!cart.discount ? (
+        <label>
+          {props.fetchStatus === 'error' && <p className="pt-1 text-sm text-red">{t('invalidPromoCode')}</p>}
+          <div
+            className={`flex h-11 w-full flex-row items-center justify-between rounded-lg bg-gray pl-3 ${props.fetchStatus === 'error' ? 'border border-red' : ''}`}
+          >
+            <input
+              className="w-full bg-transparent focus:outline-none"
+              placeholder={t('addPromoCode')}
+              type="text"
+              value={props.promoCode}
+              onInput={e => props.setPromoCode(e.currentTarget.value)}
+            />
+            {props.fetchStatus === 'idle' ? (
+              <button className="pr-3" onClick={() => props.fetchDiscount()}>
+                {t('apply')}
+              </button>
+            ) : (
+              <div className="flex h-11 w-11 items-center justify-center">
+                {props.fetchStatus === 'fetching' ? (
+                  <SpinnerLoader />
+                ) : (
+                  <button onClick={() => props.clearPromoCode()} className="flex size-11 items-center justify-center">
+                    <Icons.close className="size-4 shrink-0 text-red" />
+                  </button>
+                )}
+              </div>
+            )}
+          </div>
+        </label>
+      ) : (
+        <div className="flex h-11 w-full flex-row items-center justify-between rounded-lg bg-light-green/10 px-3">
+          <div className="flex flex-row items-center justify-start gap-2.5">
+            <Icons.check className="size-4 fill-light-green text-light-green" />
+            <p className="text-sm text-light-green">
+              {cart.discount.value}% {t('discountApplied')}
+            </p>
+          </div>
+          <button className="text-light-green" onClick={() => applyDiscount('')}>
+            <Icons.close className="size-4 fill-light-green" />
+          </button>
+        </div>
+      )}
+    </>
+  );
+};
+
+function SpinnerLoader() {
+  return (
+    <div role="status">
+      <svg
+        aria-hidden="true"
+        className="h-8 w-8 animate-spin fill-black text-gray"
+        viewBox="0 0 100 101"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z"
+          fill="currentColor"
+        />
+        <path
+          d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z"
+          fill="currentFill"
+        />
+      </svg>
+      <span className="sr-only">Loading...</span>
+    </div>
+  );
+}
 
 const TotalCostInfo = (props: {
   total: number;
@@ -572,49 +629,44 @@ const TotalCostInfo = (props: {
   const discount = props.subtotal - props.total;
 
   return (
-    <div className="px-5 flex w-full flex-col gap-3">
+    <div className="flex w-full flex-col gap-3 px-5">
       <div className="flex w-full flex-row items-center justify-between">
+        <p className="text-sm text-gray-light sm:text-base">{props.t('subtotal')}</p>
         <p className="text-sm text-gray-light sm:text-base">
-          {props.t('subtotal')}
+          {props.total}
+          {props.currencySign}
         </p>
-        <p className="text-sm text-gray-light sm:text-base">{props.total}{props.currencySign}</p>
       </div>
       {props.discountPercent > 0 && (
         <div className="flex w-full flex-row items-center justify-between">
+          <p className="text-sm text-gray-light sm:text-base">{props.t('discount')}</p>
           <p className="text-sm text-gray-light sm:text-base">
-            {props.t('discount')}
-          </p>
-          <p className="text-sm text-gray-light sm:text-base">
-            -{discount}{props.currencySign} ({props.discountPercent}%)
+            -{discount}
+            {props.currencySign} ({props.discountPercent}%)
           </p>
         </div>
       )}
       {props.measurementFilled && (
         <div className="flex w-full flex-row items-center justify-between">
-          <p className="text-sm text-gray-light sm:text-base">
-            {props.t('customTailoring')}
-          </p>
-          <p className="text-sm text-gray-light sm:text-base">
-            {props.t('free')}
-          </p>
+          <p className="text-sm text-gray-light sm:text-base">{props.t('customTailoring')}</p>
+          <p className="text-sm text-gray-light sm:text-base">{props.t('free')}</p>
         </div>
       )}
       <div className="flex w-full flex-row items-center justify-between">
-        <p className="text-sm text-gray-light sm:text-base">
-          {props.t('worldwide')}
-        </p>
+        <p className="text-sm text-gray-light sm:text-base">{props.t('worldwide')}</p>
         <p className="text-sm text-gray-light sm:text-base">
           {props.t('approx')} 30{props.currencySign}
         </p>
       </div>
       <div className="mt-4 flex w-full flex-row items-center justify-between">
+        <p className="text-base text-black sm:text-lg">{props.t('total')}</p>
         <p className="text-base text-black sm:text-lg">
-          {props.t('total')}
+          {props.total}
+          {props.currencySign}
         </p>
-        <p className="text-base text-black sm:text-lg">{props.total}{props.currencySign}</p>
       </div>
       <div className="flex w-full flex-row items-center justify-between">
-        <p className="text-xs text-gray-light sm:text-center text-start">{props.t('agree')}</p>
+        <p className="text-start text-xs text-gray-light sm:text-center">{props.t('agree')}</p>
         <Link href="/terms">
           <Icons.infoCircle className="size-3.5 shrink-0" />
         </Link>

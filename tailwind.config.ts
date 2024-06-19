@@ -21,7 +21,7 @@ const config: Config = {
         'gray-light': '#BCBCBC',
       },
       letterSpacing: {
-        'wide': '0.5px',
+        wide: '0.5px',
       },
       colors: {
         black: '#262626',

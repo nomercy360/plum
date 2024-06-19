@@ -12,6 +12,7 @@
       }
     }
   ],
+  "plugins": ["prettier-plugin-tailwindcss"],
   "endOfLine": "auto",
   "arrowParens": "avoid",
   "bracketSpacing": true,

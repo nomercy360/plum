@@ -15,8 +15,8 @@ export default function Document() {
         <meta name="facebook-domain-verification" content="bahudlkogyzobajn9gkyr24k91b2iq" />
       </Head>
       <body>
-      <Main />
-      <NextScript />
+        <Main />
+        <NextScript />
       </body>
     </Html>
   );

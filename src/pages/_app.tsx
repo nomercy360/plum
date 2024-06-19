@@ -7,7 +7,6 @@ import localFont from 'next/font/local';
 import LocaleProvider from '@/context/locale-provider';
 import { GoogleTagManager } from '@next/third-parties/google';
 
-
 const emptyInitialI18NextConfig: UserConfig = {
   i18n: {
     defaultLocale: nextI18NextConfig.i18n.defaultLocale,
@@ -22,9 +21,9 @@ function App({ Component, pageProps }: AppProps) {
     <LocaleProvider>
       <CartProvider>
         <style jsx global>{`
-            html {
-                font-family: ${baseFont.style.fontFamily};
-            }
+          html {
+            font-family: ${baseFont.style.fontFamily};
+          }
         `}</style>
         <Component {...pageProps} />
         <GoogleTagManager gtmId="GTM-PNZ4JMKQ" dataLayerName="dataLayer" dataLayer={[]} />

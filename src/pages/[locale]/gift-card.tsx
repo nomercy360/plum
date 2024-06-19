@@ -6,10 +6,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/router';
 import ExportedImage from 'next-image-export-optimizer';
 
-export default function GiftCard(props: {
-  isOpen: boolean;
-  setIsOpen: (value: boolean) => void;
-}) {
+export default function GiftCard(props: { isOpen: boolean; setIsOpen: (value: boolean) => void }) {
   const { t } = useTranslation(['common']);
   const router = useRouter();
 
@@ -30,9 +27,8 @@ export default function GiftCard(props: {
   };
 
   return (
-    <div
-      className="items-center flex h-screen w-full justify-center">
-      <div className="fixed h-screen w-full overflow-hidden m-0">
+    <div className="flex h-screen w-full items-center justify-center">
+      <div className="fixed m-0 h-screen w-full overflow-hidden">
         <ExportedImage
           alt="Mountains"
           src="/images/gift-card/bg.png"
@@ -44,11 +40,8 @@ export default function GiftCard(props: {
           }}
         />
       </div>
-      <div
-        className="relative flex h-full min-h-fit w-full flex-col items-center justify-between bg-cover bg-center px-5 py-7 sm:rounded-t-2xl">
-        <button
-          onClick={router.back}
-          className="absolute right-5 top-5">
+      <div className="relative flex h-full min-h-fit w-full flex-col items-center justify-between bg-cover bg-center px-5 py-7 sm:rounded-t-2xl">
+        <button onClick={router.back} className="absolute right-5 top-5">
           <Icons.close className="size-5 text-white" />
         </button>
         <div className="flex max-w-sm flex-col items-center justify-center text-center">
@@ -56,54 +49,46 @@ export default function GiftCard(props: {
             <Icons.logo className="h-6 w-24 text-white sm:w-32" />
             <span className="text-xl">{t('gift')}</span>
           </div>
-          <p className="mt-2.5 text-sm sm:text-base text-white">
-            {t('giftCardDescription')}
-          </p>
+          <p className="mt-2.5 text-sm text-white sm:text-base">{t('giftCardDescription')}</p>
           <div className="mt-14 flex w-[280px] flex-col items-center gap-4">
             <input
               className="h-11 w-full rounded-lg bg-gray px-3 text-sm focus:outline-neutral-200 sm:text-base"
               placeholder={t('yourEmail')}
               value={email}
-              onInput={(e) => setEmail(e.currentTarget.value)}
+              onInput={e => setEmail(e.currentTarget.value)}
             />
             <input
               className="h-11 w-full rounded-lg bg-gray px-3 text-sm focus:outline-neutral-200 sm:text-base"
               placeholder={t('recipientEmail')}
               value={recipientEmail}
-              onInput={(e) => setRecipientEmail(e.currentTarget.value)}
+              onInput={e => setRecipientEmail(e.currentTarget.value)}
             />
             <input
               className="h-11 w-full rounded-lg bg-gray px-3 text-sm focus:outline-neutral-200 sm:text-base"
               placeholder={t('receivingDate')}
               value={receivingDate}
-              onInput={(e) => setReceivingDate(e.currentTarget.value)}
+              onInput={e => setReceivingDate(e.currentTarget.value)}
             />
             <input
               className="h-11 w-full rounded-lg bg-gray px-3 text-sm focus:outline-neutral-200 sm:text-base"
               placeholder={t('receivingTime')}
               value={receivingTime}
-              onInput={(e) => setReceivingTime(e.currentTarget.value)}
+              onInput={e => setReceivingTime(e.currentTarget.value)}
             />
             <div className="flex h-11 w-full flex-row items-center justify-between rounded-lg bg-white pl-3 pr-1.5">
               <p className="text-sm text-black sm:text-base">${amount}</p>
-              <StepperButton
-                onIncrease={increaseAmount}
-                onDecrease={decreaseAmount}
-              />
+              <StepperButton onIncrease={increaseAmount} onDecrease={decreaseAmount} />
             </div>
-            <button className="mt-4 text-black h-11 w-full rounded-3xl bg-gray text-sm sm:text-base">
+            <button className="mt-4 h-11 w-full rounded-3xl bg-gray text-sm text-black sm:text-base">
               {t('checkout')} ${amount}
             </button>
           </div>
         </div>
-        <p className="text-center text-xs text-white mb-8 max-w-xs">
-          {t('giftCardTerms')}
-        </p>
+        <p className="mb-8 max-w-xs text-center text-xs text-white">{t('giftCardTerms')}</p>
       </div>
     </div>
   );
 }
-
 
 const getStaticProps = makeStaticProps(['common']);
 

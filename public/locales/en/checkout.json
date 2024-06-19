@@ -1,7 +1,7 @@
 {
   "skip": "Skip",
   "saveMeasurements": "Save Measurements",
-  "clearCart": "Clear Cart",
+  "clearCart": "Clear",
   "measurementsAdded": "Measurements added",
   "addMeasurements": "Make it fit perfectly",
   "measurementsAddedDescription": "We will tailor clothing to fit perfectly",
@@ -44,5 +44,6 @@
   "sleeve": "Sleeve, cm",
   "chest": "Chest, cm",
   "waist": "Waist, cm",
-  "hips": "Hips, cm"
+  "hips": "Hips, cm",
+  "invalidPromoCode": "Invalid promo code"
 }

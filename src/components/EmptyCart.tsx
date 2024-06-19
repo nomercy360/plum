@@ -20,18 +20,13 @@ export default function EmptyCart() {
         <div className="flex max-w-72 flex-col items-center justify-center text-center sm:max-w-sm">
           <Icons.emptyCart className="h-36 w-36" />
           <p className="-mt-12 text-lg sm:mb-2.5 sm:text-xl">{t('emptyCart')}</p>
-          <p className="mb-8 text-sm sm:text-base">
-            {t('emptyCartDescription')}
-          </p>
+          <p className="mb-8 text-sm sm:text-base">{t('emptyCartDescription')}</p>
         </div>
         <div className="flex w-full flex-col items-center justify-center">
-          <button className="mb-4 h-11 w-56 rounded-3xl bg-gray text-black"
-                  onClick={restoreCart}>
+          <button className="mb-4 h-11 w-56 rounded-3xl bg-gray text-black" onClick={restoreCart}>
             {t('restoreCart')}
           </button>
-          <button
-            className="h-11 w-56 rounded-3xl bg-black text-white"
-            onClick={() => router.back()}>
+          <button className="h-11 w-56 rounded-3xl bg-black text-white" onClick={() => router.back()}>
             {t('continueShopping')}
           </button>
         </div>

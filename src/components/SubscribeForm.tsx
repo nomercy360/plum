@@ -11,7 +11,7 @@ export default function SubscribeForm(props: { style: 'dark' | 'light' }) {
       return;
     }
 
-    await new Promise((resolve) => setTimeout(resolve, 700));
+    await new Promise(resolve => setTimeout(resolve, 700));
 
     setEmailSent(true);
   };
@@ -22,17 +22,15 @@ export default function SubscribeForm(props: { style: 'dark' | 'light' }) {
 
   return (
     <div
-      className={`flex max-w-md flex-col items-center justify-center p-8 text-center ${props.style === 'dark' ? 'text-white' : 'text-black'}`}>
+      className={`flex max-w-md flex-col items-center justify-center p-8 text-center ${props.style === 'dark' ? 'text-white' : 'text-black'}`}
+    >
       <div className="flex flex-row items-center gap-2">
-        <Icons.logo
-          className={`h-6 w-24 sm:w-32 ${props.style === 'dark' ? 'text-white' : 'text-black'}`}
-        />
+        <Icons.logo className={`h-6 w-24 sm:w-32 ${props.style === 'dark' ? 'text-white' : 'text-black'}`} />
         <span className="text-xl">{t('secretStore')}</span>
       </div>
       <p className="mt-3 text-base sm:mt-4">{t('secretStoreDescription')}</p>
       {emailSent ? (
-        <div
-          className="mt-5 flex h-14 w-full flex-row items-center justify-between rounded-lg bg-light-green p-3 sm:mt-8">
+        <div className="mt-5 flex h-14 w-full flex-row items-center justify-between rounded-lg bg-light-green p-3 sm:mt-8">
           <div className="flex flex-row items-center justify-start gap-2.5">
             <Icons.check className="size-4 fill-white text-white" />
             <p className="text-sm text-white">{t('subscribed')}</p>
@@ -50,9 +48,7 @@ export default function SubscribeForm(props: { style: 'dark' | 'light' }) {
             className="w-full bg-transparent text-black placeholder:text-dark-gray focus:outline-none"
           />
           {email && (
-            <button
-              className="text-base uppercase text-dark-gray"
-              onClick={subscribe}>
+            <button className="text-base uppercase text-dark-gray" onClick={subscribe}>
               {t('subscribe')}
             </button>
           )}

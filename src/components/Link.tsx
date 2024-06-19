@@ -9,9 +9,7 @@ const LinkComponent = ({ children, skipLocaleHandling, ...rest }: any) => {
   let href = rest.href || router.asPath;
   if (href.indexOf('http') === 0) skipLocaleHandling = true;
   if (locale && !skipLocaleHandling) {
-    href = href
-      ? `/${locale}${href}`
-      : router.pathname.replace('[locale]', locale);
+    href = href ? `/${locale}${href}` : router.pathname.replace('[locale]', locale);
   }
 
   return (

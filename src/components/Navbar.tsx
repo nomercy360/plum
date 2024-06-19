@@ -29,6 +29,10 @@ export function NavbarCart() {
 
   const router = useRouter();
 
+  const goBack = async () => {
+    await router.push('/');
+  };
+
   return (
     <nav
       className="p-5 flex w-full flex-row items-center justify-between bg-transparent text-base text-black">
@@ -40,7 +44,7 @@ export function NavbarCart() {
       <div className="flex flex-row items-center justify-between gap-3">
         <LanguageSwitchLink theme="light" />
         <button className="items-center flex justify-center size-5 bg-black rounded-full"
-                onClick={() => router.back()}>
+                onClick={() => goBack()}>
           <Icons.close className="shrink-0 text-white size-2.5" />
         </button>
       </div>
