@@ -107,7 +107,7 @@ const CartProvider = ({ children }: { children: React.ReactNode }) => {
         return resp.json();
       })
       .then(data => {
-        if (data.id) {
+        if (data) {
           setCart(() => data);
         } else {
           localStorage.removeItem('plum-cart-id');
