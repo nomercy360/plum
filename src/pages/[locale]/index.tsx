@@ -95,11 +95,10 @@ function ProductCard({ product }: { product: Product }) {
         width={370}
         height={520}
       />
-      <div className="min-h-16">
-        <p className="mb-1 mt-2 text-sm sm:mt-4 sm:text-base">{product.name}</p>
+      <div>
+        <p className="mb-1 mt-2 text-sm sm:mt-3 sm:text-base">{product.name}</p>
         <p className="text-xs text-gray-light sm:text-base">
-          {product.price}
-          {currencySign}
+          {product.price}{currencySign}
         </p>
       </div>
     </Link>
