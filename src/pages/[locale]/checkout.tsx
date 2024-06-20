@@ -86,6 +86,7 @@ export default function Checkout() {
   const [step, setStep] = useState<'bag' | 'deliveryInfo' | 'measurements'>('bag');
 
   const [isFormValid, setIsFormValid] = useState(false);
+  const [isFormLoading, setIsFormLoading] = useState(false);
 
   const router = useRouter();
 
@@ -94,7 +95,9 @@ export default function Checkout() {
   }, [shippingOption]);
 
   useEffect(() => {
-    const isValid = name !== '' && email !== '' && address !== '' && country !== '' && zip !== '' && phone !== '';
+    const isValidEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+
+    const isValid = name !== '' && address !== '' && country !== '' && zip !== '' && phone !== '' && isValidEmail;
 
     setIsFormValid(isValid);
   }, [name, email, address, country, zip, phone]);
@@ -123,6 +126,8 @@ export default function Checkout() {
   }
 
   const placeOrder = async () => {
+    setIsFormLoading(true);
+
     const order = {
       name,
       email,
@@ -148,6 +153,8 @@ export default function Checkout() {
         items: cartItemsToGTM(cart.items),
       },
     });
+
+    setIsFormLoading(false);
 
     window.open(resp.payment_link, '_blank');
   };
@@ -364,15 +371,20 @@ export default function Checkout() {
                 <div className="flex flex-col items-center rounded-t-xl bg-white pb-10 text-center sm:items-start sm:pb-0 sm:text-start">
                   <p className="mb-2 px-5 pt-5 text-lg text-black sm:text-xl">{t('addDeliveryInfo')}</p>
                   <p className="mb-8 px-5 text-sm leading-snug text-gray-light">{t('addDeliveryInfoDescription')}</p>
-                  <div className="mb-8 flex w-full flex-col gap-4 px-5">
+                  <form
+                    className="mb-8 flex w-full flex-col gap-4 px-5"
+                    onSubmit={e => {
+                      e.preventDefault();
+                      placeOrder();
+                    }}
+                  >
                     <input
                       className="h-11 w-full rounded-lg bg-gray px-3 text-sm placeholder:text-dark-gray focus:outline-neutral-200 sm:text-base"
                       placeholder={t('name')}
                       autoFocus
-                      autoComplete="off"
-                      autoCorrect="off"
-                      autoCapitalize="words"
-                      required
+                      type="text"
+                      autoComplete="name"
+                      value={name}
                       onInput={e => setName(e.currentTarget.value)}
                     />
                     <input
@@ -380,9 +392,7 @@ export default function Checkout() {
                       placeholder={t('email')}
                       type="email"
                       autoComplete="email"
-                      autoCorrect="off"
-                      autoCapitalize="off"
-                      required
+                      value={email}
                       onInput={e => setEmail(e.currentTarget.value)}
                     />
                     <input
@@ -390,6 +400,7 @@ export default function Checkout() {
                       type="tel"
                       autoComplete="tel"
                       placeholder={t('phone')}
+                      value={phone}
                       onInput={e => setPhone(e.currentTarget.value)}
                     />
                     <div className="flex w-full flex-row items-center justify-start rounded-lg bg-gray">
@@ -408,20 +419,22 @@ export default function Checkout() {
                     </div>
                     <div className="flex w-full flex-row items-center justify-start rounded-lg bg-gray">
                       <input
-                        autoComplete="address"
+                        type="text"
+                        autoComplete="street-address"
                         className="h-11 w-full bg-transparent px-3 text-sm placeholder:text-dark-gray focus:outline-neutral-200 sm:text-base"
                         placeholder={t('address')}
                         onInput={e => setAddress(e.currentTarget.value)}
                       />
                       <div className="h-8 w-0.5 bg-dark-gray"></div>
                       <input
+                        type="text"
                         autoComplete="postal-code"
                         className="h-11 w-24 bg-transparent px-3 text-sm placeholder:text-dark-gray focus:outline-neutral-200 sm:text-base"
                         placeholder={t('zip')}
                         onInput={e => setZip(e.currentTarget.value)}
                       />
                     </div>
-                  </div>
+                  </form>
                   <Divider></Divider>
                   <div className="flex w-full flex-col items-center">
                     <TotalCostInfo
@@ -440,8 +453,8 @@ export default function Checkout() {
                         {t('back')}
                       </button>
                       <button
-                        className={`h-11 w-56 flex-shrink-0 rounded-3xl text-white ${isFormValid ? 'bg-black' : 'cursor-not-allowed bg-black/60'}`}
-                        disabled={!isFormValid}
+                        className={`h-11 w-56 flex-shrink-0 rounded-3xl bg-black text-white disabled:cursor-not-allowed disabled:bg-black/60`}
+                        disabled={!isFormValid || isFormLoading}
                         onClick={() => placeOrder()}
                       >
                         {t('checkout')}{' '}

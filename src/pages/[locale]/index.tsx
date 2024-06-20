@@ -9,6 +9,7 @@ import SubscribeForm from '@/components/SubscribeForm';
 import { useContext } from 'react';
 import { LocaleContext } from '@/context/locale-provider';
 import Navbar from '@/components/Navbar';
+import Head from 'next/head';
 
 export type Product = {
   id: number;
