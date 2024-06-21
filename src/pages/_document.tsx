@@ -12,6 +12,7 @@ export default function Document() {
         <meta name="og:description" content="Dresses & things" />
         <meta name="og:image" content="https://plumplum.co/images/og.png" />
         <meta name="facebook-domain-verification" content="bahudlkogyzobajn9gkyr24k91b2iq" />
+        <meta name="facebook-domain-verification" content="plqwge8ehbbmvwwvtaxcbhpvs36lc9" />
       </Head>
       <body>
         <Main />

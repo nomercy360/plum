@@ -9,7 +9,6 @@ import SubscribeForm from '@/components/SubscribeForm';
 import { useContext } from 'react';
 import { LocaleContext } from '@/context/locale-provider';
 import Navbar from '@/components/Navbar';
-import Head from 'next/head';
 
 export type Product = {
   id: number;
@@ -23,7 +22,8 @@ export type Product = {
   }[];
   image: string;
   images: string[];
-  currency: string;
+  currency_code: string;
+  currency_symbol: string;
   price: number;
 };
 
@@ -98,7 +98,8 @@ function ProductCard({ product }: { product: Product }) {
       <div>
         <p className="mb-1 mt-2 text-sm sm:mt-3 sm:text-base">{product.name}</p>
         <p className="text-xs text-gray-light sm:text-base">
-          {product.price}{currencySign}
+          {product.price}
+          {currencySign}
         </p>
       </div>
     </Link>

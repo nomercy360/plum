@@ -60,7 +60,6 @@ export default function Checkout() {
 
   const { t } = useTranslation(['checkout', 'common']);
 
-  const [shippingOption, setShippingOption] = useState('standard');
   const [promoCode, setPromoCode] = useState('');
   const [promoStatus, setPromoStatus] = useState<'success' | 'error' | 'idle' | 'fetching'>('idle');
 
@@ -81,18 +80,12 @@ export default function Checkout() {
   const [zip, setZip] = useState('');
   const [phone, setPhone] = useState('');
 
-  const [shippingCost, setShippingCost] = useState(30);
-
   const [step, setStep] = useState<'bag' | 'deliveryInfo' | 'measurements'>('bag');
 
   const [isFormValid, setIsFormValid] = useState(false);
   const [isFormLoading, setIsFormLoading] = useState(false);
 
   const router = useRouter();
-
-  useEffect(() => {
-    setShippingCost(shippingOption === 'standard' ? 30 : 50);
-  }, [shippingOption]);
 
   useEffect(() => {
     const isValidEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
@@ -149,7 +142,7 @@ export default function Checkout() {
       event: 'add_payment_info',
       payment_type: 'Credit Card',
       ecommerce: {
-        currency: cart.currency,
+        currency: cart.currency_code,
         items: cartItemsToGTM(cart.items),
       },
     });
@@ -208,7 +201,7 @@ export default function Checkout() {
       sendGTMEvent({
         event: 'remove_from_cart',
         ecommerce: {
-          currency: cart.currency,
+          currency: cart.currency_code,
           items: [
             {
               item_id: product.id,
@@ -233,7 +226,7 @@ export default function Checkout() {
       sendGTMEvent({
         event: 'add_to_cart',
         ecommerce: {
-          currency: cart.currency,
+          currency: cart.currency_code,
           items: [
             {
               item_id: product.id,
@@ -288,7 +281,7 @@ export default function Checkout() {
                               </p>
                               <p className="mt-0.5 text-xs text-gray-light sm:text-sm">
                                 Total {item.price}
-                                {cart.currency}
+                                {cart.currency_code}
                               </p>
                             </div>
                           </div>
@@ -360,7 +353,7 @@ export default function Checkout() {
                         {t('continue')} •{' '}
                         <span className="text-gray">
                           {cart.total}
-                          {cart.currency}
+                          {cart.currency_code}
                         </span>
                       </button>
                     </div>
@@ -641,12 +634,22 @@ const TotalCostInfo = (props: {
 }) => {
   const discount = props.subtotal - props.total;
 
+  const [shippingCost, setShippingCost] = useState(10);
+
+  useEffect(() => {
+    if (props.currencySign === 'byn') {
+      setShippingCost(25);
+    } else {
+      setShippingCost(10);
+    }
+  }, [props.currencySign]);
+
   return (
     <div className="flex w-full flex-col gap-3 px-5">
       <div className="flex w-full flex-row items-center justify-between">
         <p className="text-sm text-gray-light sm:text-base">{props.t('subtotal')}</p>
         <p className="text-sm text-gray-light sm:text-base">
-          {props.total}
+          {props.subtotal}
           {props.currencySign}
         </p>
       </div>
@@ -668,7 +671,8 @@ const TotalCostInfo = (props: {
       <div className="flex w-full flex-row items-center justify-between">
         <p className="text-sm text-gray-light sm:text-base">{props.t('worldwide')}</p>
         <p className="text-sm text-gray-light sm:text-base">
-          {props.t('approx')} 30{props.currencySign}
+          {props.t('approx')} {shippingCost}
+          {props.currencySign}
         </p>
       </div>
       <div className="mt-4 flex w-full flex-row items-center justify-between">

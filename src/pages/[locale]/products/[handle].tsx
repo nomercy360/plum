@@ -33,7 +33,7 @@ export default function ProductPage({ product }: { product: Product }) {
     sendGTMEvent({
       event: 'add_to_cart',
       ecommerce: {
-        currency: product.currency,
+        currency: product.currency_code,
         items: [
           {
             item_id: product.id,
@@ -66,7 +66,7 @@ export default function ProductPage({ product }: { product: Product }) {
     sendGTMEvent({
       event: 'view_item',
       ecommerce: {
-        currency: product.currency,
+        currency: product.currency_code,
         items: [
           {
             item_id: product.id,
@@ -93,7 +93,10 @@ export default function ProductPage({ product }: { product: Product }) {
     <div>
       <Head>
         <title>{product.name} | PLUM®</title>
-        <meta name="og:title" content={`PLUM® | ${product.name}. Available for ${product.price}${product.currency}`} />
+        <meta
+          name="og:title"
+          content={`PLUM® | ${product.name}. Available for ${product.price}${product.currency_code}`}
+        />
         <meta name="og:description" content={product.description} />
         <meta name="og:image" content={product.images[0]} />
         <meta name="description" content={product.description} />
@@ -125,14 +128,14 @@ export default function ProductPage({ product }: { product: Product }) {
               {!wasAddedToCart ? (
                 <button
                   className={`flex h-11 min-w-[150px] flex-row items-center justify-center gap-2 rounded-full px-3.5 text-base text-white ${isVariantInCart ? 'bg-dark-gray' : 'bg-black'}`}
-                  onClick={handleAddToCart}
+                  onClick={() => handleAddToCart()}
                   disabled={isVariantInCart}
                 >
                   <p className="text-white">{isVariantInCart ? t('alreadyInBag') : t('addToBag')}</p>
                   {!isVariantInCart && (
                     <p className="text-white">
                       {product.price}
-                      {product.currency}
+                      {product.currency_symbol}
                     </p>
                   )}
                 </button>
@@ -141,7 +144,7 @@ export default function ProductPage({ product }: { product: Product }) {
                   <p className="text-white">{t('added')}</p>
                   <p className="text-white">
                     {product.price}
-                    {product.currency}
+                    {product.currency_symbol}
                   </p>
                 </div>
               )}

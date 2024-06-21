@@ -30,7 +30,7 @@ type Cart = {
   total: number;
   subtotal: number;
   discount?: CartDiscount;
-  currency: string;
+  currency_code: string;
 };
 
 type AddToCartItem = {
