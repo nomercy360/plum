@@ -1,6 +1,6 @@
 import Icons from '@/components/Icons';
 import { useTranslation } from 'next-i18next';
-import { Suspense, useEffect, useState } from 'react';
+import { Suspense, useContext, useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import { getStaticPaths, makeStaticProps } from '@/lib/getStatic';
 import { Product } from '@/pages/[locale]';
@@ -9,6 +9,7 @@ import { sendGTMEvent } from '@next/third-parties/google';
 import { cartItemsToGTM } from '@/pages/[locale]/checkout';
 import { NavbarCart } from '@/components/Navbar';
 import Head from 'next/head';
+import { CartContext } from '@/context/cart-provider';
 
 export async function fetchOrder(locale: string, orderID: number) {
   const resp = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/orders/${orderID}`, {
@@ -52,6 +53,8 @@ function SuccessOrder() {
 
   const params = useSearchParams();
 
+  const { clearCart } = useContext(CartContext);
+
   useEffect(() => {
     if (params.has('orderId')) {
       const orderID = parseInt(params.get('orderId') || '0');
@@ -70,6 +73,8 @@ function SuccessOrder() {
               items: cartItemsToGTM(order.items),
             },
           });
+          // clear cart
+          clearCart();
         }
       });
     }
