@@ -8,6 +8,7 @@ import { useSearchParams } from 'next/navigation';
 import { sendGTMEvent } from '@next/third-parties/google';
 import { cartItemsToGTM } from '@/pages/[locale]/checkout';
 import { NavbarCart } from '@/components/Navbar';
+import Head from 'next/head';
 
 export async function fetchOrder(locale: string, orderID: number) {
   const resp = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/orders/${orderID}`, {
@@ -83,37 +84,45 @@ function SuccessOrder() {
   }
 
   return (
-    <OrderLayout>
-      {order.payment_status === 'paid' ? (
-        <>
-          <div className="flex max-w-sm flex-col items-center gap-5 text-center">
-            <Icons.checkmark />
-            <p className="-mt-14 max-w-xs text-lg sm:text-xl">{t('titleOrderSuccess')}</p>
-            <p>{t('textOrderSuccess', { email: order.customer.email })}</p>
-          </div>
-          <a
-            href="https://www.instagram.com/"
-            className="mt-5 flex h-11 w-56 items-center justify-center rounded-3xl bg-black text-center text-white"
-          >
-            {t('subscribeInstagramButton')}
-          </a>
-        </>
-      ) : (
-        <>
-          <div className="flex max-w-sm flex-col items-center gap-5 text-center">
-            <Icons.failmark />
-            <p className="-mt-14 max-w-xs text-lg sm:text-xl">{t('titleOrderFailed')}</p>
-            <p>{t('textOrderFailed')}</p>
-          </div>
-          <button
-            className="mt-5 flex h-11 w-56 items-center justify-center rounded-3xl bg-black text-center text-white"
-            onClick={() => window.location.reload()}
-          >
-            {t('tryAgain')}
-          </button>
-        </>
-      )}
-    </OrderLayout>
+    <>
+      <Head>
+        <meta name="og:title" content="Checkout | PLUM®" />
+        <meta name="og:description" content="Dresses & things" />
+        <meta name="og:image" content="https://plumplum.co/images/og.png" />
+        <meta name="description" content="Dresses & things" />
+      </Head>
+      <OrderLayout>
+        {order.payment_status === 'paid' ? (
+          <>
+            <div className="flex max-w-sm flex-col items-center gap-5 text-center">
+              <Icons.checkmark />
+              <p className="-mt-14 max-w-xs text-lg sm:text-xl">{t('titleOrderSuccess')}</p>
+              <p>{t('textOrderSuccess', { email: order.customer.email })}</p>
+            </div>
+            <a
+              href="https://www.instagram.com/"
+              className="mt-5 flex h-11 w-56 items-center justify-center rounded-3xl bg-black text-center text-white"
+            >
+              {t('subscribeInstagramButton')}
+            </a>
+          </>
+        ) : (
+          <>
+            <div className="flex max-w-sm flex-col items-center gap-5 text-center">
+              <Icons.failmark />
+              <p className="-mt-14 max-w-xs text-lg sm:text-xl">{t('titleOrderFailed')}</p>
+              <p>{t('textOrderFailed')}</p>
+            </div>
+            <button
+              className="mt-5 flex h-11 w-56 items-center justify-center rounded-3xl bg-black text-center text-white"
+              onClick={() => window.location.reload()}
+            >
+              {t('tryAgain')}
+            </button>
+          </>
+        )}
+      </OrderLayout>
+    </>
   );
 }
 

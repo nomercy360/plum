@@ -9,6 +9,7 @@ import SubscribeForm from '@/components/SubscribeForm';
 import { useContext } from 'react';
 import { LocaleContext } from '@/context/locale-provider';
 import Navbar from '@/components/Navbar';
+import Head from 'next/head';
 
 export type Product = {
   id: number;
@@ -87,22 +88,30 @@ function ProductCard({ product }: { product: Product }) {
   const { currencySign } = useContext(LocaleContext);
 
   return (
-    <Link key={product.id} className="flex flex-col items-start justify-start" href={`/products/${product.handle}`}>
-      <ExportedImage
-        alt=""
-        className="aspect-[5/7] size-full rounded-lg object-cover"
-        src={product.image}
-        width={370}
-        height={520}
-      />
-      <div>
-        <p className="mb-1 mt-2 text-sm sm:mt-3 sm:text-base">{product.name}</p>
-        <p className="text-xs text-gray-light sm:text-base">
-          {product.price}
-          {currencySign}
-        </p>
-      </div>
-    </Link>
+    <>
+      <Head>
+        <meta name="og:title" content="PLUM®" />
+        <meta name="og:description" content="Dresses & things" />
+        <meta name="og:image" content="https://plumplum.co/images/og.png" />
+        <meta name="description" content="Dresses & things" />
+      </Head>
+      <Link key={product.id} className="flex flex-col items-start justify-start" href={`/products/${product.handle}`}>
+        <ExportedImage
+          alt=""
+          className="aspect-[5/7] size-full rounded-lg object-cover"
+          src={product.image}
+          width={370}
+          height={520}
+        />
+        <div>
+          <p className="mb-1 mt-2 text-sm sm:mt-3 sm:text-base">{product.name}</p>
+          <p className="text-xs text-gray-light sm:text-base">
+            {product.price}
+            {currencySign}
+          </p>
+        </div>
+      </Link>
+    </>
   );
 }
 

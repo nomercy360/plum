@@ -3,12 +3,19 @@ import Footer from '@/components/Footer';
 import { useTranslation } from 'next-i18next';
 import { getStaticPaths, makeStaticProps } from '@/lib/getStatic';
 import Icons from '@/components/Icons';
+import Head from 'next/head';
 
 export default function Terms(props: any) {
   const { t } = useTranslation(['policy']);
 
   return (
-    <div>
+    <>
+      <Head>
+        <meta name="og:title" content="PLUM®" />
+        <meta name="og:description" content="Dresses & things" />
+        <meta name="og:image" content="https://plumplum.co/images/og.png" />
+        <meta name="description" content="Dresses & things" />
+      </Head>
       <main className={`flex min-h-screen flex-col items-center justify-between bg-white`}>
         <Navbar />
         <div className="mb-11 mt-8 max-w-3xl p-5 sm:mb-28 sm:mt-28 sm:p-0">
@@ -68,7 +75,7 @@ export default function Terms(props: any) {
         </div>
         <Footer />
       </main>
-    </div>
+    </>
   );
 }
 
