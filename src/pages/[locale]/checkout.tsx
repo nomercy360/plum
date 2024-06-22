@@ -261,11 +261,9 @@ export default function Checkout() {
           <div>
             <NavbarCart />
             <main className="mt-8 flex w-full items-start justify-center">
-              <div
-                className="flex min-h-[calc(100vh-100px)] sm:h-full h-[calc(100vh-100px)] w-full max-w-2xl flex-col bg-white pb-10 sm:rounded-t-xl">
+              <div className="flex h-[calc(100vh-100px)] min-h-[calc(100vh-100px)] w-full max-w-2xl flex-col bg-white pb-10 sm:h-full sm:rounded-t-xl">
                 {step == 'bag' && (
-                  <div
-                    className="flex h-full w-full flex-col justify-between sm:justify-start">
+                  <div className="flex h-full w-full flex-col justify-between sm:justify-start">
                     <div>
                       <div className="flex flex-row items-center justify-between px-5 pt-5">
                         <p className="text-lg sm:text-xl">{getTranslation('yourBag', cart.count)}</p>
@@ -339,14 +337,14 @@ export default function Checkout() {
                       <Divider></Divider>
                       <TotalCostInfo
                         total={cart.total}
+                        discount={cart.discount_amount}
                         measurementFilled={isMeasurementsFilled()}
                         discountPercent={cart.discount?.value || 0}
                         subtotal={cart.subtotal}
                         t={t}
                         currencySign={currencySign}
                       />
-                      <div
-                        className="mt-10 flex w-full flex-col items-end justify-between gap-5 px-5 sm:flex-row sm:justify-start">
+                      <div className="mt-10 flex w-full flex-col items-end justify-between gap-5 px-5 sm:flex-row sm:justify-start">
                         <div className="hidden w-full sm:block">
                           <PromoCode
                             promoCode={promoCode}
@@ -363,17 +361,16 @@ export default function Checkout() {
                         >
                           {t('continue')} •{' '}
                           <span className="text-gray">
-                          {cart.total}
+                            {cart.total}
                             {cart.currency_code}
-                        </span>
+                          </span>
                         </button>
                       </div>
                     </div>
                   </div>
                 )}
                 {step == 'deliveryInfo' && (
-                  <div
-                    className="flex flex-col items-center rounded-t-xl bg-white pb-10 text-center sm:items-start sm:text-start">
+                  <div className="flex flex-col items-center rounded-t-xl bg-white pb-10 text-center sm:items-start sm:text-start">
                     <p className="mb-2 px-5 pt-5 text-lg text-black sm:text-xl">{t('addDeliveryInfo')}</p>
                     <p className="mb-8 px-5 text-sm leading-snug text-gray-light">{t('addDeliveryInfoDescription')}</p>
                     <form
@@ -444,6 +441,7 @@ export default function Checkout() {
                     <div className="flex w-full flex-col items-center">
                       <TotalCostInfo
                         total={cart.total}
+                        discount={cart.discount_amount}
                         measurementFilled={isMeasurementsFilled()}
                         discountPercent={cart.discount?.value || 0}
                         subtotal={cart.subtotal}
@@ -464,9 +462,9 @@ export default function Checkout() {
                         >
                           {t('checkout')}{' '}
                           <span className="text-gray">
-                          {cart.total}
+                            {cart.total}
                             {currencySign}
-                        </span>
+                          </span>
                         </button>
                       </div>
                     </div>
@@ -474,8 +472,7 @@ export default function Checkout() {
                 )}
 
                 {step == 'measurements' && (
-                  <div
-                    className="flex flex-col items-center rounded-t-xl bg-white px-5 pt-5 text-center sm:items-start sm:text-start">
+                  <div className="flex flex-col items-center rounded-t-xl bg-white px-5 pt-5 text-center sm:items-start sm:text-start">
                     <p className="mb-2 text-lg text-black sm:text-xl">{t('addMeasurements')}</p>
                     <p className="mb-8 max-w-xs text-sm leading-snug text-gray-light sm:max-w-4xl">
                       {t('addMeasurementsDescription2')}
@@ -528,8 +525,7 @@ export default function Checkout() {
                         onInput={e => updateMeasurements('hips', e.currentTarget.value)}
                       />
                     </div>
-                    <div
-                      className="mt-10 flex w-full max-w-[220px] flex-col items-center justify-between gap-4 sm:max-w-none sm:flex-row sm:gap-0">
+                    <div className="mt-10 flex w-full max-w-[220px] flex-col items-center justify-between gap-4 sm:max-w-none sm:flex-row sm:gap-0">
                       <button
                         className="h-11 w-full rounded-3xl bg-gray text-black sm:w-24"
                         onClick={() => afterMeasurements(false)}
@@ -612,7 +608,6 @@ const PromoCode = (props: {
         </div>
       )}
     </>
-
   );
 };
 
@@ -645,11 +640,10 @@ const TotalCostInfo = (props: {
   measurementFilled: boolean;
   subtotal: number;
   discountPercent: number;
+  discount: number;
   t: any;
   currencySign: string;
 }) => {
-  const discount = props.subtotal - props.total;
-
   const [shippingCost, setShippingCost] = useState(10);
 
   useEffect(() => {
@@ -673,7 +667,7 @@ const TotalCostInfo = (props: {
         <div className="flex w-full flex-row items-center justify-between">
           <p className="text-sm text-gray-light sm:text-base">{props.t('discount')}</p>
           <p className="text-sm text-gray-light sm:text-base">
-            -{discount}
+            -{props.discount}
             {props.currencySign} ({props.discountPercent}%)
           </p>
         </div>

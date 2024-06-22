@@ -98,7 +98,7 @@ function ProductCard({ product }: { product: Product }) {
       <Link key={product.id} className="flex flex-col items-start justify-start" href={`/products/${product.handle}`}>
         <ExportedImage
           alt=""
-          className="aspect-[5/7] size-full rounded-lg object-cover"
+          className="aspect-[5/7] w-full rounded-lg object-cover sm:size-full"
           src={product.image}
           width={370}
           height={520}

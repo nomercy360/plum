@@ -107,7 +107,7 @@ export default function ProductPage({ product }: { product: Product }) {
           {product.images && <PhotoGallery images={product.images} />}
           <div className="flex w-full flex-col items-start text-start text-black sm:w-[360px] sm:min-w-[360px]">
             <div className="mb-3 flex h-6 items-center justify-center rounded-full bg-violet/10 px-2 pt-px text-xs uppercase tracking-wide text-violet">
-              {availability && availability > 1
+              {availability && availability > 1 && availability < 3
                 ? t('piecesLeft', { count: product.variants.find(variant => variant.id === selectedSize)?.available })
                 : t('lastPiece')}
             </div>

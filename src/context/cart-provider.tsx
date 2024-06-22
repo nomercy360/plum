@@ -31,6 +31,7 @@ type Cart = {
   subtotal: number;
   discount?: CartDiscount;
   currency_code: string;
+  discount_amount: number;
 };
 
 type AddToCartItem = {
