@@ -3,7 +3,7 @@ import Divider from '@/components/Divider';
 import EmptyCart from '@/components/EmptyCart';
 import StepperButton from '@/components/StepperButton';
 import { useContext, useEffect, useState } from 'react';
-import { CartContext, CartItem } from '@/context/cart-provider';
+import { Cart, CartContext, CartItem } from '@/context/cart-provider';
 import { useTranslation } from 'next-i18next';
 import { getStaticPaths, makeStaticProps } from '@/lib/getStatic';
 import { useRouter } from 'next/router';
@@ -54,10 +54,13 @@ async function checkoutRequest(data: any, locale: string = 'en') {
   }
 }
 
+const priceString = (currencySymbol: string, price: number) =>
+  currencySymbol === '$' ? `$${price}` : `${price} ${currencySymbol}`;
+
 export default function Checkout() {
   const { cart, getCartItems, clearCart, updateCartItem, applyDiscount } = useContext(CartContext);
 
-  const { currency, currencySign, currentLanguage } = useContext(LocaleContext);
+  const { currentLanguage } = useContext(LocaleContext);
 
   const { t } = useTranslation(['checkout', 'common']);
 
@@ -101,7 +104,7 @@ export default function Checkout() {
       sendGTMEvent({
         event: 'view_cart',
         ecommerce: {
-          currency: currency,
+          currency: cart.currency_code,
           items: cartItemsToGTM(cart.items),
         },
       });
@@ -113,7 +116,7 @@ export default function Checkout() {
     sendGTMEvent({
       event: 'begin_checkout',
       ecommerce: {
-        currency: currency,
+        currency: cart.currency_code,
         items: cartItemsToGTM(cart.items),
       },
     });
@@ -288,8 +291,7 @@ export default function Checkout() {
                                   {item.quantity > 1 && `x ${item.quantity}`}
                                 </p>
                                 <p className="mt-0.5 text-xs text-gray-light sm:text-sm">
-                                  Total {item.price}
-                                  {cart.currency_code}
+                                  Total {priceString(cart.currency_symbol, item.price * item.quantity)}
                                 </p>
                               </div>
                             </div>
@@ -335,15 +337,7 @@ export default function Checkout() {
                         />
                       </div>
                       <Divider></Divider>
-                      <TotalCostInfo
-                        total={cart.total}
-                        discount={cart.discount_amount}
-                        measurementFilled={isMeasurementsFilled()}
-                        discountPercent={cart.discount?.value || 0}
-                        subtotal={cart.subtotal}
-                        t={t}
-                        currencySign={currencySign}
-                      />
+                      <TotalCostInfo measurementFilled={isMeasurementsFilled()} t={t} cart={cart} />
                       <div className="mt-10 flex w-full flex-col items-end justify-between gap-5 px-5 sm:flex-row sm:justify-start">
                         <div className="hidden w-full sm:block">
                           <PromoCode
@@ -360,10 +354,7 @@ export default function Checkout() {
                           disabled={!cart.total}
                         >
                           {t('continue')} •{' '}
-                          <span className="text-gray">
-                            {cart.total}
-                            {cart.currency_code}
-                          </span>
+                          <span className="text-gray">{priceString(cart.currency_symbol, cart.total)}</span>
                         </button>
                       </div>
                     </div>
@@ -439,15 +430,7 @@ export default function Checkout() {
                     </form>
                     <Divider></Divider>
                     <div className="flex w-full flex-col items-center">
-                      <TotalCostInfo
-                        total={cart.total}
-                        discount={cart.discount_amount}
-                        measurementFilled={isMeasurementsFilled()}
-                        discountPercent={cart.discount?.value || 0}
-                        subtotal={cart.subtotal}
-                        t={t}
-                        currencySign={currencySign}
-                      />
+                      <TotalCostInfo measurementFilled={isMeasurementsFilled()} t={t} cart={cart} />
                       <div className="mt-10 flex w-full flex-row items-center justify-center px-5 sm:justify-between">
                         <button
                           className="hidden h-11 w-24 rounded-3xl bg-gray text-black sm:block"
@@ -461,10 +444,7 @@ export default function Checkout() {
                           onClick={() => placeOrder()}
                         >
                           {t('checkout')}{' '}
-                          <span className="text-gray">
-                            {cart.total}
-                            {currencySign}
-                          </span>
+                          <span className="text-gray">{priceString(cart.currency_symbol, cart.total)}</span>
                         </button>
                       </div>
                     </div>
@@ -635,40 +615,31 @@ function SpinnerLoader() {
   );
 }
 
-const TotalCostInfo = (props: {
-  total: number;
-  measurementFilled: boolean;
-  subtotal: number;
-  discountPercent: number;
-  discount: number;
-  t: any;
-  currencySign: string;
-}) => {
+const TotalCostInfo = (props: { measurementFilled: boolean; t: any; cart: Cart }) => {
   const [shippingCost, setShippingCost] = useState(10);
 
   useEffect(() => {
-    if (props.currencySign === 'byn') {
+    if (props.cart.currency_symbol === 'BYN') {
       setShippingCost(25);
     } else {
       setShippingCost(10);
     }
-  }, [props.currencySign]);
+  }, [props.cart.currency_symbol]);
 
   return (
     <div className="flex w-full flex-col gap-3 px-5">
       <div className="flex w-full flex-row items-center justify-between">
         <p className="text-sm text-gray-light sm:text-base">{props.t('subtotal')}</p>
         <p className="text-sm text-gray-light sm:text-base">
-          {props.subtotal}
-          {props.currencySign}
+          {priceString(props.cart.currency_symbol, props.cart.subtotal)}
         </p>
       </div>
-      {props.discountPercent > 0 && (
+      {props.cart.discount_amount > 0 && (
         <div className="flex w-full flex-row items-center justify-between">
           <p className="text-sm text-gray-light sm:text-base">{props.t('discount')}</p>
           <p className="text-sm text-gray-light sm:text-base">
-            -{props.discount}
-            {props.currencySign} ({props.discountPercent}%)
+            -{props.cart.discount_amount}
+            {props.cart.currency_symbol} ({props.cart.discount?.value}%)
           </p>
         </div>
       )}
@@ -681,16 +652,14 @@ const TotalCostInfo = (props: {
       <div className="flex w-full flex-row items-center justify-between">
         <p className="text-sm text-gray-light sm:text-base">{props.t('worldwide')}</p>
         <p className="text-sm text-gray-light sm:text-base">
-          {props.t('approx')} {shippingCost}
-          {props.currencySign}
+          {props.t('approx')}
+          {': '}
+          {priceString(props.cart.currency_symbol, shippingCost)}
         </p>
       </div>
       <div className="mt-4 flex w-full flex-row items-center justify-between">
         <p className="text-base text-black sm:text-lg">{props.t('total')}</p>
-        <p className="text-base text-black sm:text-lg">
-          {props.total}
-          {props.currencySign}
-        </p>
+        <p className="text-base text-black sm:text-lg">{priceString(props.cart.currency_symbol, props.cart.total)}</p>
       </div>
       <div className="flex w-full flex-row items-center justify-between">
         <p className="text-start text-xs text-gray-light sm:text-center">{props.t('agree')}</p>

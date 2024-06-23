@@ -23,7 +23,7 @@ type CartDiscount = {
   value: number;
 };
 
-type Cart = {
+export type Cart = {
   count: number;
   items: Array<CartItem>;
   id: number;
@@ -31,6 +31,7 @@ type Cart = {
   subtotal: number;
   discount?: CartDiscount;
   currency_code: string;
+  currency_symbol: string;
   discount_amount: number;
 };
 

@@ -89,6 +89,9 @@ export default function ProductPage({ product }: { product: Product }) {
     return product.variants.find(variant => variant.id === selectedSize)?.available;
   }, [product, selectedSize]);
 
+  const priceString =
+    product.currency_symbol === '$' ? `$${product.price}` : `${product.price} ${product.currency_symbol}`;
+
   return (
     <div>
       <Head>
@@ -107,9 +110,12 @@ export default function ProductPage({ product }: { product: Product }) {
           {product.images && <PhotoGallery images={product.images} />}
           <div className="flex w-full flex-col items-start text-start text-black sm:w-[360px] sm:min-w-[360px]">
             <div className="mb-3 flex h-6 items-center justify-center rounded-full bg-violet/10 px-2 pt-px text-xs uppercase tracking-wide text-violet">
-              {availability && availability > 1 && availability < 3
-                ? t('piecesLeft', { count: product.variants.find(variant => variant.id === selectedSize)?.available })
-                : t('lastPiece')}
+              {availability &&
+                availability > 1 &&
+                availability < 3 &&
+                t('piecesLeft', { count: product.variants.find(variant => variant.id === selectedSize)?.available })}
+              {availability && availability === 1 && t('lastPiece')}
+              {availability && availability > 2 && t('inStock')}
             </div>
             <p className="mb-1 text-lg text-black sm:text-xl">{product.name} </p>
             <p className="text-sm text-gray-light sm:text-base">{product.description}</p>
@@ -132,12 +138,7 @@ export default function ProductPage({ product }: { product: Product }) {
                   disabled={isVariantInCart}
                 >
                   <p className="text-white">{isVariantInCart ? t('alreadyInBag') : t('addToBag')}</p>
-                  {!isVariantInCart && (
-                    <p className="text-white">
-                      {product.price}
-                      {product.currency_symbol}
-                    </p>
-                  )}
+                  {!isVariantInCart && <p className="text-white">{priceString}</p>}
                 </button>
               ) : (
                 <div className="flex h-11 min-w-[140px] flex-row items-center justify-between gap-2 rounded-full bg-light-green px-3.5 text-base text-white">
