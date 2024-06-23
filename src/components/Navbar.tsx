@@ -10,7 +10,7 @@ export default function Navbar() {
 
   return (
     <nav
-      className="p-5 flex w-full flex-row items-center justify-between bg-transparent text-base text-black">
+      className="top-0 fixes p-5 flex w-full flex-row items-center justify-between bg-transparent text-base text-black">
       <Link href="/">
         <Icons.logo
           className="h-6 w-32 text-black"

@@ -85,7 +85,7 @@ export default function Home({ products }: { products: Product[] }) {
 }
 
 function ProductCard({ product }: { product: Product }) {
-  const { currencySign } = useContext(LocaleContext);
+  const priceString = product.currency_code === 'USD' ? `$${product.price}` : `${product.price} ${product.currency_symbol}`;
 
   return (
     <>
@@ -106,8 +106,7 @@ function ProductCard({ product }: { product: Product }) {
         <div>
           <p className="mb-1 mt-2 text-sm sm:mt-3 sm:text-base">{product.name}</p>
           <p className="text-xs text-gray-light sm:text-base">
-            {product.price}
-            {currencySign}
+            {priceString}
           </p>
         </div>
       </Link>
