@@ -10,8 +10,6 @@ import { fetchProducts, Product } from '@/pages/[locale]';
 import { getI18nProps } from '@/lib/getStatic';
 import i18nextConfig from '../../../../next-i18next.config';
 import { sendGTMEvent } from '@next/third-parties/google';
-import { Metadata, ResolvingMetadata } from 'next';
-import { Props } from 'next/script';
 import Head from 'next/head';
 
 export default function ProductPage({ product }: { product: Product }) {

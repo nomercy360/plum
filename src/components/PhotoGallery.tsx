@@ -1,39 +1,11 @@
-import { useEffect, useState } from 'react';
 import ExportedImage from 'next-image-export-optimizer';
+import EmblaCarousel from '@/components/Carousel';
 
 export default function PhotoGallery(props: { images: string[] }) {
-  const [isMobile, setIsMobile] = useState(false);
-  const [activeIndex, setActiveIndex] = useState(0);
-
-  useEffect(() => {
-    setIsMobile(window.innerWidth < 768);
-    window.addEventListener('resize', () => {
-      setIsMobile(window.innerWidth < 768);
-    });
-  }, []);
-
   return (
     <div className="max-w-full">
-      <div
-        className="relative flex w-full flex-col items-center justify-end sm:hidden"
-        onClick={() => {
-          setActiveIndex(prevIndex => (prevIndex + 1) % props.images.length);
-        }}
-      >
-        <ExportedImage
-          alt="Product Image"
-          width={740}
-          priority={true}
-          height={1040}
-          className="size-full rounded-lg object-cover"
-          src={props.images[activeIndex]}
-        />
-        <div className="absolute z-10 my-5 flex items-center justify-center gap-2">
-          {props.images.length > 1 &&
-            props.images.map((image, index) => (
-              <div key={image} className={`h-2 w-2 rounded-full bg-white ${index === activeIndex ? 'bg-black' : ''}`} />
-            ))}
-        </div>
+      <div className="relative flex w-full flex-col items-center justify-end sm:hidden">
+        <EmblaCarousel slides={props.images} options={{ loop: false }} />
       </div>
       <div className="hidden gap-4 sm:flex">
         {props.images.length === 1 ? (
