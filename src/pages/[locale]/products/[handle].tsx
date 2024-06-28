@@ -107,7 +107,8 @@ export default function ProductPage({ product }: { product: Product }) {
         <div className="mt-4 flex max-w-[1440px] flex-col gap-10 px-5 sm:mt-14 sm:flex-row sm:px-14">
           {product.images && <PhotoGallery images={product.images} />}
           <div className="flex w-full flex-col items-start text-start text-black sm:w-[360px] sm:min-w-[360px]">
-            <div className="mb-3 flex h-6 items-center justify-center rounded-full bg-violet/10 px-2 pt-px text-xs uppercase tracking-wide text-violet">
+            <div
+              className="mb-3 flex h-6 items-center justify-center rounded-full bg-violet/10 px-2 pt-px text-xs uppercase tracking-wide text-violet">
               {availability &&
                 availability > 1 &&
                 availability < 3 &&
@@ -116,7 +117,8 @@ export default function ProductPage({ product }: { product: Product }) {
               {availability && availability > 2 && t('inStock')}
             </div>
             <p className="mb-1 text-lg text-black sm:text-xl">{product.name} </p>
-            <p className="text-sm text-gray-light sm:text-base">{product.description}</p>
+            <p className="mb-1 text-sm text-gray-light sm:text-base">{product.description}</p>
+            <p className="text-sm text-gray-light sm:text-base">{product.materials}</p>
             <div className="mt-5 flex h-9 w-full flex-row items-center justify-between sm:h-10">
               <div className="flex flex-row items-center justify-start gap-1 text-xs sm:text-base">
                 {product.variants.map(variant => (
@@ -139,7 +141,8 @@ export default function ProductPage({ product }: { product: Product }) {
                   {!isVariantInCart && <p className="text-white">{priceString}</p>}
                 </button>
               ) : (
-                <div className="flex h-11 min-w-[140px] flex-row items-center justify-between gap-2 rounded-full bg-light-green px-3.5 text-base text-white">
+                <div
+                  className="flex h-11 min-w-[140px] flex-row items-center justify-between gap-2 rounded-full bg-light-green px-3.5 text-base text-white">
                   <p className="text-white">{t('added')}</p>
                   <p className="text-white">
                     {product.price}

@@ -6,8 +6,6 @@ import Link from '@/components/Link';
 
 import ExportedImage from 'next-image-export-optimizer';
 import SubscribeForm from '@/components/SubscribeForm';
-import { useContext } from 'react';
-import { LocaleContext } from '@/context/locale-provider';
 import Navbar from '@/components/Navbar';
 import Head from 'next/head';
 
@@ -15,6 +13,7 @@ export type Product = {
   id: number;
   handle: string;
   name: string;
+  materials: string;
   description: string;
   variants: {
     id: number;
