@@ -187,14 +187,14 @@ const CartProvider = ({ children }: { children: React.ReactNode }) => {
 
   const applyDiscount = async (code: string) => {
     if (code === '') {
-      const resp = await fetchAPI({ endpoint: `cart/${cart.id}/discounts`, method: 'DELETE' });
+      const resp = await fetchAPI({ endpoint: `cart/${cart.id}/discounts`, method: 'DELETE', locale: currentLanguage });
       const data = await resp.json();
 
       if (resp.ok) {
         setCart(() => data);
       }
     } else {
-      const resp = await fetchAPI({ endpoint: `cart/${cart.id}/discounts`, method: 'POST', body: { code } });
+      const resp = await fetchAPI({ endpoint: `cart/${cart.id}/discounts`, method: 'POST', body: { code }, locale: currentLanguage });
       const data = await resp.json();
 
       if (resp.ok && data.discount) {

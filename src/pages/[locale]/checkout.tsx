@@ -106,7 +106,7 @@ export default function Checkout() {
 
   useEffect(() => {
     if (cart.count > 0) {
-      sendGTMEvent({
+      window.dataLayer.push({
         event: 'view_cart',
         ecommerce: {
           currency: cart.currency_code,
@@ -118,7 +118,7 @@ export default function Checkout() {
 
   async function toDeliveryInfo() {
     setStep('deliveryInfo');
-    sendGTMEvent({
+    window.dataLayer.push({
       event: 'begin_checkout',
       ecommerce: {
         currency: cart.currency_code,
@@ -147,7 +147,7 @@ export default function Checkout() {
     const resp = await checkoutRequest(order, currentLanguage);
     // get payment_link and redirect to it in new tab
 
-    sendGTMEvent({
+    window.dataLayer.push({
       event: 'add_payment_info',
       payment_type: 'Credit Card',
       ecommerce: {
@@ -207,7 +207,7 @@ export default function Checkout() {
     if (item) {
       updateCartItem(product.id, item.quantity - 1);
       // push to gtm
-      sendGTMEvent({
+      window.dataLayer.push({
         event: 'remove_from_cart',
         ecommerce: {
           currency: cart.currency_code,
@@ -232,7 +232,7 @@ export default function Checkout() {
     if (item) {
       updateCartItem(product.id, item.quantity + 1);
       // push to gtm
-      sendGTMEvent({
+      window.dataLayer.push({
         event: 'add_to_cart',
         ecommerce: {
           currency: cart.currency_code,

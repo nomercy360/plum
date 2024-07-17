@@ -63,7 +63,7 @@ function SuccessOrder() {
         setLoading(false);
 
         if (order.payment_status === 'paid') {
-          sendGTMEvent({
+          window.dataLayer.push({
             event: 'purchase',
             affiliation: 'Online Store',
             transaction_id: order.payment_id,

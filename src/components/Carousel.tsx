@@ -59,7 +59,7 @@ const EmblaCarousel = (props: { slides: string[]; options: any }) => {
         <div className="embla__container gap-2">
           {slides.map(index => (
             <div className="embla__slide" key={index}>
-              <ExportedImage src={index} width={740} height={1040} alt="" className="w-full aspect-[5/7] rounded-lg object-cover" />
+              <ExportedImage src={index} width={360} height={640} alt="" className="w-full aspect-[5/7] rounded-lg object-cover" />
             </div>
           ))}
         </div>

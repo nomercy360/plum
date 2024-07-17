@@ -28,7 +28,7 @@ export default function ProductPage({ product }: { product: Product }) {
     addToCart(item);
     setWasAddedToCart(true);
 
-    sendGTMEvent({
+    window.dataLayer.push({
       event: 'add_to_cart',
       ecommerce: {
         currency: product.currency_code,
@@ -61,7 +61,7 @@ export default function ProductPage({ product }: { product: Product }) {
   };
 
   useEffect(() => {
-    sendGTMEvent({
+    window.dataLayer.push({
       event: 'view_item',
       ecommerce: {
         currency: product.currency_code,
