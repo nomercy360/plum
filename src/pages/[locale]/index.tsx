@@ -40,6 +40,14 @@ export default function Home({ products }: { products: Product[] }) {
   const productsFourthSection = products[9];
   // next 4
   const productsFifthSection = products.slice(10, 14);
+  // next 4
+  const productsSixthSection = products.slice(14, 18);
+  // next 4
+  const productsSeventhSection = products.slice(18, 22);
+  // next 1
+  const productsEighthSection = products[22];
+  // next 4
+  const productsNinthSection = products.slice(23, 27);
 
   return (
     <div>
@@ -60,6 +68,22 @@ export default function Home({ products }: { products: Product[] }) {
           <ProductCard product={productsFourthSection} />
           <div className="grid grid-cols-2 gap-10">
             {productsFifthSection.map(product => (
+              <ProductCard key={product.id} product={product} />
+            ))}
+          </div>
+          <div className="col-span-2 grid grid-cols-4 gap-10">
+            {productsSixthSection.map(product => (
+              <ProductCard key={product.id} product={product} />
+            ))}
+          </div>
+          <div className="grid grid-cols-2 gap-10">
+            {productsSeventhSection.map(product => (
+              <ProductCard key={product.id} product={product} />
+            ))}
+          </div>
+          <ProductCard product={productsEighthSection} />
+          <div className="col-span-2 grid grid-cols-4 gap-10">
+            {productsNinthSection.map(product => (
               <ProductCard key={product.id} product={product} />
             ))}
           </div>
@@ -84,7 +108,8 @@ export default function Home({ products }: { products: Product[] }) {
 }
 
 function ProductCard({ product }: { product: Product }) {
-  const priceString = product.currency_code === 'USD' ? `$${product.price}` : `${product.price} ${product.currency_symbol}`;
+  const priceString =
+    product.currency_code === 'USD' ? `$${product.price}` : `${product.price} ${product.currency_symbol}`;
 
   return (
     <>
@@ -104,9 +129,7 @@ function ProductCard({ product }: { product: Product }) {
         />
         <div>
           <p className="mb-1 mt-2 text-sm sm:mt-3 sm:text-base">{product.name}</p>
-          <p className="text-xs text-gray-light sm:text-base">
-            {priceString}
-          </p>
+          <p className="text-xs text-gray-light sm:text-base">{priceString}</p>
         </div>
       </Link>
     </>
