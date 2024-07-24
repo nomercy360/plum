@@ -128,37 +128,41 @@ export default function Checkout() {
   }
 
   const placeOrder = async () => {
-    setIsFormLoading(true);
+    try {
+      const order = {
+        name,
+        email,
+        address,
+        country,
+        zip,
+        phone,
+        provider: 'bepaid',
+        cart_id: cart.id,
+        metadata: {
+          measurements,
+        },
+      };
 
-    const order = {
-      name,
-      email,
-      address,
-      country,
-      zip,
-      phone,
-      provider: 'bepaid',
-      cart_id: cart.id,
-      metadata: {
-        measurements,
-      },
-    };
+      const resp = await checkoutRequest(order, currentLanguage);
+      // get payment_link and redirect to it in new tab
 
-    const resp = await checkoutRequest(order, currentLanguage);
-    // get payment_link and redirect to it in new tab
+      window.dataLayer.push({
+        event: 'add_payment_info',
+        payment_type: 'Credit Card',
+        ecommerce: {
+          currency: cart.currency_code,
+          items: cartItemsToGTM(cart.items),
+        },
+      });
 
-    window.dataLayer.push({
-      event: 'add_payment_info',
-      payment_type: 'Credit Card',
-      ecommerce: {
-        currency: cart.currency_code,
-        items: cartItemsToGTM(cart.items),
-      },
-    });
+      window.open(resp.payment_link, '_blank');
+    } catch (error) {
+      console.error('Error placing order:', error);
+    } finally {
+      setIsFormLoading(false);
+    }
 
     setIsFormLoading(false);
-
-    window.open(resp.payment_link, '_blank');
   };
 
   const [measurements, setMeasurements] = useState<Measurements>({} as Measurements);
@@ -386,7 +390,7 @@ export default function Checkout() {
                         type="text"
                         autoComplete="name"
                         value={name}
-                        onInput={e => setName(e.currentTarget.value)}
+                        onChange={e => setName(e.currentTarget.value)}
                       />
                       <input
                         className="h-11 w-full rounded-lg bg-gray px-3 text-sm placeholder:text-dark-gray focus:outline-neutral-200 sm:text-base"
@@ -394,7 +398,7 @@ export default function Checkout() {
                         type="email"
                         autoComplete="email"
                         value={email}
-                        onInput={e => setEmail(e.currentTarget.value)}
+                        onChange={e => setEmail(e.currentTarget.value)}
                       />
                       <input
                         className="h-11 w-full rounded-lg bg-gray px-3 text-sm placeholder:text-dark-gray focus:outline-neutral-200 sm:text-base"
@@ -402,7 +406,7 @@ export default function Checkout() {
                         autoComplete="tel"
                         placeholder={t('phone')}
                         value={phone}
-                        onInput={e => setPhone(e.currentTarget.value)}
+                        onChange={e => setPhone(e.currentTarget.value)}
                       />
                       <div className="flex w-full flex-row items-center justify-start rounded-lg bg-gray">
                         <select
@@ -424,7 +428,7 @@ export default function Checkout() {
                           autoComplete="street-address"
                           className="h-11 w-full bg-transparent px-3 text-sm placeholder:text-dark-gray focus:outline-neutral-200 sm:text-base"
                           placeholder={t('address')}
-                          onInput={e => setAddress(e.currentTarget.value)}
+                          onChange={e => setAddress(e.currentTarget.value)}
                         />
                         <div className="h-8 w-0.5 bg-dark-gray"></div>
                         <input
@@ -432,7 +436,7 @@ export default function Checkout() {
                           autoComplete="postal-code"
                           className="h-11 w-24 bg-transparent px-3 text-sm placeholder:text-dark-gray focus:outline-neutral-200 sm:text-base"
                           placeholder={t('zip')}
-                          onInput={e => setZip(e.currentTarget.value)}
+                          onChange={e => setZip(e.currentTarget.value)}
                         />
                       </div>
                     </form>
