@@ -118,13 +118,6 @@ export default function Checkout() {
 
   async function toDeliveryInfo() {
     setStep('deliveryInfo');
-    window.dataLayer.push({
-      event: 'begin_checkout',
-      ecommerce: {
-        currency: cart.currency_code,
-        items: cartItemsToGTM(cart.items),
-      },
-    });
   }
 
   const placeOrder = async () => {
@@ -156,9 +149,17 @@ export default function Checkout() {
       },
     });
 
+    window.dataLayer.push({
+      event: 'begin_checkout',
+      ecommerce: {
+        currency: cart.currency_code,
+        items: cartItemsToGTM(cart.items),
+      },
+    });
+
     setIsFormLoading(false);
 
-    window.open(resp.payment_link, '_blank');
+    window.location.href = resp.payment_link;
   };
 
   const [measurements, setMeasurements] = useState<Measurements>({} as Measurements);

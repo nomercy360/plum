@@ -124,8 +124,8 @@ function ProductCard({ product }: { product: Product }) {
           alt=""
           className="aspect-[5/7] w-full rounded-lg object-cover sm:size-full"
           src={product.image}
-          width={370}
-          height={520}
+          width={700}
+          height={1200}
         />
         <div>
           <p className="mb-1 mt-2 text-sm sm:mt-3 sm:text-base">{product.name}</p>
