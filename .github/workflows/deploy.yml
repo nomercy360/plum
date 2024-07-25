@@ -34,6 +34,7 @@ jobs:
         run: |
           echo "$SSH_PRIVATE_KEY" > private_key
           chmod 600 private_key
+          mkdir -p ~/.ssh
           ssh-keyscan -H 185.244.50.122 >> ~/.ssh/known_hosts
           
           if [ "${{ github.ref }}" == "refs/heads/test" ]; then
