@@ -1,0 +1,52 @@
+name: Deploy
+
+on:
+  push:
+    branches:
+      - test
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install pnpm
+        run: npm install -g pnpm
+
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Build project
+        run: pnpm run build
+
+      - name: Deploy to server
+        env:
+          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+        run: |
+          echo "$SSH_PRIVATE_KEY" > private_key
+          chmod 600 private_key
+          mkdir -p ~/.ssh
+          ssh-keyscan -H 185.244.50.122 >> ~/.ssh/known_hosts
+          
+          if [ "${{ github.ref }}" == "refs/heads/test" ]; then
+            DEPLOY_PATH="/app/test"
+          elif [ "${{ github.ref }}" == "refs/heads/main" ]; then
+            DEPLOY_PATH="/app/frontend"
+          else
+            echo "Unknown branch. Skipping deployment."
+            exit 0
+          fi
+          
+          rsync -avz --compress-level=9 --partial --progress --inplace -e "ssh -i private_key" out/ root@185.244.50.122:$DEPLOY_PATH
+
+      - name: Clean up
+        run: rm -f private_key

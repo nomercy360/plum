@@ -118,13 +118,6 @@ export default function Checkout() {
 
   async function toDeliveryInfo() {
     setStep('deliveryInfo');
-    window.dataLayer.push({
-      event: 'begin_checkout',
-      ecommerce: {
-        currency: cart.currency_code,
-        items: cartItemsToGTM(cart.items),
-      },
-    });
   }
 
   useEffect(() => {
@@ -192,12 +185,8 @@ export default function Checkout() {
 
       const resp = await checkoutRequest(order, currentLanguage);
       // get payment_link and redirect to it in new tab
-      console.log(resp);
-
-
       window.dataLayer.push({
-        event: 'add_payment_info',
-        payment_type: 'Credit Card',
+        event: 'begin_checkout',
         ecommerce: {
           currency: cart.currency_code,
           items: cartItemsToGTM(cart.items),
@@ -211,7 +200,7 @@ export default function Checkout() {
       if (token) {
         payment(token, order, currentLanguage, 'BYN')
       }
-
+      // window.location.href = resp.payment_link;
       // window.open(resp.payment_link, '_blank');
     } catch (error) {
       setIsFormLoading(false);
