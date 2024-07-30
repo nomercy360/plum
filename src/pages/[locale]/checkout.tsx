@@ -127,8 +127,55 @@ export default function Checkout() {
     });
   }
 
+  useEffect(() => {
+    const script = document.createElement('script');
+    script.src = 'https://js.bepaid.by/widget/be_gateway.js';
+    script.defer = true;
+    document.body.appendChild(script);
+
+    return () => {
+      document.body.removeChild(script);
+    };
+  }, []);
+
+  const payment = function (token: string, order, language: string, currency: string) {
+    const params = {
+      checkout_url: "https://checkout.bepaid.by",
+      token: token,
+      checkout: {
+        iframe: true,
+        test: false,
+        transaction_type: "payment",
+        public_key: "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAlBmg1g0vF2sRUQTG85TrS083LN+TIpY3QnSRRjDHb/w6YuB2vitnVpmec3WSSCRzgWBfler0mWtpZk6NQ+FJVg6iSx1wGWxCVq21Rq99/VvrVUXBt/WgLuBzWFj4AeAOh9sp+Q/uYSxKq60E1aR0xXo7RLI5NWN9UDGLshoeaF4Lq4o7DuvUb3zNkk1F5rihdU/T5WvaJ8/C3XV8u2BmsX2NR2rteNZ4FOCTEfCLANDtAikSZwArdYZYdulmEE7DTlZlvBaup7N7u99K+C9/H2exBanhtWA2C/m1zXMINc2nPMF0I4Q1kU2Ryn93kqy3qP/PhNVRXmBZ8KBkHBtjkQIDAQAB",
+        order: {
+          amount: 100 * cart.total,
+          currency: currency,
+          description: JSON.stringify(cart.items),
+          tracking_id: cart.id
+        },
+        settings: {
+          language: language,
+          style: {
+            widget: {
+              backgroundColor: '#262626',
+              buttonsColor: '#262626',
+              backgroundType: 2
+            },
+          }
+        },
+        customer: order,
+      },
+      closeWidget: function (status) {
+        console.debug('close widget callback')
+      }
+    };
+
+    return new window.BeGateway(params).createWidget();
+  };
+
   const placeOrder = async () => {
     try {
+      setIsFormLoading(true);
       const order = {
         name,
         email,
@@ -145,6 +192,8 @@ export default function Checkout() {
 
       const resp = await checkoutRequest(order, currentLanguage);
       // get payment_link and redirect to it in new tab
+      console.log(resp);
+
 
       window.dataLayer.push({
         event: 'add_payment_info',
@@ -155,14 +204,21 @@ export default function Checkout() {
         },
       });
 
-      window.open(resp.payment_link, '_blank');
+      const url = new URL(resp.payment_link);
+      const params = new URLSearchParams(url.search);
+      const token = params.get('token');
+
+      if (token) {
+        payment(token, order, currentLanguage, 'BYN')
+      }
+
+      // window.open(resp.payment_link, '_blank');
     } catch (error) {
+      setIsFormLoading(false);
       console.error('Error placing order:', error);
     } finally {
       setIsFormLoading(false);
     }
-
-    setIsFormLoading(false);
   };
 
   const [measurements, setMeasurements] = useState<Measurements>({} as Measurements);
