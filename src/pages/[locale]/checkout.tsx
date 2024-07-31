@@ -131,7 +131,7 @@ export default function Checkout() {
     };
   }, []);
 
-  const payment = function (token: string, order, language: string, currency: string) {
+  const payment = function (token: string, order: any, language: string, currency: string) {
     const params = {
       checkout_url: "https://checkout.bepaid.by",
       token: token,
@@ -158,7 +158,7 @@ export default function Checkout() {
         },
         customer: order,
       },
-      closeWidget: function (status) {
+      closeWidget: function (status: any) {
         console.debug('close widget callback')
       }
     };
