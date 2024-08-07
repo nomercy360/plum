@@ -119,6 +119,12 @@ export default function Checkout() {
     }
   }, [cart]);
 
+  useEffect(() => {
+    if (cart.customer?.email) {
+      setEmail(cart.customer.email);
+    }
+  }, [cart.customer]);
+
   async function toDeliveryInfo() {
     // update cart with email
     saveCartCustomer(email);
@@ -136,7 +142,7 @@ export default function Checkout() {
     };
   }, []);
 
-  const payment = function (token: string, order: any, language: string, currency: string) {
+  const payment = function(token: string, order: any, language: string, currency: string) {
     const params = {
       checkout_url: 'https://checkout.bepaid.by',
       token: token,
@@ -161,7 +167,7 @@ export default function Checkout() {
           },
         },
       },
-      closeWidget: function (status: any) {
+      closeWidget: function(status: any) {
         console.debug('close widget callback');
       },
     };
@@ -321,7 +327,8 @@ export default function Checkout() {
           <div>
             <NavbarCart />
             <main className="mt-8 flex w-full items-start justify-center">
-              <div className="flex h-[calc(100vh-112px)] min-h-[calc(100vh-112px)] w-full max-w-2xl flex-col bg-white pb-10 sm:rounded-t-xl">
+              <div
+                className="flex h-[calc(100vh-112px)] min-h-[calc(100vh-112px)] w-full max-w-2xl flex-col bg-white pb-10 sm:rounded-t-xl">
                 {step == 'bag' && (
                   <div className="flex h-full w-full flex-col items-center justify-between">
                     <div className="w-full">
@@ -426,7 +433,8 @@ export default function Checkout() {
                   </div>
                 )}
                 {step == 'deliveryInfo' && (
-                  <div className="flex flex-col items-center rounded-t-xl bg-white pb-10 text-center sm:items-start sm:text-start">
+                  <div
+                    className="flex flex-col items-center rounded-t-xl bg-white pb-10 text-center sm:items-start sm:text-start">
                     <p className="mb-2 px-5 pt-5 text-lg text-black sm:text-xl">{t('addDeliveryInfo')}</p>
                     <p className="mb-8 px-5 text-sm leading-snug text-gray-light">{t('addDeliveryInfoDescription')}</p>
                     <form
@@ -475,14 +483,6 @@ export default function Checkout() {
                           placeholder={t('address')}
                           onChange={e => setAddress(e.currentTarget.value)}
                         />
-                        <div className="h-8 w-0.5 bg-dark-gray"></div>
-                        <input
-                          type="text"
-                          autoComplete="postal-code"
-                          className="h-11 w-24 bg-transparent px-3 text-sm placeholder:text-dark-gray focus:outline-neutral-200 sm:text-base"
-                          placeholder={t('zip')}
-                          onChange={e => setZip(e.currentTarget.value)}
-                        />
                       </div>
                     </form>
                     <Divider></Divider>
@@ -509,7 +509,8 @@ export default function Checkout() {
                 )}
 
                 {step == 'measurements' && (
-                  <div className="flex flex-col items-center rounded-t-xl bg-white px-5 pt-5 text-center sm:items-start sm:text-start">
+                  <div
+                    className="flex flex-col items-center rounded-t-xl bg-white px-5 pt-5 text-center sm:items-start sm:text-start">
                     <p className="mb-2 text-lg text-black sm:text-xl">{t('addMeasurements')}</p>
                     <p className="mb-8 max-w-xs text-sm leading-snug text-gray-light sm:max-w-4xl">
                       {t('addMeasurementsDescription2')}
@@ -562,7 +563,8 @@ export default function Checkout() {
                         onInput={e => updateMeasurements('hips', e.currentTarget.value)}
                       />
                     </div>
-                    <div className="mt-10 flex w-full max-w-[220px] flex-col items-center justify-between gap-4 sm:max-w-none sm:flex-row sm:gap-0">
+                    <div
+                      className="mt-10 flex w-full max-w-[220px] flex-col items-center justify-between gap-4 sm:max-w-none sm:flex-row sm:gap-0">
                       <button
                         className="h-11 w-full rounded-3xl bg-gray text-black sm:w-24"
                         onClick={() => afterMeasurements(false)}
