@@ -35,6 +35,8 @@ const config: Config = {
         blue: '#00C8FC',
         yellow: '#FFC700',
         red: '#FF0031',
+        'lighter-gray': '#EBEBEB',
+        'light-gray': '#BCBCBC',
       },
     },
     screens: {

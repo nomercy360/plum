@@ -6,8 +6,8 @@
   "addMeasurements": "Подшить под размеры",
   "measurementsAddedDescription": "Мы сшьем одежду идеально по вашему размеру",
   "addMeasurementsDescription": "Укажите свои размеры и платье сядет идеально. Это Бесплатно",
-  "discountApplied": "скидка применена",
-  "continue": "Продолжить",
+  "discountApplied": "Скидка {{discount}} применена с промокодом {{code}}",
+  "continue": "Перейти к оформлению",
   "yourBag": "за {{total}} {{ending}}",
   "emptyCart": "Корзина пуста",
   "checkout": "К оплате • ",
@@ -45,5 +45,8 @@
   "chest": "Обхват груди, см",
   "waist": "Обхват талии, см",
   "hips": "Обхват бедер, см",
-  "invalidPromoCode": "Промо не найден"
+  "invalidPromoCode": "Похоже, вы ввели неправильный код.",
+  "discountSaved": "Вы экономите {{discount}}",
+  "worldwideShipping": "Международная доставка от 10 долларов.",
+  "worldwideShippingDescription": "Точную стоимость мы рассчитаем на следующем шаге"
 }

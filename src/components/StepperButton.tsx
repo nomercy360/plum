@@ -6,7 +6,7 @@ export default function StepperButton(props: { onIncrease: () => void; onDecreas
       <button className="flex h-8 w-full items-center justify-center" onClick={props.onDecrease}>
         <Icons.minus className="h-[20px] w-[16px]" />
       </button>
-      <div className="h-[18px] w-px rounded bg-[#EBEBEB]" />
+      <div className="bg-lighter-gray h-[18px] w-px rounded" />
       <button className="flex h-8 w-full items-center justify-center" onClick={props.onIncrease}>
         <Icons.plus className="h-[20px] w-[16px]" />
       </button>

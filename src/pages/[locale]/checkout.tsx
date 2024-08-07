@@ -58,20 +58,20 @@ const priceString = (currencySymbol: string, price: number) =>
   currencySymbol === '$' ? `$${price}` : `${price} ${currencySymbol}`;
 
 export default function Checkout() {
-  const { cart, getCartItems, clearCart, updateCartItem, applyDiscount } = useContext(CartContext);
+  const { cart, getCartItems, clearCart, updateCartItem, applyDiscount, saveCartCustomer } = useContext(CartContext);
 
   const { currentLanguage } = useContext(LocaleContext);
 
   const { t } = useTranslation(['checkout', 'common']);
 
   const [promoCode, setPromoCode] = useState('');
-  const [promoStatus, setPromoStatus] = useState<'success' | 'error' | 'idle' | 'fetching'>('idle');
+  const [promoStatus, setPromoStatus] = useState<'error' | 'idle' | 'fetching'>('idle');
 
   const fetchDiscount = async () => {
     setPromoStatus('fetching');
     try {
       await applyDiscount(promoCode);
-      setPromoStatus('success');
+      setPromoStatus('idle');
     } catch (e) {
       setPromoStatus('error');
     }
@@ -92,17 +92,20 @@ export default function Checkout() {
   const [step, setStep] = useState<'bag' | 'deliveryInfo' | 'measurements'>('bag');
 
   const [isFormValid, setIsFormValid] = useState(false);
+  const [isEmailValid, setIsEmailValid] = useState(false);
   const [isFormLoading, setIsFormLoading] = useState(false);
 
   const router = useRouter();
 
   useEffect(() => {
-    const isValidEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-
-    const isValid = name !== '' && address !== '' && country !== '' && zip !== '' && phone !== '' && isValidEmail;
-
+    const isValid = name !== '' && address !== '' && country !== '' && zip !== '' && phone !== '';
     setIsFormValid(isValid);
-  }, [name, email, address, country, zip, phone]);
+  }, [name, address, country, zip, phone]);
+
+  useEffect(() => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    setIsEmailValid(emailRegex.test(email));
+  }, [email]);
 
   useEffect(() => {
     if (cart.count > 0) {
@@ -117,6 +120,8 @@ export default function Checkout() {
   }, [cart]);
 
   async function toDeliveryInfo() {
+    // update cart with email
+    saveCartCustomer(email);
     setStep('deliveryInfo');
   }
 
@@ -133,17 +138,17 @@ export default function Checkout() {
 
   const payment = function (token: string, order: any, language: string, currency: string) {
     const params = {
-      checkout_url: "https://checkout.bepaid.by",
+      checkout_url: 'https://checkout.bepaid.by',
       token: token,
       checkout: {
         iframe: true,
         test: false,
-        transaction_type: "payment",
+        transaction_type: 'payment',
         order: {
           amount: 100 * order.total,
           currency: currency,
           description: JSON.stringify(order.items),
-          tracking_id: order.id
+          tracking_id: order.id,
         },
         settings: {
           language: language,
@@ -151,14 +156,14 @@ export default function Checkout() {
             widget: {
               backgroundColor: '#262626',
               buttonsColor: '#262626',
-              backgroundType: 2
+              backgroundType: 2,
             },
-          }
+          },
         },
       },
       closeWidget: function (status: any) {
-        console.debug('close widget callback')
-      }
+        console.debug('close widget callback');
+      },
     };
 
     return new window.BeGateway(params).createWidget();
@@ -196,7 +201,7 @@ export default function Checkout() {
       const token = params.get('token');
 
       if (token) {
-        payment(token, resp.order, currentLanguage, 'BYN')
+        payment(token, resp.order, currentLanguage, 'BYN');
       }
       // window.location.href = resp.payment_link;
       // window.open(resp.payment_link, '_blank');
@@ -316,13 +321,14 @@ export default function Checkout() {
           <div>
             <NavbarCart />
             <main className="mt-8 flex w-full items-start justify-center">
-              <div
-                className="flex h-[calc(100vh-100px)] min-h-[calc(100vh-100px)] w-full max-w-2xl flex-col bg-white pb-10 sm:h-full sm:rounded-t-xl">
+              <div className="flex h-[calc(100vh-112px)] min-h-[calc(100vh-112px)] w-full max-w-2xl flex-col bg-white pb-10 sm:rounded-t-xl">
                 {step == 'bag' && (
-                  <div className="flex h-full w-full flex-col justify-between sm:justify-start">
-                    <div>
+                  <div className="flex h-full w-full flex-col items-center justify-between">
+                    <div className="w-full">
                       <div className="flex flex-row items-center justify-between px-5 pt-5">
-                        <p className="text-lg sm:text-xl">{getTranslation('yourBag', cart.count)}</p>
+                        <p className="text-lg uppercase sm:text-xl">
+                          {priceString(cart.currency_symbol, cart.total)} {getTranslation('yourBag', cart.count)}
+                        </p>
                         <button className="h-8 text-gray-light" onClick={() => clearCart()}>
                           {t('clearCart')}
                         </button>
@@ -377,10 +383,26 @@ export default function Checkout() {
                             <Icons.arrowRight className="h-3 w-2.5" />
                           </div>
                         </button>
+                        <div className="flex flex-row items-center justify-start gap-3">
+                          <div className="flex size-10 shrink-0 items-center justify-center rounded-full bg-gray">
+                            <Icons.box className="size-6" />
+                          </div>
+                          <div>
+                            <p className="text-sm sm:text-base">{t('worldwideShipping')}</p>
+                            <p className="mt-0.5 text-xs text-gray-light">{t('worldwideShippingDescription')}</p>
+                          </div>
+                        </div>
                       </div>
-                    </div>
-                    <div>
-                      <div className="block px-5 pb-6 sm:hidden">
+                      <Divider></Divider>
+                      <div className="flex w-full flex-col items-center gap-4 px-5">
+                        <input
+                          className="h-11 w-full rounded-lg bg-gray px-3 text-sm placeholder:text-dark-gray focus:outline-neutral-200 sm:text-base"
+                          placeholder={t('email')}
+                          type="email"
+                          autoComplete="email"
+                          value={email}
+                          onChange={e => setEmail(e.currentTarget.value)}
+                        />
                         <PromoCode
                           promoCode={promoCode}
                           setPromoCode={(value: string) => updatePromoCode(value)}
@@ -389,34 +411,22 @@ export default function Checkout() {
                           clearPromoCode={clearPromoCode}
                         />
                       </div>
-                      <Divider></Divider>
-                      <TotalCostInfo measurementFilled={isMeasurementsFilled()} t={t} cart={cart} />
-                      <div
-                        className="mt-10 flex w-full flex-col items-end justify-between gap-5 px-5 sm:flex-row sm:justify-start">
-                        <div className="hidden w-full sm:block">
-                          <PromoCode
-                            promoCode={promoCode}
-                            setPromoCode={(value: string) => updatePromoCode(value)}
-                            fetchDiscount={fetchDiscount}
-                            fetchStatus={promoStatus}
-                            clearPromoCode={clearPromoCode}
-                          />
-                        </div>
-                        <button
-                          className="h-11 w-full flex-shrink-0 rounded-3xl bg-black text-white sm:w-56"
-                          onClick={() => toDeliveryInfo()}
-                          disabled={!cart.total}
-                        >
-                          {t('continue')} •{' '}
-                          <span className="text-gray">{priceString(cart.currency_symbol, cart.total)}</span>
-                        </button>
-                      </div>
+                    </div>
+                    <div className="flex w-full max-w-md flex-col items-center justify-center gap-5 text-center">
+                      <button
+                        className="flex h-11 w-full flex-row items-center justify-between rounded-3xl bg-black px-4 text-white disabled:cursor-not-allowed disabled:opacity-35 sm:w-[280px]"
+                        onClick={() => toDeliveryInfo()}
+                        disabled={!isEmailValid}
+                      >
+                        {t('continue')}
+                        <span className="text-gray">{priceString(cart.currency_symbol, cart.total)}</span>
+                      </button>
+                      <TermsAndConditions t={t} />
                     </div>
                   </div>
                 )}
                 {step == 'deliveryInfo' && (
-                  <div
-                    className="flex flex-col items-center rounded-t-xl bg-white pb-10 text-center sm:items-start sm:text-start">
+                  <div className="flex flex-col items-center rounded-t-xl bg-white pb-10 text-center sm:items-start sm:text-start">
                     <p className="mb-2 px-5 pt-5 text-lg text-black sm:text-xl">{t('addDeliveryInfo')}</p>
                     <p className="mb-8 px-5 text-sm leading-snug text-gray-light">{t('addDeliveryInfoDescription')}</p>
                     <form
@@ -434,14 +444,6 @@ export default function Checkout() {
                         autoComplete="name"
                         value={name}
                         onChange={e => setName(e.currentTarget.value)}
-                      />
-                      <input
-                        className="h-11 w-full rounded-lg bg-gray px-3 text-sm placeholder:text-dark-gray focus:outline-neutral-200 sm:text-base"
-                        placeholder={t('email')}
-                        type="email"
-                        autoComplete="email"
-                        value={email}
-                        onChange={e => setEmail(e.currentTarget.value)}
                       />
                       <input
                         className="h-11 w-full rounded-lg bg-gray px-3 text-sm placeholder:text-dark-gray focus:outline-neutral-200 sm:text-base"
@@ -507,8 +509,7 @@ export default function Checkout() {
                 )}
 
                 {step == 'measurements' && (
-                  <div
-                    className="flex flex-col items-center rounded-t-xl bg-white px-5 pt-5 text-center sm:items-start sm:text-start">
+                  <div className="flex flex-col items-center rounded-t-xl bg-white px-5 pt-5 text-center sm:items-start sm:text-start">
                     <p className="mb-2 text-lg text-black sm:text-xl">{t('addMeasurements')}</p>
                     <p className="mb-8 max-w-xs text-sm leading-snug text-gray-light sm:max-w-4xl">
                       {t('addMeasurementsDescription2')}
@@ -561,8 +562,7 @@ export default function Checkout() {
                         onInput={e => updateMeasurements('hips', e.currentTarget.value)}
                       />
                     </div>
-                    <div
-                      className="mt-10 flex w-full max-w-[220px] flex-col items-center justify-between gap-4 sm:max-w-none sm:flex-row sm:gap-0">
+                    <div className="mt-10 flex w-full max-w-[220px] flex-col items-center justify-between gap-4 sm:max-w-none sm:flex-row sm:gap-0">
                       <button
                         className="h-11 w-full rounded-3xl bg-gray text-black sm:w-24"
                         onClick={() => afterMeasurements(false)}
@@ -593,29 +593,32 @@ const PromoCode = (props: {
   promoCode: string;
   setPromoCode: (value: string) => void;
   fetchDiscount: () => void;
-  fetchStatus: 'success' | 'error' | 'idle' | 'fetching';
+  fetchStatus: 'error' | 'idle' | 'fetching';
   clearPromoCode: () => void;
 }) => {
   const { t } = useTranslation('checkout');
   const { cart, applyDiscount } = useContext(CartContext);
 
   return (
-    <>
-      {!cart.discount ? (
-        <label>
-          {props.fetchStatus === 'error' && <p className="pt-1 text-sm text-red">{t('invalidPromoCode')}</p>}
+    <div className="w-full">
+      <label>
+        {!cart.discount ? (
           <div
-            className={`flex h-11 w-full flex-row items-center justify-between rounded-lg bg-gray pl-3 ${props.fetchStatus === 'error' ? 'border border-red' : ''}`}
+            className={`flex h-11 w-full flex-row items-center justify-between rounded-lg bg-gray px-3 ${props.fetchStatus === 'error' ? 'bg-red/5 text-red' : ''}`}
           >
             <input
-              className="w-full bg-transparent focus:outline-none"
+              className="h-full w-full bg-transparent focus:outline-none"
               placeholder={t('addPromoCode')}
               type="text"
               value={props.promoCode}
               onInput={e => props.setPromoCode(e.currentTarget.value)}
             />
             {props.fetchStatus === 'idle' ? (
-              <button className="pr-3" onClick={() => props.fetchDiscount()}>
+              <button
+                className="disabled:bg-lighter-gray h-6 rounded-xl bg-black px-3.5 text-center text-xs uppercase text-white disabled:cursor-not-allowed disabled:text-dark-gray"
+                onClick={() => props.fetchDiscount()}
+                disabled={!props.promoCode}
+              >
                 {t('apply')}
               </button>
             ) : (
@@ -630,21 +633,30 @@ const PromoCode = (props: {
               </div>
             )}
           </div>
-        </label>
-      ) : (
-        <div className="flex h-11 w-full flex-row items-center justify-between rounded-lg bg-light-green/10 px-3">
-          <div className="flex flex-row items-center justify-start gap-2.5">
-            <Icons.check className="size-4 fill-light-green text-light-green" />
-            <p className="text-sm text-light-green">
-              {cart.discount.value}% {t('discountApplied')}
-            </p>
+        ) : (
+          <div className="flex h-11 w-full flex-row items-center justify-between rounded-lg bg-light-green/10 px-3">
+            <div className="flex flex-row items-center justify-start gap-2.5">
+              <Icons.check className="size-4 fill-light-green text-light-green" />
+              <p className="text-sm text-light-green">
+                {t('discountSaved', { discount: priceString(cart.currency_symbol, cart.discount_amount) })}
+              </p>
+            </div>
+            <button className="text-light-green" onClick={() => applyDiscount()}>
+              <Icons.close className="size-4 fill-light-green" />
+            </button>
           </div>
-          <button className="text-light-green" onClick={() => applyDiscount('')}>
-            <Icons.close className="size-4 fill-light-green" />
-          </button>
-        </div>
-      )}
-    </>
+        )}
+        {props.fetchStatus === 'error' && <p className="pt-1 text-sm text-red">{t('invalidPromoCode')}</p>}
+        {cart.discount && (
+          <p className="pt-1 text-sm text-light-green">
+            {t('discountApplied', {
+              discount: cart.discount.value + '%',
+              code: cart.discount.code,
+            })}
+          </p>
+        )}
+      </label>
+    </div>
   );
 };
 
@@ -718,12 +730,18 @@ const TotalCostInfo = (props: { measurementFilled: boolean; t: any; cart: Cart }
         <p className="text-base text-black sm:text-lg">{props.t('total')}</p>
         <p className="text-base text-black sm:text-lg">{priceString(props.cart.currency_symbol, props.cart.total)}</p>
       </div>
-      <div className="flex w-full flex-row items-center justify-between">
-        <p className="text-start text-xs text-gray-light sm:text-center">{props.t('agree')}</p>
-        <Link href="/terms">
-          <Icons.infoCircle className="size-3.5 shrink-0" />
-        </Link>
-      </div>
+      <TermsAndConditions t={props.t} />
+    </div>
+  );
+};
+
+const TermsAndConditions = (props: { t: any }) => {
+  return (
+    <div className="flex w-full flex-row items-center justify-center gap-2">
+      <p className="text-start text-xs text-gray-light sm:text-center">{props.t('agree')}</p>
+      <Link href="/terms">
+        <Icons.infoCircle className="size-3.5 shrink-0" />
+      </Link>
     </div>
   );
 };

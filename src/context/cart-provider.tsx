@@ -45,10 +45,11 @@ interface ICart {
   cart: Cart;
   addToCart: (item: AddToCartItem) => void;
   updateCartItem: (id: number, quantity: number) => void;
-  applyDiscount: (code: string) => Promise<void>;
+  applyDiscount: (code?: string) => Promise<void>;
   clearCart: () => void;
   getCartItems: () => Array<CartItem>;
   restoreCart: () => void;
+  saveCartCustomer: (email: string) => void;
 }
 
 async function fetchAPI({
@@ -84,6 +85,7 @@ export const CartContext = createContext<ICart>({
   clearCart: () => {},
   getCartItems: () => [],
   restoreCart: () => {},
+  saveCartCustomer: () => {},
 });
 
 const CartProvider = ({ children }: { children: React.ReactNode }) => {
@@ -185,8 +187,8 @@ const CartProvider = ({ children }: { children: React.ReactNode }) => {
     localStorage.removeItem('plum-restore-cart-id');
   };
 
-  const applyDiscount = async (code: string) => {
-    if (code === '') {
+  const applyDiscount = async (code?: string) => {
+    if (code == undefined) {
       const resp = await fetchAPI({ endpoint: `cart/${cart.id}/discounts`, method: 'DELETE', locale: currentLanguage });
       const data = await resp.json();
 
@@ -194,7 +196,12 @@ const CartProvider = ({ children }: { children: React.ReactNode }) => {
         setCart(() => data);
       }
     } else {
-      const resp = await fetchAPI({ endpoint: `cart/${cart.id}/discounts`, method: 'POST', body: { code }, locale: currentLanguage });
+      const resp = await fetchAPI({
+        endpoint: `cart/${cart.id}/discounts`,
+        method: 'POST',
+        body: { code },
+        locale: currentLanguage,
+      });
       const data = await resp.json();
 
       if (resp.ok && data.discount) {
@@ -202,6 +209,20 @@ const CartProvider = ({ children }: { children: React.ReactNode }) => {
       } else {
         throw new Error('Invalid discount code');
       }
+    }
+  };
+
+  const saveCartCustomer = async (email: string) => {
+    const resp = await fetchAPI({
+      endpoint: `cart/${cart.id}/customer`,
+      method: 'POST',
+      body: { email },
+      locale: currentLanguage,
+    });
+    const data = await resp.json();
+
+    if (resp.ok) {
+      setCart(() => data);
     }
   };
 
@@ -215,6 +236,7 @@ const CartProvider = ({ children }: { children: React.ReactNode }) => {
         clearCart,
         restoreCart,
         getCartItems: () => cart.items,
+        saveCartCustomer,
       }}
     >
       {children}

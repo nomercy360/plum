@@ -6,11 +6,11 @@
   "addMeasurements": "Make it fit perfectly",
   "measurementsAddedDescription": "We will tailor clothing to fit perfectly",
   "addMeasurementsDescription": "Add tailoring measurements. It’s absolutely free!",
-  "discountApplied": "discount applied",
+  "discountApplied": "{{discount}} discount applied with promo code {{code}}",
   "titleOrderSuccess": "Plum has received your order. So what’s next?",
   "textOrderSuccess": "Check {{email}} for the order confirmation letter. Once the order is ready, we will send you a tracking number. If you want to be in the know about all our new drops, why not give us a follow on Instagram?",
   "subscribeInstagramButton": "Subscribe to Instagram",
-  "continue": "Continue",
+  "continue": "Continue to checkout",
   "back": "Back",
   "yourBag": "For {{total}} items",
   "checkout": "Checkout • ",
@@ -45,5 +45,8 @@
   "chest": "Chest, cm",
   "waist": "Waist, cm",
   "hips": "Hips, cm",
-  "invalidPromoCode": "Invalid promo code"
+  "invalidPromoCode": "Seems like you've entered the wrong code.",
+  "discountSaved": "You are saving {{discount}}",
+  "worldwideShipping": "Worldwide shipping from $10",
+  "worldwideShippingDescription": "We will calculate the exact price on the next step"
 }
