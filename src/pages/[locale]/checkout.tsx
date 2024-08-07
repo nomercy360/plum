@@ -139,12 +139,11 @@ export default function Checkout() {
         iframe: true,
         test: false,
         transaction_type: "payment",
-        public_key: "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAlBmg1g0vF2sRUQTG85TrS083LN+TIpY3QnSRRjDHb/w6YuB2vitnVpmec3WSSCRzgWBfler0mWtpZk6NQ+FJVg6iSx1wGWxCVq21Rq99/VvrVUXBt/WgLuBzWFj4AeAOh9sp+Q/uYSxKq60E1aR0xXo7RLI5NWN9UDGLshoeaF4Lq4o7DuvUb3zNkk1F5rihdU/T5WvaJ8/C3XV8u2BmsX2NR2rteNZ4FOCTEfCLANDtAikSZwArdYZYdulmEE7DTlZlvBaup7N7u99K+C9/H2exBanhtWA2C/m1zXMINc2nPMF0I4Q1kU2Ryn93kqy3qP/PhNVRXmBZ8KBkHBtjkQIDAQAB",
         order: {
-          amount: 100 * cart.total,
+          amount: 100 * order.total,
           currency: currency,
-          description: JSON.stringify(cart.items),
-          tracking_id: cart.id
+          description: JSON.stringify(order.items),
+          tracking_id: order.id
         },
         settings: {
           language: language,
@@ -156,7 +155,6 @@ export default function Checkout() {
             },
           }
         },
-        customer: order,
       },
       closeWidget: function (status: any) {
         console.debug('close widget callback')
@@ -198,7 +196,7 @@ export default function Checkout() {
       const token = params.get('token');
 
       if (token) {
-        payment(token, order, currentLanguage, 'BYN')
+        payment(token, resp.order, currentLanguage, 'BYN')
       }
       // window.location.href = resp.payment_link;
       // window.open(resp.payment_link, '_blank');
