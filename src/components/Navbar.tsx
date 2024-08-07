@@ -1,22 +1,58 @@
 import Icons from './Icons';
 import { CartContext } from '@/context/cart-provider';
-import { useContext } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import Link from '@/components/Link';
 import LanguageSwitchLink from '@/components/LanguageSwitchButton';
 import { useRouter } from 'next/router';
+import BurgerMenu from './BurgerMenu';
+import { handleClientScriptLoad } from 'next/script';
 
 export default function Navbar() {
   const { cart } = useContext(CartContext);
+  const [isDisplayMenu, setDisplayMenu] = useState(false);
+
+  const handleDisplayBurgerMenu = () => {
+    setDisplayMenu(prev => !prev)
+
+
+  }
+
+  useEffect(() => {
+    if (isDisplayMenu) {
+      document.body.style.overflow = 'hidden'
+    } else {
+      document.body.style.overflow = ''
+    }
+
+
+  }, [isDisplayMenu])
 
   return (
     <header
       className="top-0 fixes p-5 flex w-full flex-row items-center justify-between bg-transparent text-base text-black">
-      <button className='w-[20px] h-[20px] m-[5px] flex justify-center items-center'>
+      <button
+        className='w-[20px] h-[20px] m-[5px] flex justify-center items-center'
+        onClick={handleDisplayBurgerMenu}
+      >
         {/* <Icons.menu
           className="h-6 w-32 text-black"
         /> */}
-        <span className='block w-[20px] h-[2px] bg-black rounded-sm absolute translate-y-1'></span>
-        <span className='block w-[20px] h-[2px] bg-black rounded-sm absolute translate-y--1'></span>
+        {
+          isDisplayMenu ? (
+            <Icons.close
+              className="h-6 w-32 text-black"
+            />
+          ) : (
+            <>
+              <Icons.menu
+                className="h-6 w-32 text-black"
+              />
+              {/* <span className='block w-[20px] h-[2px] bg-black rounded-sm absolute translate-y-1'></span>
+              <span className='block w-[20px] h-[2px] bg-black rounded-sm absolute translate-y--1'></span> */}
+            </>
+          )
+        }
+
       </button>
       <Link href="/">
         <Icons.logo
@@ -27,6 +63,7 @@ export default function Navbar() {
         {/* <LanguageSwitchLink theme="light" /> */}
         <CartButton cartItems={cart.count} theme="light" />
       </div>
+      <BurgerMenu display={isDisplayMenu} />
     </header>
   );
 }
@@ -42,7 +79,7 @@ export function NavbarCart() {
 
   return (
     <header
-      className="p-5 flex w-full flex-row items-center justify-between bg-transparent text-base text-black">
+      className="p-5 flex w-full flex-row items-center justify-between bg-transparent text-base text-black bg-white">
       <Link href="/">
         <Icons.logo
           className="h-6 w-32 text-black"
