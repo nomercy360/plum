@@ -57,6 +57,11 @@ async function checkoutRequest(data: any, locale: string = 'en') {
 const priceString = (currencySymbol: string, price: number) =>
   currencySymbol === '$' ? `$${price}` : `${price} ${currencySymbol}`;
 
+const priceTotalString = (currencySymbol: string, price: number) => {
+  const formattedNumber = price.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  return currencySymbol === '$' ? `$${formattedNumber}` : `${formattedNumber} ${currencySymbol}`;
+}
+
 export default function Checkout() {
   const { cart, getCartItems, clearCart, updateCartItem, applyDiscount } = useContext(CartContext);
 
@@ -88,6 +93,7 @@ export default function Checkout() {
   const [country, setCountry] = useState('');
   const [zip, setZip] = useState('');
   const [phone, setPhone] = useState('');
+
 
   const [step, setStep] = useState<'bag' | 'deliveryInfo' | 'measurements'>('bag');
 
@@ -269,102 +275,127 @@ export default function Checkout() {
         {cart.count > 0 ? (
           <div>
             <NavbarCart />
-            <main className="mt-8 flex w-full items-start justify-center">
+            <main className="w-full min-h-[calc(100dvh-102px)] mt-2 sm:mt-8 flex items-start justify-center">
               <div
-                className="flex h-[calc(100vh-100px)] min-h-[calc(100vh-100px)] w-full max-w-2xl flex-col bg-white pb-10 sm:h-full sm:rounded-t-xl">
+                className="flex w-full max-w-2xl flex-col bg-white rounded-t-xl">
                 {step == 'bag' && (
-                  <div className="flex h-full w-full flex-col justify-between sm:justify-start">
-                    <div>
-                      <div className="flex flex-row items-center justify-between px-5 pt-5">
-                        <p className="text-lg sm:text-xl">{getTranslation('yourBag', cart.count)}</p>
-                        <button className="h-8 text-gray-light" onClick={() => clearCart()}>
+                  <div className="flex min-h-[calc(100dvh-102px)] w-full flex-col justify-between sm:justify-start">
+                    <div className='px-5 pt-5 mb-8'>
+                      <div className="flex flex-row items-center justify-between">
+                        <p className="text-sm uppercase">{priceString(cart.currency_symbol, cart.total)} {getTranslation('yourBag', cart.count)}</p>
+                        <button className="h-8 text-gray-light text-sm" onClick={() => clearCart()}>
                           {t('clearCart')}
                         </button>
                       </div>
-                      <div className="mt-8 flex flex-col gap-5 px-5 pb-5 sm:pb-10">
-                        {getCartItems().map(item => (
-                          <div key={item.variant_id} className="flex flex-row items-center justify-between gap-3">
-                            <div className="flex flex-row items-center gap-3">
-                              <ExportedImage
-                                alt=""
-                                className="size-10 shrink-0 rounded-full object-cover"
-                                src={item.image_url}
-                                width={40}
-                                height={40}
+                      <div className="mt-7 flex flex-col gap-y-5">
+                        <ul className='flex flex-col gap-y-5'>
+                          {getCartItems().map(item => (
+                            <li key={item.variant_id} className="flex flex-row items-center justify-between gap-y-5">
+                              <div className="flex flex-row items-center gap-3">
+                                <ExportedImage
+                                  alt=""
+                                  className="size-10 shrink-0 rounded-full object-cover"
+                                  src={item.image_url}
+                                  width={40}
+                                  height={40}
+                                />
+                                <div className="flex flex-col">
+                                  <p className="text-sm sm:text-base">
+                                    {item.product_name}
+                                  </p>
+                                  <p className="mt-0.5 text-xs text-gray-light sm:text-sm">
+                                    {priceString(cart.currency_symbol, item.price * item.quantity)}{' / '}
+                                    {t('size')}: {`(${item.variant_name})`}{' '} {item.quantity > 1 && `x ${item.quantity}`}
+                                  </p>
+                                </div>
+                              </div>
+                              <StepperButton
+                                onIncrease={() => increaseQuantity(item)}
+                                onDecrease={() => decreaseQuantity(item)}
                               />
-                              <div className="flex flex-col">
+                            </li>
+                          ))}
+                        </ul>
+                        <div className='flex flex-col gap-y-5'>
+                          <button
+                            className="flex flex-row items-center justify-between text-start"
+                            onClick={() => setStep('measurements')}
+                          >
+                            <div className="flex flex-row items-center justify-start gap-3">
+                              <div className="flex size-10 shrink-0 items-center justify-center rounded-full bg-gray">
+                                <Icons.tShirt className="size-6" />
+                              </div>
+                              <div>
                                 <p className="text-sm sm:text-base">
-                                  {item.product_name} {`(${item.variant_name})`}{' '}
-                                  {item.quantity > 1 && `x ${item.quantity}`}
+                                  {isMeasurementsFilled() ? t('measurementsAdded') : t('addMeasurements')}
                                 </p>
-                                <p className="mt-0.5 text-xs text-gray-light sm:text-sm">
-                                  Total {priceString(cart.currency_symbol, item.price * item.quantity)}
+                                <p className="mt-0.5 text-xs text-gray-light">
+                                  {isMeasurementsFilled()
+                                    ? t('measurementsAddedDescription')
+                                    : t('addMeasurementsDescription')}
                                 </p>
                               </div>
                             </div>
-                            <StepperButton
-                              onIncrease={() => increaseQuantity(item)}
-                              onDecrease={() => decreaseQuantity(item)}
-                            />
-                          </div>
-                        ))}
-                        <button
-                          className="flex flex-row items-center justify-between text-start"
-                          onClick={() => setStep('measurements')}
-                        >
-                          <div className="flex flex-row items-center justify-start gap-3">
-                            <div className="flex size-10 shrink-0 items-center justify-center rounded-full bg-gray">
-                              <Icons.tShirt className="size-6" />
+                            <div className="flex h-10 items-center justify-center px-2">
+                              <Icons.arrowRight className="h-3 w-2.5" />
                             </div>
-                            <div>
-                              <p className="text-sm sm:text-base">
-                                {isMeasurementsFilled() ? t('measurementsAdded') : t('addMeasurements')}
-                              </p>
-                              <p className="mt-0.5 text-xs text-gray-light">
-                                {isMeasurementsFilled()
-                                  ? t('measurementsAddedDescription')
-                                  : t('addMeasurementsDescription')}
-                              </p>
+                          </button>
+                          <div
+                            className="flex flex-row items-center justify-between text-start"
+                          >
+                            <div className="flex flex-row items-center justify-start gap-3">
+                              <div className="flex size-10 shrink-0 items-center justify-center rounded-full bg-gray">
+                                <Icons.shippingBox className="size-6" />
+                              </div>
+                              <div>
+                                <p className="text-sm sm:text-base">
+                                  {t('worldwideShipping')}
+                                </p>
+                                <p className="mt-0.5 text-xs text-gray-light">
+                                  {t('worldwideShippingDescription')}
+                                </p>
+                              </div>
                             </div>
                           </div>
-                          <div className="flex h-10 items-center justify-center px-2">
-                            <Icons.arrowRight className="h-3 w-2.5" />
-                          </div>
-                        </button>
+                        </div>
                       </div>
                     </div>
-                    <div>
-                      <div className="block px-5 pb-6 sm:hidden">
-                        <PromoCode
-                          promoCode={promoCode}
-                          setPromoCode={(value: string) => updatePromoCode(value)}
-                          fetchDiscount={fetchDiscount}
-                          fetchStatus={promoStatus}
-                          clearPromoCode={clearPromoCode}
-                        />
+                    <Divider></Divider>
+                    <div
+                      className="mt-8 mb-20 flex  w-full flex-col justify-between gap-5 px-5">
+                      <input
+                        className="h-11 w-full rounded-lg bg-gray px-3 placeholder:text-dark-gray focus:outline-neutral-200"
+                        placeholder={t('email')}
+                        type="email"
+                        autoComplete="email"
+                        value={email}
+                        onInput={e => setEmail(e.currentTarget.value)}
+                      />
+                      <PromoCode
+                        promoCode={promoCode}
+                        setPromoCode={(value: string) => updatePromoCode(value)}
+                        fetchDiscount={fetchDiscount}
+                        fetchStatus={promoStatus}
+                        clearPromoCode={clearPromoCode}
+                      />
+                    </div>
+                    <div className='flex flex-col-reverse items-center gap-5 sm:flex-col mt-auto'>
+                      <button
+                        className='h-auto sm:h-11 p-5 min-w-full sm:min-w-64 flex justify-center sm:justify-between items-center px-4 rounded-none sm:rounded-3xl  text-white bg-black disabled:cursor-not-allowed disabled:bg-black/60'
+                        onClick={() => toDeliveryInfo()}
+                        disabled={email.length <= 0}
+                      >
+                        {t('continue')}
+                        <span className='block sm:hidden'>&nbsp;•&nbsp;</span>
+                        <span className="text-gray">{priceTotalString(cart.currency_symbol, cart.total)}</span>
+                      </button>
+                      <div className="flex w-full flex-row justify-center items-center gap-2 mb-0 sm:mb-5 px-5">
+                        <p className="text-xxs text-gray-light text-center">{t('agree')}</p>
+                        <Link href="/terms" className='w-[20px] h-[20px] flex justify-center items-center'>
+                          <Icons.infoCircle className="size-3.5 shrink-0" />
+                        </Link>
                       </div>
-                      <Divider></Divider>
-                      <TotalCostInfo measurementFilled={isMeasurementsFilled()} t={t} cart={cart} />
-                      <div
-                        className="mt-10 flex w-full flex-col items-end justify-between gap-5 px-5 sm:flex-row sm:justify-start">
-                        <div className="hidden w-full sm:block">
-                          <PromoCode
-                            promoCode={promoCode}
-                            setPromoCode={(value: string) => updatePromoCode(value)}
-                            fetchDiscount={fetchDiscount}
-                            fetchStatus={promoStatus}
-                            clearPromoCode={clearPromoCode}
-                          />
-                        </div>
-                        <button
-                          className="h-11 w-full flex-shrink-0 rounded-3xl bg-black text-white sm:w-56"
-                          onClick={() => toDeliveryInfo()}
-                          disabled={!cart.total}
-                        >
-                          {t('continue')} •{' '}
-                          <span className="text-gray">{priceString(cart.currency_symbol, cart.total)}</span>
-                        </button>
-                      </div>
+                      {/* <TotalCostInfo measurementFilled={isMeasurementsFilled()} t={t} cart={cart} /> */}
                     </div>
                   </div>
                 )}
@@ -534,11 +565,12 @@ export default function Checkout() {
                 )}
               </div>
             </main>
-          </div>
+          </div >
         ) : (
           <EmptyCart />
-        )}
-      </div>
+        )
+        }
+      </div >
     </>
   );
 }
@@ -556,20 +588,20 @@ const PromoCode = (props: {
   return (
     <>
       {!cart.discount ? (
-        <label>
+        <form className='relative'>
           {props.fetchStatus === 'error' && <p className="pt-1 text-sm text-red">{t('invalidPromoCode')}</p>}
           <div
-            className={`flex h-11 w-full flex-row items-center justify-between rounded-lg bg-gray pl-3 ${props.fetchStatus === 'error' ? 'border border-red' : ''}`}
+            className={`flex h-11 w-full flex-row items-center justify-between rounded-lg bg-gray ${props.fetchStatus === 'error' ? 'border border-red' : ''}`}
           >
             <input
-              className="w-full bg-transparent focus:outline-none"
+              className="h-11 w-full rounded-lg bg-gray pl-3 pr-24 placeholder:text-dark-gray focus:outline-neutral-200"
               placeholder={t('addPromoCode')}
               type="text"
               value={props.promoCode}
               onInput={e => props.setPromoCode(e.currentTarget.value)}
             />
             {props.fetchStatus === 'idle' ? (
-              <button className="pr-3" onClick={() => props.fetchDiscount()}>
+              <button className="absolute right-3 top-1/2 -translate-y-1/2 flex justify-center items-center px-3 py-1 rounded-2xl uppercase bg-black text-white tracking-[1px] leading-[inherit] text-xs" onClick={() => props.fetchDiscount()}>
                 {t('apply')}
               </button>
             ) : (
@@ -584,7 +616,7 @@ const PromoCode = (props: {
               </div>
             )}
           </div>
-        </label>
+        </form>
       ) : (
         <div className="flex h-11 w-full flex-row items-center justify-between rounded-lg bg-light-green/10 px-3">
           <div className="flex flex-row items-center justify-start gap-2.5">

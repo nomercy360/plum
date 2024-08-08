@@ -79,7 +79,7 @@ export function NavbarCart() {
 
   return (
     <header
-      className="p-5 flex w-full flex-row items-center justify-between bg-transparent text-base text-black bg-white">
+      className="p-5 flex w-full flex-row items-center justify-between bg-transparent text-base text-black">
       <Link href="/">
         <Icons.logo
           className="h-6 w-32 text-black"
