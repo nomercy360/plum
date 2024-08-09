@@ -35,6 +35,13 @@ export type Cart = {
   discount_amount: number;
   customer?: {
     email: string;
+    id: number;
+    name?: string;
+    address?: string;
+    city?: string;
+    country?: string;
+    zip?: string;
+    phone?: string;
   };
 };
 
@@ -56,11 +63,11 @@ interface ICart {
 }
 
 async function fetchAPI({
-                          endpoint,
-                          method = 'GET',
-                          body = null,
-                          locale = 'en',
-                        }: {
+  endpoint,
+  method = 'GET',
+  body = null,
+  locale = 'en',
+}: {
   endpoint: string;
   method?: string;
   body?: any;
@@ -82,19 +89,13 @@ async function fetchAPI({
 
 export const CartContext = createContext<ICart>({
   cart: {} as Cart,
-  addToCart: () => {
-  },
-  updateCartItem: () => {
-  },
-  applyDiscount: async () => {
-  },
-  clearCart: () => {
-  },
+  addToCart: () => {},
+  updateCartItem: () => {},
+  applyDiscount: async () => {},
+  clearCart: () => {},
   getCartItems: () => [],
-  restoreCart: () => {
-  },
-  saveCartCustomer: () => {
-  },
+  restoreCart: () => {},
+  saveCartCustomer: () => {},
 });
 
 const CartProvider = ({ children }: { children: React.ReactNode }) => {

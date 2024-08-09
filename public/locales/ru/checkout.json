@@ -23,11 +23,15 @@
   "restoreCart": "Восстановить корзину",
   "addDeliveryInfo": "Добавить информацию о доставке",
   "addDeliveryInfoDescription": "Используйте учетные данные так же, как они указаны в удостоверении личности получателя",
-  "name": "ФИО полностью",
+  "name": "ФИО Получателя",
   "email": "Электронная почта",
   "phone": "Телефон",
   "country": "Страна",
-  "address": "Полный адрес",
+  "comment": "Комментарий к заказу",
+  "address": "Адрес доставки",
+  "commentDescription": "Введите здесь свои размеры и инструкции для курьера, или оставьте это поле пустым.",
+  "paymentMethod": "Способ оплаты",
+  "paymentMethodDescription": "Мы принимаем платежи из большинства стран мира",
   "zip": "Индекс",
   "customTailoring": "Индивидуальный пошив",
   "discount": "Скидка",
@@ -48,5 +52,7 @@
   "invalidPromoCode": "Похоже, вы ввели неправильный код.",
   "discountSaved": "Вы экономите {{discount}}",
   "worldwideShipping": "Международная доставка от 10 долларов.",
-  "worldwideShippingDescription": "Точную стоимость мы рассчитаем на следующем шаге"
+  "worldwideShippingDescription": "Точную стоимость мы рассчитаем на следующем шаге",
+  "creditCardViaBePaid": "Кредитная карта через BePaid",
+  "paypal": "Оплата через PayPal"
 }

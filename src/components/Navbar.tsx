@@ -4,6 +4,7 @@ import { useContext } from 'react';
 import Link from '@/components/Link';
 import LanguageSwitchLink from '@/components/LanguageSwitchButton';
 import { useRouter } from 'next/router';
+import { step } from 'next/dist/experimental/testmode/playwright/step';
 
 export default function Navbar() {
   const { cart } = useContext(CartContext);
@@ -21,22 +22,31 @@ export default function Navbar() {
   );
 }
 
-export function NavbarCart() {
+export function NavbarCart(props: { backButtonVisible: boolean; onBackButtonClick: (value: boolean) => void }) {
   const router = useRouter();
 
-  const goBack = async () => {
+  const close = async () => {
     await router.push('/');
   };
 
   return (
     <nav className="flex h-14 w-full items-center justify-between bg-transparent px-4 text-base text-black sm:h-20 sm:px-7">
-      <div className="flex-1"></div>
+      <div className="flex-1">
+        {props.backButtonVisible && (
+          <button
+            onClick={() => props.onBackButtonClick(false)}
+            className="flex size-5 items-center justify-center rounded-full bg-black/5"
+          >
+            <Icons.chevronLeft className="size-5 shrink-0 text-black" />
+          </button>
+        )}
+      </div>
       <Link href="/" className="flex-1 justify-center">
         <Icons.logo className="mx-auto h-6 w-32 text-black" />
       </Link>
       <div className="flex flex-1 justify-end">
-        <button className="flex size-5 items-center justify-center rounded-full bg-black" onClick={() => goBack()}>
-          <Icons.close className="size-2.5 shrink-0 text-white" />
+        <button onClick={() => close()} className="flex size-5 items-center justify-center rounded-full bg-black/5">
+          <Icons.xmark className="shrink-0 text-black" />
         </button>
       </div>
     </nav>
