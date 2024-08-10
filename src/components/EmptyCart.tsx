@@ -14,7 +14,7 @@ export default function EmptyCart() {
 
   return (
     <main className="flex h-screen w-full flex-col items-center justify-start bg-white">
-      <NavbarCart />
+      <NavbarCart backButtonVisible={false} onBackButtonClick={() => router.back()} />
       <div className="flex h-full flex-col items-center justify-between p-8 sm:justify-center">
         <div></div>
         <div className="flex max-w-72 flex-col items-center justify-center text-center sm:max-w-sm">
