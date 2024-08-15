@@ -1,65 +1,108 @@
 import Icons from './Icons';
 import { CartContext } from '@/context/cart-provider';
-import { useContext } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import Link from '@/components/Link';
-import LanguageSwitchLink from '@/components/LanguageSwitchButton';
+// import LanguageSwitchLink from '@/components/LanguageSwitchButton';
 import { useRouter } from 'next/router';
-import { step } from 'next/dist/experimental/testmode/playwright/step';
+// import { step } from 'next/dist/experimental/testmode/playwright/step';
+import BurgerMenu from './BurgerMenu';
+// import { handleClientScriptLoad } from 'next/script';
 
 export default function Navbar() {
   const { cart } = useContext(CartContext);
+  const [isDisplayMenu, setDisplayMenu] = useState(false);
+
+  const handleDisplayBurgerMenu = () => {
+    setDisplayMenu(prev => !prev)
+  }
+
+  useEffect(() => {
+    if (isDisplayMenu) {
+      document.body.style.overflow = 'hidden'
+    } else {
+      document.body.style.overflow = ''
+    }
+
+
+  }, [isDisplayMenu])
 
   return (
-    <nav className="fixes top-0 flex w-full flex-row items-center justify-between bg-transparent p-5 text-base text-black">
+    <header
+      className="top-0 fixes p-5 flex w-full flex-row items-center justify-between bg-transparent text-base text-black">
+      <button
+        className='w-[20px] h-[20px] m-[5px] flex justify-center items-center'
+        onClick={handleDisplayBurgerMenu}
+      >
+        {
+          isDisplayMenu ? (
+            <Icons.close
+              className="h-6 w-32 text-black"
+            />
+          ) : (
+            <>
+              <Icons.menu
+                className="h-6 w-32 text-black"
+              />
+            </>
+          )
+        }
+
+      </button>
       <Link href="/">
         <Icons.logo className="h-6 w-32 text-black" />
       </Link>
       <div className="flex flex-row items-center justify-between gap-3">
-        <LanguageSwitchLink theme="light" />
+        {/* <LanguageSwitchLink theme="light" /> */}
         <CartButton cartItems={cart.count} theme="light" />
       </div>
-    </nav>
+      <BurgerMenu display={isDisplayMenu} />
+    </header>
   );
 }
 
 export function NavbarCart(props: { backButtonVisible: boolean; onBackButtonClick: (value: boolean) => void }) {
   const router = useRouter();
 
-  const close = async () => {
+  const goBack = async () => {
     await router.push('/');
   };
 
   return (
-    <nav className="flex h-14 w-full items-center justify-between bg-transparent px-4 text-base text-black sm:h-20 sm:px-7">
-      <div className="flex-1">
-        {props.backButtonVisible && (
-          <button
-            onClick={() => props.onBackButtonClick(false)}
-            className="flex size-5 items-center justify-center rounded-full bg-black/5"
-          >
-            <Icons.chevronLeft className="size-5 shrink-0 text-black" />
-          </button>
-        )}
-      </div>
-      <Link href="/" className="flex-1 justify-center">
-        <Icons.logo className="mx-auto h-6 w-32 text-black" />
+    <header
+      className="p-5 flex w-full flex-row items-center justify-between bg-transparent text-base text-black">
+      <Link href="/">
+        <Icons.logo
+          className="h-6 w-32 text-black"
+        />
       </Link>
-      <div className="flex flex-1 justify-end">
-        <button onClick={() => close()} className="flex size-5 items-center justify-center rounded-full bg-black/5">
-          <Icons.xmark className="shrink-0 text-black" />
+      <div className="flex flex-row items-center justify-between gap-3">
+        {/* <LanguageSwitchLink theme="light" /> */}
+        <button className="items-center flex justify-center size-5 bg-black rounded-full"
+          onClick={() => goBack()}>
+          <Icons.close className="shrink-0 text-white size-2.5" />
         </button>
       </div>
-    </nav>
+    </header>
   );
 }
 
 const CartButton = (props: { cartItems: number; theme: 'dark' | 'light' }) => {
   return (
-    <Link href="/checkout" className="flex flex-row items-center justify-start gap-1">
-      <span className="text-base uppercase text-black">bag</span>
-      <div className="flex size-5 shrink-0 items-center justify-center rounded-full bg-black text-xxs text-white">
-        <span className="mt-px">{props.cartItems}</span>
-      </div>
-    </Link>
+    <Link href="/checkout" className="flex flex-row items-center justify-center gap-1 relative w-[30px] h-[30px]">
+      {
+        props.cartItems > 0 &&
+        <span className='bg-red rounded-full w-2 h-2 absolute top-1 right-0'></span>
+      }
+
+      <Icons.basket
+        className="h-6 w-32 text-black"
+      />
+      {
+        props.cartItems > 0 &&
+        <span className="mt-px text-center absolute pb-[2px] font-bold top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
+          {props.cartItems}
+        </span>
+      }
+    </Link >
   );
 };

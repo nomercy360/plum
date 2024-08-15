@@ -29,6 +29,7 @@ export type Product = {
 
 export default function Home({ products }: { products: Product[] }) {
   const { t } = useTranslation(['common']);
+  console.log(products);
 
   //first 4
   const productsFirstSection = products.slice(0, 4);
@@ -53,7 +54,12 @@ export default function Home({ products }: { products: Product[] }) {
     <div>
       <main className="flex min-h-screen flex-col items-center justify-between bg-white pb-24 sm:pb-44">
         <Navbar />
-        <div className="mb-20 mt-14 hidden grid-cols-2 gap-10 px-12 lg:grid">
+        <div className='flex  w-full px-5 lg:px-12 min-h-[520px] lg:max-h-[600px] '>
+          <div className=' flex justify-center w-full rounded-2xl lg:rounded-xl overflow-hidden'>
+            <video className='object-cover  w-full h-full' src="/video/plum_ad_two_1160.mp4" autoPlay loop muted />
+          </div>
+        </div>
+        <div className="mb-20 mt-10 hidden grid-cols-2 gap-10 px-12 lg:grid">
           <div className="grid grid-cols-2 gap-10">
             {productsFirstSection.map(product => (
               <ProductCard key={product.id} product={product} />
@@ -91,13 +97,13 @@ export default function Home({ products }: { products: Product[] }) {
         <div className="mb-10 mt-4 grid grid-cols-2 gap-4 px-5 lg:hidden">
           {products.map(product =>
             // every fifth product
-            product.id % 5 === 0 ? (
+            product.id % 5 <= 3 ? (
+              <ProductCard key={product.id} product={product} />
+            ) : (
               <div key={product.id} className="col-span-2 row-span-2">
                 <ProductCard product={product} />
               </div>
-            ) : (
-              <ProductCard key={product.id} product={product} />
-            ),
+            )
           )}
         </div>
         <SubscribeForm style="light" />
