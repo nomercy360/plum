@@ -54,9 +54,9 @@ export default function Home({ products }: { products: Product[] }) {
     <div>
       <main className="flex min-h-screen flex-col items-center justify-between bg-white pb-24 sm:pb-44">
         <Navbar />
-        <div className='flex  w-full px-5 lg:px-12 min-h-[520px] lg:max-h-[600px] '>
-          <div className=' flex justify-center w-full rounded-2xl lg:rounded-xl overflow-hidden'>
-            <video className='object-cover  w-full h-full' src="/video/plum_ad_two_1160.mp4" autoPlay loop muted />
+        <div className="flex min-h-[520px] w-full px-5 lg:max-h-[600px] lg:px-12">
+          <div className="flex w-full justify-center overflow-hidden rounded-2xl lg:rounded-xl">
+            <video className="h-full w-full object-cover" src="/video/plum_ad_two_1160.mp4" autoPlay loop muted />
           </div>
         </div>
         <div className="mb-20 mt-10 hidden grid-cols-2 gap-10 px-12 lg:grid">
@@ -103,7 +103,7 @@ export default function Home({ products }: { products: Product[] }) {
               <div key={product.id} className="col-span-2 row-span-2">
                 <ProductCard product={product} />
               </div>
-            )
+            ),
           )}
         </div>
         <SubscribeForm style="light" />
