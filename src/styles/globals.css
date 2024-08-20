@@ -10,18 +10,26 @@
         -moz-osx-font-smoothing: grayscale;
         @apply text-base antialiased;
     }
+
+
+    input::placeholder {
+        color: #A8A8A8 !important;
+    }
 }
 
 .embla {
     overflow: hidden;
 }
+
 .embla__container {
     display: flex;
 }
+
 .embla__slide {
     flex: 0 0 100%;
     min-width: 0;
 }
+
 .embla__slide__inner {
     display: block;
 }

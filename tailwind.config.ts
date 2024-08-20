@@ -9,7 +9,7 @@ const config: Config = {
   theme: {
     fontSize: {
       xxs: ['11px', '11px'],
-      xs: ['13px', '15px'],
+      xs: '13px',
       sm: ['15px', '19px'],
       base: ['15px', '21px'],
       lg: ['19px', '25px'],
