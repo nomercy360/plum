@@ -161,7 +161,7 @@ export default function Checkout() {
     };
   }, []);
 
-  const payment = function (token: string, order: any, language: string, currency: string) {
+  const payment = function(token: string, order: any, language: string, currency: string) {
     const params = {
       checkout_url: 'https://checkout.bepaid.by',
       token: token,
@@ -186,7 +186,7 @@ export default function Checkout() {
           },
         },
       },
-      closeWidget: function (status: any) {
+      closeWidget: function(status: any) {
         console.debug('close widget callback');
       },
     };
@@ -317,7 +317,8 @@ export default function Checkout() {
             <NavbarCart backButtonVisible={step === 'deliveryInfo'} onBackButtonClick={() => setStep('bag')} />
             <main className="mt-8 flex w-full items-start justify-center bg-transparent">
               {step == 'bag' && (
-                <div className="flex min-h-[calc(100vh-112px)] w-full max-w-2xl flex-col items-center justify-between bg-white pb-10 sm:rounded-t-xl">
+                <div
+                  className="flex min-h-[calc(100vh-112px)] w-full max-w-2xl flex-col items-center justify-between bg-white pb-10 sm:rounded-t-xl">
                   <div className="w-full">
                     <div className="flex flex-row items-center justify-between px-5 pt-5">
                       <p className="text-lg uppercase sm:text-xl">
@@ -406,7 +407,8 @@ export default function Checkout() {
                 </div>
               )}
               {step == 'deliveryInfo' && (
-                <div className="flex min-h-[calc(100vh-112px)] w-full max-w-2xl flex-col items-start justify-between bg-white pb-10 text-start sm:rounded-t-xl">
+                <div
+                  className="flex min-h-[calc(100vh-112px)] w-full max-w-2xl flex-col items-start justify-between bg-white pb-10 text-start sm:rounded-t-xl">
                   <p className="mb-1 px-5 pt-5 uppercase text-black">{t('addDeliveryInfo')}</p>
                   <p className="mb-8 px-5 text-xs leading-snug text-gray-light">{t('addDeliveryInfoDescription')}</p>
                   <form
@@ -683,37 +685,51 @@ const PaymentMethodSelector = (props: {
   const { t } = useTranslation('checkout');
 
   return (
-    <div className="mb-8 flex w-full flex-col space-y-2.5 px-4">
-      <div className="flex h-11 w-full items-center justify-between rounded-lg border border-lighter-gray has-[:checked]:border-black">
-        <label className="flex h-11 w-full items-center space-x-3 px-2.5">
-          <input
-            type="radio"
-            name="payment"
-            value="bepaid"
-            checked={selected === 'bepaid'}
-            onChange={() => handleChange('bepaid')}
-            className="radio radio-primary"
-          />
-          <div className="flex items-center space-x-2">
-            <VisaIcon />
-            <span>{t('creditCardViaBePaid')}</span>
+    <div className="mb-8 flex w-full flex-col space-y-2.5 px-5">
+      <div
+        className="flex h-11 w-full items-center justify-between rounded-lg border border-lighter-gray has-[:checked]:border-black has-[:checked]:border-2">
+        <label className="group flex h-11 w-full items-center justify-between px-2.5">
+          <div className="flex w-full items-center">
+            <input
+              type="radio"
+              name="payment"
+              value="bepaid"
+              checked={selected === 'bepaid'}
+              onChange={() => handleChange('bepaid')}
+              className="radio radio-primary"
+            />
+            <div className="flex items-center space-x-2">
+              <VisaIcon />
+              <span>{t('creditCardViaBePaid')}</span>
+            </div>
+          </div>
+          <div
+            className="flex items-center justify-center border border-black size-5 rounded-full invisible group-has-[:checked]:visible">
+            <div className="size-1.5 bg-black rounded-full"></div>
           </div>
         </label>
       </div>
 
-      <div className="flex h-11 w-full items-center justify-between rounded-lg border border-lighter-gray has-[:checked]:border-black">
-        <label className="flex w-full items-center space-x-3 px-2.5">
-          <input
-            type="radio"
-            name="payment"
-            value="paypal"
-            checked={selected === 'paypal'}
-            onChange={() => handleChange('paypal')}
-            className="radio radio-primary"
-          />
-          <div className="flex items-center space-x-2">
-            <PaypalIcon />
-            <span>{t('paypal')}</span>
+      <div
+        className="flex h-11 w-full items-center justify-between rounded-lg border border-lighter-gray has-[:checked]:border-black has-[:checked]:border-2">
+        <label className="group flex h-11 w-full items-center justify-between px-2.5">
+          <div className="flex w-full items-center">
+            <input
+              type="radio"
+              name="payment"
+              value="paypal"
+              checked={selected === 'paypal'}
+              onChange={() => handleChange('paypal')}
+              className="radio radio-primary"
+            />
+            <div className="flex items-center space-x-2">
+              <PaypalIcon />
+              <span>{t('paypal')}</span>
+            </div>
+          </div>
+          <div
+            className="flex items-center justify-center border border-black size-5 rounded-full invisible group-has-[:checked]:visible">
+            <div className="size-1.5 bg-black rounded-full"></div>
           </div>
         </label>
       </div>

@@ -17,6 +17,14 @@ export default function ProductPage({ product }: { product: Product }) {
   const [selectedSize, setSelectedSize] = useState<number>(0);
   const [wasAddedToCart, setWasAddedToCart] = useState(false);
 
+  const { currency } = useContext(CartContext);
+
+  const [currencyCode, currencySymbol, price] = useMemo(() => {
+    const price = product.prices.find(price => price.currency_code === currency);
+    if (!price) return [product.prices[0].currency_code, product.prices[0].currency_symbol, product.prices[0].price];
+    return [price.currency_code, price.currency_symbol, price.price];
+  }, [product, currency]);
+
   const handleAddToCart = () => {
     const item = {
       product_id: product.id,
@@ -30,14 +38,14 @@ export default function ProductPage({ product }: { product: Product }) {
     window.dataLayer.push({
       event: 'add_to_cart',
       ecommerce: {
-        currency: product.currency_code,
+        currency: currencyCode,
         items: [
           {
             item_id: product.id,
             item_name: product.name,
             item_category: 'Dresses',
             item_brand: 'Plum',
-            price: product.price,
+            price: price,
             quantity: 1,
           },
         ],
@@ -63,14 +71,14 @@ export default function ProductPage({ product }: { product: Product }) {
     window.dataLayer.push({
       event: 'view_item',
       ecommerce: {
-        currency: product.currency_code,
+        currency: currencyCode,
         items: [
           {
             item_id: product.id,
             item_name: product.name,
             item_category: 'Dresses',
             item_brand: 'Plum',
-            price: product.price,
+            price: price,
             quantity: 1,
           },
         ],
@@ -86,8 +94,9 @@ export default function ProductPage({ product }: { product: Product }) {
     return product.variants.find(variant => variant.id === selectedSize)?.available;
   }, [product, selectedSize]);
 
-  const priceString =
-    product.currency_symbol === '$' ? `$${product.price}` : `${product.price} ${product.currency_symbol}`;
+  const priceToString = (price: number, currencySymbol: string) => {
+    return currencySymbol === '$' ? `$${price}` : `${price} ${currencySymbol}`;
+  };
 
   return (
     <div>
@@ -95,7 +104,7 @@ export default function ProductPage({ product }: { product: Product }) {
         <title>{product.name} | PLUM®</title>
         <meta
           name="og:title"
-          content={`PLUM® | ${product.name}. Available for ${product.price}${product.currency_code}`}
+          content={`PLUM® | ${product.name}. Available for ${price}${currencyCode}`}
         />
         <meta name="og:description" content={product.description} />
         <meta name="og:image" content={product.images[0]} />
@@ -106,7 +115,8 @@ export default function ProductPage({ product }: { product: Product }) {
         <div className="mt-4 flex max-w-[1440px] flex-col gap-10 px-5 sm:mt-14 sm:flex-row sm:px-14">
           {product.images && <PhotoGallery images={product.images} />}
           <div className="flex w-full flex-col items-start text-start text-black sm:w-[360px] sm:min-w-[360px]">
-            <div className="mb-3 flex h-6 items-center justify-center rounded-full bg-violet/10 px-2 pt-px text-xs uppercase tracking-wide text-violet">
+            <div
+              className="mb-3 flex h-6 items-center justify-center rounded-full bg-violet/10 px-2 pt-px text-xs uppercase tracking-wide text-violet">
               {availability &&
                 availability > 1 &&
                 availability < 3 &&
@@ -136,14 +146,15 @@ export default function ProductPage({ product }: { product: Product }) {
                   disabled={isVariantInCart}
                 >
                   <p className="text-white">{isVariantInCart ? t('alreadyInBag') : t('addToBag')}</p>
-                  {!isVariantInCart && <p className="text-white">{priceString}</p>}
+                  {!isVariantInCart && <p className="text-white">{priceToString(price, currencySymbol)}</p>}
                 </button>
               ) : (
-                <div className="flex h-11 min-w-[140px] flex-row items-center justify-between gap-2 rounded-full bg-light-green px-3.5 text-base text-white">
+                <div
+                  className="flex h-11 min-w-[140px] flex-row items-center justify-between gap-2 rounded-full bg-light-green px-3.5 text-base text-white">
                   <p className="text-white">{t('added')}</p>
                   <p className="text-white">
-                    {product.price}
-                    {product.currency_symbol}
+                    {price}
+                    {currencySymbol}
                   </p>
                 </div>
               )}

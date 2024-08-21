@@ -128,7 +128,7 @@ const CartProvider = ({ children }: { children: React.ReactNode }) => {
       return;
     }
 
-    fetchAPI({
+    const resp = fetchAPI({
       endpoint: `cart/${cartID}`,
       locale: currentLanguage,
     })
@@ -150,6 +150,7 @@ const CartProvider = ({ children }: { children: React.ReactNode }) => {
   const addToCart = async (item: AddToCartItem) => {
     if (!cart.id) {
       item.currency_code = currency;
+      console.log('Currency code', item.currency_code);
       const resp = await fetchAPI({ endpoint: 'cart', method: 'POST', body: item, locale: currentLanguage });
       const data = await resp.json();
 

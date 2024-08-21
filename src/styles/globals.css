@@ -15,6 +15,12 @@
     input::placeholder {
         color: #A8A8A8 !important;
     }
+
+    input[type="radio"] {
+        position: absolute;
+        opacity: 0;
+        cursor: pointer;
+    }
 }
 
 .embla {

@@ -24,9 +24,6 @@ export type Product = {
   }[];
   image: string;
   images: string[];
-  // currency_code: string;
-  // currency_symbol: string;
-  // price: number;
   prices: {
     currency_code: string;
     currency_symbol: string;
@@ -36,7 +33,6 @@ export type Product = {
 
 export default function Home({ products }: { products: Product[] }) {
   const { t } = useTranslation(['common']);
-  console.log(products);
 
   //first 4
   const productsFirstSection = products.slice(0, 4);
