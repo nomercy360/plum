@@ -8,6 +8,8 @@ import ExportedImage from 'next-image-export-optimizer';
 import SubscribeForm from '@/components/SubscribeForm';
 import Navbar from '@/components/Navbar';
 import Head from 'next/head';
+import { useContext, useMemo } from 'react';
+import { CartContext } from '@/context/cart-provider';
 
 export type Product = {
   id: number;
@@ -22,9 +24,14 @@ export type Product = {
   }[];
   image: string;
   images: string[];
-  currency_code: string;
-  currency_symbol: string;
-  price: number;
+  // currency_code: string;
+  // currency_symbol: string;
+  // price: number;
+  prices: {
+    currency_code: string;
+    currency_symbol: string;
+    price: number;
+  }[];
 };
 
 export default function Home({ products }: { products: Product[] }) {
@@ -114,8 +121,15 @@ export default function Home({ products }: { products: Product[] }) {
 }
 
 function ProductCard({ product }: { product: Product }) {
-  const priceString =
-    product.currency_code === 'USD' ? `$${product.price}` : `${product.price} ${product.currency_symbol}`;
+  const { currency } = useContext(CartContext);
+
+  const price = useMemo(() => product.prices.find(price => price.currency_code === currency), [currency]);
+
+  const priceString = price
+    ? price.currency_symbol === '$'
+      ? `$${price.price}`
+      : `${price.price} ${price.currency_symbol}`
+    : '';
 
   return (
     <>

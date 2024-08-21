@@ -1,8 +1,9 @@
-import { useState } from 'react';
+import { useContext, useState } from 'react';
 import { useTranslation } from 'next-i18next';
 import Link from 'next/link';
 import clsx from 'clsx';
 import style from './burgerMenu.module.css';
+import { CartContext } from '@/context/cart-provider';
 
 type IPropsBurgerMenu = {
   display: boolean;
@@ -10,10 +11,12 @@ type IPropsBurgerMenu = {
 
 export default function BurgerMenu({ display }: IPropsBurgerMenu) {
   const { t } = useTranslation('common');
-  const [isSelectCurrency, setSelectCurrency] = useState('EUR');
+
+  const { currency, updateCurrency } = useContext(CartContext);
 
   const handelCurrencySelect = (currency: string) => {
     console.log(currency);
+    updateCurrency(currency as 'USD' | 'BYN');
   };
 
   const burgerMenuClasses = clsx(
@@ -48,7 +51,8 @@ export default function BurgerMenu({ display }: IPropsBurgerMenu) {
                   type="radio"
                   name="currency"
                   value={item.currency}
-                  defaultChecked={i === 0}
+                  defaultChecked={currency === item.currency}
+                  onChange={() => handelCurrencySelect(item.currency)}
                 />
                 <span
                   className={`inline-block min-h-9 w-auto rounded-3xl bg-gray px-3 py-2 text-xs leading-snug text-gray-light ${style.check}`}
@@ -86,19 +90,11 @@ const navList = [
 
 const currencyList = [
   {
-    currency: 'EUR',
-    symbol: '€',
-  },
-  {
-    currency: 'GBP',
-    symbol: '£',
-  },
-  {
     currency: 'USD',
     symbol: '$',
   },
   {
-    currency: 'RUB',
-    symbol: '₽',
+    currency: 'BYN',
+    symbol: 'byn',
   },
 ];

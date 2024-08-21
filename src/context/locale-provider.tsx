@@ -1,56 +1,23 @@
 import React, { createContext, useEffect, useState } from 'react';
 import languageDetector from '@/lib/languageDetector';
 
-interface ICart {
-  currency: 'USD' | 'BYN';
-  // $ or ₽
-  currencySign: '$' | 'byn';
-  toggleCurrency: () => void;
+interface ILocaleContext {
   currentLanguage: string;
 }
 
-export const LocaleContext = createContext<ICart>({
-  currency: 'USD',
-  currencySign: '$',
-  toggleCurrency: () => {},
+export const LocaleContext = createContext<ILocaleContext>({
   currentLanguage: 'en',
 });
 
 const LocaleProvider = ({ children }: { children: React.ReactNode }) => {
-  const [currency, setCurrency] = useState<'USD' | 'BYN'>('USD');
-  const [currencySign, setCurrencySign] = useState<'$' | 'byn'>('$');
-  const [currentLanguage, setCurrentLanguage] = useState<string>('en');
-
-  const toggleCurrency = () => {
-    if (currency === 'USD') {
-      setCurrency('BYN');
-      setCurrencySign('byn');
-      setCurrentLanguage('ru');
-    } else {
-      setCurrency('USD');
-      setCurrencySign('$');
-      setCurrentLanguage('en');
-    }
-  };
+  const [currentLanguage, setCurrentLanguage] = useState('en');
 
   useEffect(() => {
-    const lang = languageDetector.detect() || 'en';
-    if (lang === 'ru') {
-      setCurrency('BYN');
-      setCurrencySign('byn');
-      setCurrentLanguage('ru');
-    } else {
-      setCurrency('USD');
-      setCurrencySign('$');
-      setCurrentLanguage('en');
-    }
+    const detectedLanguage = languageDetector.detect() || 'en';
+    setCurrentLanguage(detectedLanguage);
   }, []);
 
-  return (
-    <LocaleContext.Provider value={{ currency, currencySign, toggleCurrency, currentLanguage }}>
-      {children}
-    </LocaleContext.Provider>
-  );
+  return <LocaleContext.Provider value={{ currentLanguage }}>{children}</LocaleContext.Provider>;
 };
 
 export default LocaleProvider;
