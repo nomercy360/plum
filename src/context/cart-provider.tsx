@@ -67,11 +67,11 @@ interface ICart {
 }
 
 async function fetchAPI({
-  endpoint,
-  method = 'GET',
-  body = null,
-  locale = 'en',
-}: {
+                          endpoint,
+                          method = 'GET',
+                          body = null,
+                          locale = 'en',
+                        }: {
   endpoint: string;
   method?: string;
   body?: any;
@@ -93,16 +93,23 @@ async function fetchAPI({
 
 export const CartContext = createContext<ICart>({
   cart: {} as Cart,
-  addToCart: () => {},
-  updateCartItem: () => {},
-  applyDiscount: async () => {},
-  clearCart: () => {},
+  addToCart: () => {
+  },
+  updateCartItem: () => {
+  },
+  applyDiscount: async () => {
+  },
+  clearCart: () => {
+  },
   getCartItems: () => [],
-  restoreCart: () => {},
-  saveCartCustomer: () => {},
+  restoreCart: () => {
+  },
+  saveCartCustomer: () => {
+  },
   currency: 'USD',
   currencySign: '$',
-  updateCurrency: () => {},
+  updateCurrency: () => {
+  },
 });
 
 const CartProvider = ({ children }: { children: React.ReactNode }) => {
@@ -148,9 +155,9 @@ const CartProvider = ({ children }: { children: React.ReactNode }) => {
   }, [currentLanguage]);
 
   const addToCart = async (item: AddToCartItem) => {
+    item.currency_code = currency;
+
     if (!cart.id) {
-      item.currency_code = currency;
-      console.log('Currency code', item.currency_code);
       const resp = await fetchAPI({ endpoint: 'cart', method: 'POST', body: item, locale: currentLanguage });
       const data = await resp.json();
 
