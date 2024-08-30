@@ -39,6 +39,8 @@ jobs:
           
           if [ "${{ github.ref }}" == "refs/heads/test" ]; then
             DEPLOY_PATH="/app/test"
+          elif [ "${{ github.ref }}" == "refs/heads/main" ]; then
+            DEPLOY_PATH="/app/frontend"
           else
             echo "Unknown branch. Skipping deployment."
             exit 0
