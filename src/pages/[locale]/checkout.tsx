@@ -352,8 +352,8 @@ export default function Checkout() {
 
                                 {!isDescOpen &&
                                   // @ts-ignore
-                                  ref.current?.clientWidth < '250' &&
-                                  item.product_name?.length > 33 && (
+                                  ref.current?.clientWidth < '300' &&
+                                  item.product_name.length > 33 && (
                                     <button
                                       onClick={() => setIsDescOpen(prev => !prev)}
                                       className="absolute bottom-0 right-0 bg-[linear-gradient(90.00deg,rgba(254,254,254,0),rgb(255,255,255)_54.444%)] text-right leading-4"
