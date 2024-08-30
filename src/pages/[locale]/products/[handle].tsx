@@ -29,6 +29,14 @@ export default function ProductPage({ product }: { product: Product }) {
     return [price.currency_code, price.currency_symbol, price.price, price.sale_price];
   }, [product, currency, selectedSize]);
 
+  const { currency } = useContext(CartContext);
+
+  const [currencyCode, currencySymbol, price] = useMemo(() => {
+    const price = product.prices.find(price => price.currency_code === currency);
+    if (!price) return [product.prices[0].currency_code, product.prices[0].currency_symbol, product.prices[0].price];
+    return [price.currency_code, price.currency_symbol, price.price];
+  }, [product, currency]);
+
   const handleAddToCart = () => {
     const item = {
       product_id: product.id,
@@ -43,12 +51,14 @@ export default function ProductPage({ product }: { product: Product }) {
       event: 'add_to_cart',
       ecommerce: {
         currency: currencyCode,
+        currency: currencyCode,
         items: [
           {
             item_id: product.id,
             item_name: product.name,
             item_category: 'Dresses',
             item_brand: 'Plum',
+            price: price,
             price: price,
             quantity: 1,
           },
@@ -76,6 +86,7 @@ export default function ProductPage({ product }: { product: Product }) {
       event: 'view_item',
       ecommerce: {
         currency: currencyCode,
+        currency: currencyCode,
         items: [
           {
             item_id: product.id,
@@ -98,6 +109,9 @@ export default function ProductPage({ product }: { product: Product }) {
     return product.variants.find(variant => variant.id === selectedSize)?.available;
   }, [product, selectedSize]);
 
+  const priceToString = (price: number, currencySymbol: string) => {
+    return currencySymbol === '$' ? `$${price}` : `${price} ${currencySymbol}`;
+  };
   const priceToString = (price: number, currencySymbol: string) => {
     return currencySymbol === '$' ? `$${price}` : `${price} ${currencySymbol}`;
   };

@@ -4,6 +4,7 @@ import { useRouter } from 'next/router';
 import { useContext } from 'react';
 import { CartContext } from '@/context/cart-provider';
 import Navbar from '@/components/Navbar';
+import Navbar from '@/components/Navbar';
 
 export default function EmptyCart() {
   const { t } = useTranslation('checkout');
@@ -11,6 +12,7 @@ export default function EmptyCart() {
   const router = useRouter();
 
   const { restoreCart, cart } = useContext(CartContext);
+  const cartID = typeof localStorage !== 'undefined' ? localStorage.getItem('plum-restore-cart-id') || false : false;
 
   return (
     <>

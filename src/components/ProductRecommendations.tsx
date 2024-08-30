@@ -4,6 +4,7 @@ import ExportedImage from 'next-image-export-optimizer';
 import { LocaleContext } from '@/context/locale-provider';
 import { Product } from '@/pages/[locale]';
 import { CartContext } from '@/context/cart-provider';
+import { CartContext } from '@/context/cart-provider';
 
 export default function ProductRecommendations(props: { productID: number }) {
   const [products, setProducts] = useState<Product[]>([]);
