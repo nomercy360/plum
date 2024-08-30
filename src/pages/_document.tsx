@@ -16,6 +16,7 @@ export default function Document() {
         <link rel="icon" href="/favicon.ico" />
         <meta name="facebook-domain-verification" content="bahudlkogyzobajn9gkyr24k91b2iq" />
         <meta name="facebook-domain-verification" content="plqwge8ehbbmvwwvtaxcbhpvs36lc9" />
+        <meta name="theme-color" content="#EBEBEB" />
         <script
           dangerouslySetInnerHTML={{
             __html: `
@@ -25,15 +26,15 @@ export default function Document() {
         />
       </Head>
       <body>
-      <noscript
-        dangerouslySetInnerHTML={{
-          __html: `
+        <noscript
+          dangerouslySetInnerHTML={{
+            __html: `
           <iframe src="https://load.gtm.plumplum.co/ns.html?id=GTM-PNZ4JMKQ" height="0" width="0" style="display:none;visibility:hidden"></iframe>
             `,
-        }}
-      />
-      <Main />
-      <NextScript />
+          }}
+        />
+        <Main />
+        <NextScript />
       </body>
     </Html>
   );

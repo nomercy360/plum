@@ -2,40 +2,38 @@
 @tailwind components;
 @tailwind utilities;
 
-
 @layer {
-    * {
-        text-rendering: optimizeLegibility;
-        -webkit-font-smoothing: antialiased;
-        -moz-osx-font-smoothing: grayscale;
-        @apply text-base antialiased;
-    }
+  * {
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    @apply text-base antialiased;
+  }
 
+  input::placeholder {
+    color: #a8a8a8 !important;
+  }
 
-    input::placeholder {
-        color: #A8A8A8 !important;
-    }
-
-    input[type="radio"] {
-        position: absolute;
-        opacity: 0;
-        cursor: pointer;
-    }
+  input[type='radio'] {
+    position: absolute;
+    opacity: 0;
+    cursor: pointer;
+  }
 }
 
 .embla {
-    overflow: hidden;
+  overflow: hidden;
 }
 
 .embla__container {
-    display: flex;
+  display: flex;
 }
 
 .embla__slide {
-    flex: 0 0 100%;
-    min-width: 0;
+  flex: 0 0 100%;
+  min-width: 0;
 }
 
 .embla__slide__inner {
-    display: block;
+  display: block;
 }

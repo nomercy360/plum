@@ -2,7 +2,7 @@ import Icons from '@/components/Icons';
 import Divider from '@/components/Divider';
 import EmptyCart from '@/components/EmptyCart';
 import StepperButton from '@/components/StepperButton';
-import { useContext, useEffect, useState } from 'react';
+import { useContext, useEffect, useRef, useState } from 'react';
 import { Cart, CartContext, CartItem } from '@/context/cart-provider';
 import { useTranslation } from 'next-i18next';
 import { getStaticPaths, makeStaticProps } from '@/lib/getStatic';
@@ -50,6 +50,7 @@ const priceString = (currencySymbol: string, price: number) =>
   currencySymbol === '$' ? `$${price}` : `${price} ${currencySymbol}`;
 
 export default function Checkout() {
+  const ref = useRef(null);
   const { cart, getCartItems, clearCart, updateCartItem, applyDiscount, saveCartCustomer } = useContext(CartContext);
 
   const { currentLanguage } = useContext(LocaleContext);
@@ -100,6 +101,8 @@ export default function Checkout() {
   const [isFormValid, setIsFormValid] = useState(false);
   const [isEmailValid, setIsEmailValid] = useState(false);
   const [isFormLoading, setIsFormLoading] = useState(false);
+  const [isDescOpen, setIsDescOpen] = useState(false);
+  const [elementWidth, elementWidthSet] = useState('');
 
   const router = useRouter();
 
@@ -161,7 +164,7 @@ export default function Checkout() {
     };
   }, []);
 
-  const payment = function(token: string, order: any, language: string, currency: string) {
+  const payment = function (token: string, order: any, language: string, currency: string) {
     const params = {
       checkout_url: 'https://checkout.bepaid.by',
       token: token,
@@ -186,7 +189,7 @@ export default function Checkout() {
           },
         },
       },
-      closeWidget: function(status: any) {
+      closeWidget: function (status: any) {
         console.debug('close widget callback');
       },
     };
@@ -317,11 +320,10 @@ export default function Checkout() {
             <NavbarCart backButtonVisible={step === 'deliveryInfo'} onBackButtonClick={() => setStep('bag')} />
             <main className="mt-8 flex w-full items-start justify-center bg-transparent">
               {step == 'bag' && (
-                <div
-                  className="flex min-h-[calc(100vh-112px)] w-full max-w-2xl flex-col items-center justify-between bg-white pb-10 sm:rounded-t-xl">
+                <div className="fixed bottom-0 flex min-h-[calc(100vh-112px)] w-full max-w-2xl flex-col items-center justify-between bg-white pb-28 sm:rounded-t-xl sm:pb-10">
                   <div className="w-full">
                     <div className="flex flex-row items-center justify-between px-5 pt-5">
-                      <p className="text-lg uppercase sm:text-xl">
+                      <p className="text-base uppercase">
                         {priceString(cart.currency_symbol, cart.total)} {getTranslation('yourBag', cart.count)}
                       </p>
                       <button className="h-8 text-gray-light" onClick={() => clearCart()}>
@@ -331,7 +333,7 @@ export default function Checkout() {
                     <div className="mt-8 flex flex-col gap-5 px-5 pb-5 sm:pb-10">
                       {getCartItems().map(item => (
                         <div key={item.variant_id} className="flex flex-row items-center justify-between gap-3">
-                          <div className="flex flex-row items-center gap-3">
+                          <div className="flex grow flex-row items-center gap-3">
                             <ExportedImage
                               alt=""
                               className="size-10 shrink-0 rounded-full object-cover"
@@ -339,10 +341,27 @@ export default function Checkout() {
                               width={40}
                               height={40}
                             />
-                            <div className="flex flex-col">
-                              <p className="text-sm sm:text-base">
-                                {item.product_name} {item.quantity > 1 && `x ${item.quantity}`}
-                              </p>
+                            <div className="flex grow flex-col">
+                              <div
+                                className={`relative overflow-hidden ${isDescOpen ? '' : 'max-h-[19px] lg:max-h-[21px]'}`}
+                                ref={ref}
+                              >
+                                <p className="text-sm sm:text-base">
+                                  {item.product_name} {item.quantity > 1 && `x ${item.quantity}`}
+                                </p>
+
+                                {!isDescOpen &&
+                                  // @ts-ignore
+                                  ref.current?.clientWidth < '250' &&
+                                  item.product_name.length > 33 && (
+                                    <button
+                                      onClick={() => setIsDescOpen(prev => !prev)}
+                                      className="absolute bottom-0 right-0 bg-[linear-gradient(90.00deg,rgba(254,254,254,0),rgb(255,255,255)_54.444%)] text-right leading-4"
+                                    >
+                                      ...
+                                    </button>
+                                  )}
+                              </div>
                               <p className="mt-0.5 text-xs text-gray-light sm:text-sm">
                                 Total {priceString(cart.currency_symbol, item.price * item.quantity)} /{' '}
                                 {`Size: ${item.variant_name}`}
@@ -407,8 +426,7 @@ export default function Checkout() {
                 </div>
               )}
               {step == 'deliveryInfo' && (
-                <div
-                  className="flex min-h-[calc(100vh-112px)] w-full max-w-2xl flex-col items-start justify-between bg-white pb-10 text-start sm:rounded-t-xl">
+                <div className="flex min-h-[calc(100vh-112px)] w-full max-w-2xl flex-col items-start justify-between bg-white text-start sm:rounded-t-xl">
                   <p className="mb-1 px-5 pt-5 uppercase text-black">{t('addDeliveryInfo')}</p>
                   <p className="mb-8 px-5 text-xs leading-snug text-gray-light">{t('addDeliveryInfoDescription')}</p>
                   <form
@@ -488,19 +506,22 @@ export default function Checkout() {
                       <p className="pt-2.5 text-xs text-gray-light">{t('commentDescription')}</p>
                     </label>
                   </form>
-                  <p className="mb-1 px-5 uppercase text-black">{t('paymentMethod')}</p>
-                  <p className="mb-5 px-5 text-sm leading-snug text-gray-light">{t('paymentMethodDescription')}</p>
+                  <p className="mb-1 px-5 text-sm text-black">{t('paymentMethod')}</p>
+                  <p className="mb-5 px-5 text-[13px] leading-snug text-gray-light">{t('paymentMethodDescription')}</p>
                   <PaymentMethodSelector paymentMethod={paymentMethod} setPaymentMethod={setPaymentMethod} />
                   <Divider></Divider>
                   <div className="flex w-full flex-col items-center">
                     <TotalCostInfo cart={cart} />
-                    <button
-                      className="fixed bottom-0 flex h-24 w-full flex-row items-start justify-center gap-1 bg-black px-4 pt-5 text-white disabled:cursor-not-allowed disabled:opacity-35 sm:static sm:h-11 sm:w-[280px] sm:items-center sm:justify-between sm:rounded-3xl sm:pt-0"
-                      disabled={!isFormValid || isFormLoading}
-                      onClick={() => placeOrder()}
-                    >
-                      {t('continue')} <span className="text-gray">{priceString(cart.currency_symbol, cart.total)}</span>
-                    </button>
+                    <div className="sm:fixed sm:bottom-0 sm:m-[5px]">
+                      <button
+                        className="flex h-24 w-[100vw] flex-row items-start justify-center gap-1 bg-black px-4 pt-5 text-white disabled:cursor-not-allowed disabled:opacity-35 sm:static sm:h-11 sm:w-[280px] sm:items-center sm:justify-between sm:rounded-3xl sm:pt-0"
+                        disabled={!isFormValid || isFormLoading}
+                        onClick={() => placeOrder()}
+                      >
+                        {t('continue')}{' '}
+                        <span className="text-gray">{priceString(cart.currency_symbol, cart.total)}</span>
+                      </button>
+                    </div>
                   </div>
                 </div>
               )}
@@ -663,7 +684,7 @@ const TermsAndConditions = (props: any) => {
   const { t } = useTranslation('checkout');
 
   return (
-    <div className="flex w-full flex-row items-center justify-center gap-2">
+    <div className="flex w-[95%] flex-row items-center justify-center gap-2 sm:w-full">
       <p className="text-start text-xs text-gray-light sm:text-center">{t('agree')}</p>
       <Link href="/terms">
         <Icons.infoCircle className="size-3.5 shrink-0" />
@@ -686,8 +707,7 @@ const PaymentMethodSelector = (props: {
 
   return (
     <div className="mb-8 flex w-full flex-col space-y-2.5 px-5">
-      <div
-        className="flex h-11 w-full items-center justify-between rounded-lg border border-lighter-gray has-[:checked]:border-black has-[:checked]:border-2">
+      <div className="flex h-11 w-full items-center justify-between rounded-lg border border-lighter-gray has-[:checked]:border-2 has-[:checked]:border-black">
         <label className="group flex h-11 w-full items-center justify-between px-2.5">
           <div className="flex w-full items-center">
             <input
@@ -703,15 +723,13 @@ const PaymentMethodSelector = (props: {
               <span>{t('creditCardViaBePaid')}</span>
             </div>
           </div>
-          <div
-            className="flex items-center justify-center border border-black size-5 rounded-full invisible group-has-[:checked]:visible">
-            <div className="size-1.5 bg-black rounded-full"></div>
+          <div className="invisible flex size-5 items-center justify-center rounded-full border border-black group-has-[:checked]:visible">
+            <div className="size-1.5 rounded-full bg-black"></div>
           </div>
         </label>
       </div>
 
-      <div
-        className="flex h-11 w-full items-center justify-between rounded-lg border border-lighter-gray has-[:checked]:border-black has-[:checked]:border-2">
+      <div className="flex h-11 w-full items-center justify-between rounded-lg border border-lighter-gray has-[:checked]:border-2 has-[:checked]:border-black">
         <label className="group flex h-11 w-full items-center justify-between px-2.5">
           <div className="flex w-full items-center">
             <input
@@ -727,9 +745,8 @@ const PaymentMethodSelector = (props: {
               <span>{t('paypal')}</span>
             </div>
           </div>
-          <div
-            className="flex items-center justify-center border border-black size-5 rounded-full invisible group-has-[:checked]:visible">
-            <div className="size-1.5 bg-black rounded-full"></div>
+          <div className="invisible flex size-5 items-center justify-center rounded-full border border-black group-has-[:checked]:visible">
+            <div className="size-1.5 rounded-full bg-black"></div>
           </div>
         </label>
       </div>

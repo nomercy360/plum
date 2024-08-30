@@ -6,6 +6,7 @@ import Link from '@/components/Link';
 import { useRouter } from 'next/router';
 // import { step } from 'next/dist/experimental/testmode/playwright/step';
 import BurgerMenu from './BurgerMenu';
+import { useTranslation } from 'react-i18next';
 // import { handleClientScriptLoad } from 'next/script';
 
 export default function Navbar() {
@@ -49,6 +50,7 @@ export default function Navbar() {
 
 export function NavbarCart(props: { backButtonVisible: boolean; onBackButtonClick: (value: boolean) => void }) {
   const router = useRouter();
+  const { t } = useTranslation(['checkout', 'common']);
 
   const close = async () => {
     await router.push('/');
@@ -66,8 +68,9 @@ export function NavbarCart(props: { backButtonVisible: boolean; onBackButtonClic
           </button>
         )}
       </div>
-      <Link href="/" className="flex-1 justify-center">
+      <Link href="/" className="flex justify-center text-center">
         <Icons.logo className="mx-auto h-6 w-32 text-black" />
+        {<span className="ml-1 flex self-start text-[21px]">{t('checkoutName')}</span>}
       </Link>
       <div className="flex flex-1 justify-end">
         <button onClick={() => close()} className="flex size-5 items-center justify-center rounded-full bg-black/5">

@@ -48,5 +48,6 @@
   "worldwideShipping": "Международная доставка от 10 долларов.",
   "worldwideShippingDescription": "Точную стоимость мы рассчитаем на следующем шаге",
   "creditCardViaBePaid": "Кредитная карта через BePaid",
-  "paypal": "Оплата через PayPal"
+  "paypal": "Оплата через PayPal",
+  "checkoutName": "К оплате"
 }

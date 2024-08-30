@@ -50,5 +50,6 @@
   "worldwideShipping": "Worldwide shipping from $10",
   "worldwideShippingDescription": "We will calculate the exact price on the next step",
   "creditCardViaBePaid": "Credit card via BePaid",
-  "paypal": "Payment via PayPal"
+  "paypal": "Payment via PayPal",
+  "checkoutName": "Checkout"
 }
