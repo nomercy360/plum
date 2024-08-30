@@ -320,7 +320,7 @@ export default function Checkout() {
             <NavbarCart backButtonVisible={step === 'deliveryInfo'} onBackButtonClick={() => setStep('bag')} />
             <main className="mt-8 flex w-full items-start justify-center bg-transparent">
               {step == 'bag' && (
-                <div className="fixed bottom-0 flex min-h-[calc(100vh-112px)] w-full max-w-2xl flex-col items-center justify-between bg-white pb-28 sm:rounded-t-xl sm:pb-10">
+                <div className="flex min-h-[calc(100vh-112px)] w-full max-w-2xl flex-col items-center justify-between bg-white sm:rounded-t-xl sm:pb-10">
                   <div className="w-full">
                     <div className="flex flex-row items-center justify-between px-5 pt-5">
                       <p className="text-base uppercase">
@@ -353,7 +353,7 @@ export default function Checkout() {
                                 {!isDescOpen &&
                                   // @ts-ignore
                                   ref.current?.clientWidth < '250' &&
-                                  item.product_name.length > 33 && (
+                                  item.product_name?.length > 33 && (
                                     <button
                                       onClick={() => setIsDescOpen(prev => !prev)}
                                       className="absolute bottom-0 right-0 bg-[linear-gradient(90.00deg,rgba(254,254,254,0),rgb(255,255,255)_54.444%)] text-right leading-4"
@@ -413,15 +413,20 @@ export default function Checkout() {
                     </div>
                   </div>
                   <div className="mt-8 flex w-full flex-col items-center justify-center gap-5 text-center sm:max-w-md">
+                    <div className="flex justify-center px-5 sm:hidden">
+                      <TermsAndConditions />
+                    </div>
                     <button
-                      className="absolute bottom-0 flex h-24 w-full flex-row items-start justify-center gap-1 bg-black px-4 pt-5 text-white disabled:cursor-not-allowed disabled:opacity-35 sm:static sm:h-11 sm:w-[280px] sm:items-center sm:justify-between sm:rounded-3xl sm:pt-0"
+                      className="flex h-24 w-full flex-row items-start justify-center gap-1 bg-black px-4 pt-5 text-white disabled:cursor-not-allowed disabled:opacity-35 sm:static sm:h-11 sm:w-[280px] sm:items-center sm:justify-between sm:rounded-3xl sm:pt-0"
                       onClick={() => toDeliveryInfo()}
                       disabled={!isEmailValid}
                     >
                       {t('continue')}
-                      <span className="text-gray">{priceString(cart.currency_symbol, cart.total)}</span>
+                      <span className="text-gray">{priceString(cart?.currency_symbol, cart?.total)}</span>
                     </button>
-                    <TermsAndConditions />
+                    <div className="hidden w-full sm:flex">
+                      <TermsAndConditions />
+                    </div>
                   </div>
                 </div>
               )}
@@ -506,8 +511,13 @@ export default function Checkout() {
                       <p className="pt-2.5 text-xs text-gray-light">{t('commentDescription')}</p>
                     </label>
                   </form>
-                  <p className="mb-1 px-5 text-sm text-black">{t('paymentMethod')}</p>
-                  <p className="mb-5 px-5 text-[13px] leading-snug text-gray-light">{t('paymentMethodDescription')}</p>
+                  <div className="flex w-full flex-col">
+                    <p className="mb-1 min-w-[5] px-5 text-sm text-black">{t('paymentMethod')}</p>
+                    <p className="mb-5 px-5 text-[13px] leading-snug text-gray-light">
+                      {t('paymentMethodDescription')}
+                    </p>
+                  </div>
+
                   <PaymentMethodSelector paymentMethod={paymentMethod} setPaymentMethod={setPaymentMethod} />
                   <Divider></Divider>
                   <div className="flex w-full flex-col items-center">
@@ -684,7 +694,7 @@ const TermsAndConditions = (props: any) => {
   const { t } = useTranslation('checkout');
 
   return (
-    <div className="flex w-[95%] flex-row items-center justify-center gap-2 sm:w-full">
+    <div className="flex w-full flex-row items-center justify-center gap-2">
       <p className="text-start text-xs text-gray-light sm:text-center">{t('agree')}</p>
       <Link href="/terms">
         <Icons.infoCircle className="size-3.5 shrink-0" />
