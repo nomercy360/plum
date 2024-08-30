@@ -68,11 +68,9 @@ export function NavbarCart(props: { backButtonVisible: boolean; onBackButtonClic
           </button>
         )}
       </div>
-      <Link href="/">
-        <div className="flex items-center justify-center">
-          <Icons.logo className="mx-auto h-6 w-32 text-black" />
-          {<span className="ml-1 flex self-start text-[21px]">{t('checkoutName')}</span>}
-        </div>
+      <Link href="/" className="flex justify-center text-center">
+        <Icons.logo className="mx-auto h-6 w-32 text-black" />
+        {<span className="ml-1 flex self-start text-[21px]">{t('checkoutName')}</span>}
       </Link>
       <div className="flex flex-1 justify-end">
         <button onClick={() => close()} className="flex size-5 items-center justify-center rounded-full bg-black/5">
