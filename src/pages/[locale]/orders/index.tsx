@@ -135,7 +135,7 @@ function OrderLayout({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   return (
     <div className="flex flex-col items-center justify-start bg-white">
-      <NavbarCart />
+      <NavbarCart backButtonVisible={false} onBackButtonClick={() => router.back()} />
       <div className="flex flex-col items-center justify-between p-8 sm:justify-center">
         <div></div>
         {children}

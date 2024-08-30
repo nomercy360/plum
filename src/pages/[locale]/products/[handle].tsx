@@ -9,7 +9,6 @@ import { useTranslation } from 'next-i18next';
 import { fetchProducts, Product } from '@/pages/[locale]';
 import { getI18nProps } from '@/lib/getStatic';
 import i18nextConfig from '../../../../next-i18next.config';
-import { sendGTMEvent } from '@next/third-parties/google';
 import Head from 'next/head';
 
 export default function ProductPage({ product }: { product: Product }) {
@@ -17,6 +16,14 @@ export default function ProductPage({ product }: { product: Product }) {
   const { addToCart, cart } = useContext(CartContext);
   const [selectedSize, setSelectedSize] = useState<number>(0);
   const [wasAddedToCart, setWasAddedToCart] = useState(false);
+
+  const { currency } = useContext(CartContext);
+
+  const [currencyCode, currencySymbol, price] = useMemo(() => {
+    const price = product.prices.find(price => price.currency_code === currency);
+    if (!price) return [product.prices[0].currency_code, product.prices[0].currency_symbol, product.prices[0].price];
+    return [price.currency_code, price.currency_symbol, price.price];
+  }, [product, currency]);
 
   const handleAddToCart = () => {
     const item = {
@@ -31,14 +38,14 @@ export default function ProductPage({ product }: { product: Product }) {
     window.dataLayer.push({
       event: 'add_to_cart',
       ecommerce: {
-        currency: product.currency_code,
+        currency: currencyCode,
         items: [
           {
             item_id: product.id,
             item_name: product.name,
             item_category: 'Dresses',
             item_brand: 'Plum',
-            price: product.price,
+            price: price,
             quantity: 1,
           },
         ],
@@ -64,14 +71,14 @@ export default function ProductPage({ product }: { product: Product }) {
     window.dataLayer.push({
       event: 'view_item',
       ecommerce: {
-        currency: product.currency_code,
+        currency: currencyCode,
         items: [
           {
             item_id: product.id,
             item_name: product.name,
             item_category: 'Dresses',
             item_brand: 'Plum',
-            price: product.price,
+            price: price,
             quantity: 1,
           },
         ],
@@ -87,8 +94,9 @@ export default function ProductPage({ product }: { product: Product }) {
     return product.variants.find(variant => variant.id === selectedSize)?.available;
   }, [product, selectedSize]);
 
-  const priceString =
-    product.currency_symbol === '$' ? `$${product.price}` : `${product.price} ${product.currency_symbol}`;
+  const priceToString = (price: number, currencySymbol: string) => {
+    return currencySymbol === '$' ? `$${price}` : `${price} ${currencySymbol}`;
+  };
 
   return (
     <div>
@@ -96,7 +104,7 @@ export default function ProductPage({ product }: { product: Product }) {
         <title>{product.name} | PLUM®</title>
         <meta
           name="og:title"
-          content={`PLUM® | ${product.name}. Available for ${product.price}${product.currency_code}`}
+          content={`PLUM® | ${product.name}. Available for ${price}${currencyCode}`}
         />
         <meta name="og:description" content={product.description} />
         <meta name="og:image" content={product.images[0]} />
@@ -138,15 +146,15 @@ export default function ProductPage({ product }: { product: Product }) {
                   disabled={isVariantInCart}
                 >
                   <p className="text-white">{isVariantInCart ? t('alreadyInBag') : t('addToBag')}</p>
-                  {!isVariantInCart && <p className="text-white">{priceString}</p>}
+                  {!isVariantInCart && <p className="text-white">{priceToString(price, currencySymbol)}</p>}
                 </button>
               ) : (
                 <div
                   className="flex h-11 min-w-[140px] flex-row items-center justify-between gap-2 rounded-full bg-light-green px-3.5 text-base text-white">
                   <p className="text-white">{t('added')}</p>
                   <p className="text-white">
-                    {product.price}
-                    {product.currency_symbol}
+                    {price}
+                    {currencySymbol}
                   </p>
                 </div>
               )}

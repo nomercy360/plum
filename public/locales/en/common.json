@@ -27,5 +27,8 @@
   "collaborationsPress": "Collaborations, shootings, press",
   "individualEntrepreneur": "Individual Entrepreneur: Mari Chkheidze",
   "vat": "VAT: 57101067052",
-  "address": "Address: Georgia, Tbilisi, Khataeti street, N48, 502"
+  "address": "Address: Georgia, Tbilisi, Khataeti street, N48, 502",
+  "shop": "Shop",
+  "archive": "Archive",
+  "warningPayment": "Please be aware that during checkout, the final price will be automatically converted to the currency used by the payment provider."
 }

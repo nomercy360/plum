@@ -8,6 +8,8 @@ import ExportedImage from 'next-image-export-optimizer';
 import SubscribeForm from '@/components/SubscribeForm';
 import Navbar from '@/components/Navbar';
 import Head from 'next/head';
+import { useContext, useMemo } from 'react';
+import { CartContext } from '@/context/cart-provider';
 
 export type Product = {
   id: number;
@@ -22,9 +24,11 @@ export type Product = {
   }[];
   image: string;
   images: string[];
-  currency_code: string;
-  currency_symbol: string;
-  price: number;
+  prices: {
+    currency_code: string;
+    currency_symbol: string;
+    price: number;
+  }[];
 };
 
 export default function Home({ products }: { products: Product[] }) {
@@ -53,7 +57,12 @@ export default function Home({ products }: { products: Product[] }) {
     <div>
       <main className="flex min-h-screen flex-col items-center justify-between bg-white pb-24 sm:pb-44">
         <Navbar />
-        <div className="mb-20 mt-14 hidden grid-cols-2 gap-10 px-12 lg:grid">
+        <div className="flex min-h-[520px] w-full px-5 lg:max-h-[600px] lg:px-12">
+          <div className="flex w-full justify-center overflow-hidden rounded-2xl lg:rounded-xl">
+            <video className="h-full w-full object-cover" src="/video/plum_ad_two_1160.mp4" autoPlay loop muted />
+          </div>
+        </div>
+        <div className="mb-20 mt-10 hidden grid-cols-2 gap-10 px-12 lg:grid">
           <div className="grid grid-cols-2 gap-10">
             {productsFirstSection.map(product => (
               <ProductCard key={product.id} product={product} />
@@ -91,12 +100,12 @@ export default function Home({ products }: { products: Product[] }) {
         <div className="mb-10 mt-4 grid grid-cols-2 gap-4 px-5 lg:hidden">
           {products.map(product =>
             // every fifth product
-            product.id % 5 === 0 ? (
+            product.id % 5 <= 3 ? (
+              <ProductCard key={product.id} product={product} />
+            ) : (
               <div key={product.id} className="col-span-2 row-span-2">
                 <ProductCard product={product} />
               </div>
-            ) : (
-              <ProductCard key={product.id} product={product} />
             ),
           )}
         </div>
@@ -108,8 +117,15 @@ export default function Home({ products }: { products: Product[] }) {
 }
 
 function ProductCard({ product }: { product: Product }) {
-  const priceString =
-    product.currency_code === 'USD' ? `$${product.price}` : `${product.price} ${product.currency_symbol}`;
+  const { currency } = useContext(CartContext);
+
+  const price = useMemo(() => product.prices.find(price => price.currency_code === currency), [currency]);
+
+  const priceString = price
+    ? price.currency_symbol === '$'
+      ? `$${price.price}`
+      : `${price.price} ${price.currency_symbol}`
+    : '';
 
   return (
     <>

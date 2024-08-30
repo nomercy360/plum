@@ -1,0 +1,8 @@
+.check {
+  cursor: pointer;
+}
+
+.radio:checked + .check {
+  background-color: #262626;
+  color: #ffffff;
+}

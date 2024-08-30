@@ -49,6 +49,7 @@ type AddToCartItem = {
   product_id: number;
   quantity: number;
   variant_id: number;
+  currency_code?: string;
 };
 
 interface ICart {
@@ -60,6 +61,9 @@ interface ICart {
   getCartItems: () => Array<CartItem>;
   restoreCart: () => void;
   saveCartCustomer: (email: string) => void;
+  currency: 'USD' | 'BYN';
+  currencySign: '$' | 'byn';
+  updateCurrency: (currency: string) => void;
 }
 
 async function fetchAPI({
@@ -96,12 +100,26 @@ export const CartContext = createContext<ICart>({
   getCartItems: () => [],
   restoreCart: () => {},
   saveCartCustomer: () => {},
+  currency: 'USD',
+  currencySign: '$',
+  updateCurrency: () => {},
 });
 
 const CartProvider = ({ children }: { children: React.ReactNode }) => {
   const { currentLanguage } = useContext(LocaleContext);
 
   const [cart, setCart] = useState<Cart>({} as Cart);
+
+  const [currency, setCurrency] = useState<'USD' | 'BYN'>('USD');
+  const [currencySign, setCurrencySign] = useState<'$' | 'byn'>('$');
+
+  useEffect(() => {
+    const storedCurrency = localStorage.getItem('plum-currency-code') as 'USD' | 'BYN';
+    if (storedCurrency) {
+      setCurrency(storedCurrency);
+      setCurrencySign(storedCurrency === 'USD' ? '$' : 'byn');
+    }
+  }, []);
 
   useEffect(() => {
     const cartID = localStorage.getItem('plum-cart-id');
@@ -110,7 +128,7 @@ const CartProvider = ({ children }: { children: React.ReactNode }) => {
       return;
     }
 
-    const cartResp = fetchAPI({
+    const resp = fetchAPI({
       endpoint: `cart/${cartID}`,
       locale: currentLanguage,
     })
@@ -130,6 +148,8 @@ const CartProvider = ({ children }: { children: React.ReactNode }) => {
   }, [currentLanguage]);
 
   const addToCart = async (item: AddToCartItem) => {
+    item.currency_code = currency;
+
     if (!cart.id) {
       const resp = await fetchAPI({ endpoint: 'cart', method: 'POST', body: item, locale: currentLanguage });
       const data = await resp.json();
@@ -236,6 +256,26 @@ const CartProvider = ({ children }: { children: React.ReactNode }) => {
     }
   };
 
+  const updateCartCurrency = async (currency: string) => {
+    setCurrency(currency as 'USD' | 'BYN');
+    setCurrencySign(currency === 'USD' ? '$' : 'byn');
+
+    localStorage.setItem('plum-currency-code', currency);
+
+    console.log('updateCartCurrency', currency);
+    const resp = await fetchAPI({
+      endpoint: `cart/${cart.id}/currency`,
+      method: 'POST',
+      body: { currency_code: currency },
+      locale: currentLanguage,
+    });
+    const data = await resp.json();
+
+    if (resp.ok) {
+      setCart(() => data);
+    }
+  };
+
   return (
     <CartContext.Provider
       value={{
@@ -247,6 +287,9 @@ const CartProvider = ({ children }: { children: React.ReactNode }) => {
         restoreCart,
         getCartItems: () => cart.items,
         saveCartCustomer,
+        currency,
+        currencySign,
+        updateCurrency: updateCartCurrency,
       }}
     >
       {children}
