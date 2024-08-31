@@ -362,7 +362,7 @@ export default function Checkout() {
         <meta name="og:image" content="https://plumplum.co/images/og.png" />
         <meta name="description" content="Dresses & things" />
       </Head>
-      <div className="relative h-full min-h-screen overflow-x-hidden bg-lighter-gray">
+      <div className="relative overflow-x-hidden bg-lighter-gray">
         {cart.count > 0 ? (
           <div>
             <NavbarCart backButtonVisible={step === 'deliveryInfo'} onBackButtonClick={() => setStep('bag')} />
