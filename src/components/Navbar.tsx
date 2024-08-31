@@ -27,25 +27,30 @@ export default function Navbar() {
   }, [isDisplayMenu]);
 
   return (
-    <header className="fixes top-0 flex w-full flex-row items-center justify-between bg-transparent p-5 text-base text-black">
-      <button className="m-[5px] flex h-[20px] w-[20px] items-center justify-center" onClick={handleDisplayBurgerMenu}>
-        {isDisplayMenu ? (
-          <Icons.close className="h-6 w-32 text-black" />
-        ) : (
-          <>
-            <Icons.menu className="h-6 w-32 text-black" />
-          </>
-        )}
-      </button>
-      <Link href="/">
-        <Icons.logo className="h-6 w-32 text-black" />
-      </Link>
-      <div className="flex flex-row items-center justify-between gap-3">
-        {/* <LanguageSwitchLink theme="light" /> */}
-        <CartButton cartItems={cart.count} theme="light" />
-      </div>
+    <>
+      <header className="fixes top-0 flex w-full flex-row items-center justify-between bg-transparent p-5 text-base text-black">
+        <button
+          className="m-[5px] flex h-[20px] w-[20px] items-center justify-center"
+          onClick={handleDisplayBurgerMenu}
+        >
+          {isDisplayMenu ? (
+            <Icons.close className="h-6 w-32 text-black" />
+          ) : (
+            <>
+              <Icons.menu className="h-6 w-32 text-black" />
+            </>
+          )}
+        </button>
+        <Link href="/">
+          <Icons.logo className="h-6 w-32 text-black" />
+        </Link>
+        <div className="flex flex-row items-center justify-between gap-3">
+          {/* <LanguageSwitchLink theme="light" /> */}
+          <CartButton cartItems={cart.count} theme="light" />
+        </div>
+      </header>
       <BurgerMenu display={isDisplayMenu} />
-    </header>
+    </>
   );
 }
 
