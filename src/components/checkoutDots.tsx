@@ -1,15 +1,21 @@
 import { CartItem } from '@/context/cart-provider';
-import { useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 
 export const CheckoutDots = (item: { item: CartItem }) => {
-  const ref = useRef(null);
+  const [widthClient, setWidthClient] = useState(0);
   const { product_name, quantity } = item.item;
   const [isDescOpen, setIsDescOpen] = useState(false);
+  useEffect(() => {
+    const width = document.querySelector('#refId')?.clientWidth;
+    if (width) {
+      setWidthClient(width);
+    }
+  }, []);
 
   return (
     <div
       className={`relative flex flex-row gap-[5px] overflow-hidden ${isDescOpen ? '' : 'max-h-[19px] lg:max-h-[21px]'}`}
-      ref={ref}
+      id="refId"
     >
       <p className="text-sm sm:text-base">
         {product_name} {quantity > 1 && `x ${quantity}`}
@@ -17,7 +23,8 @@ export const CheckoutDots = (item: { item: CartItem }) => {
 
       {!isDescOpen &&
         // @ts-ignore
-        ref.current?.clientWidth < '250' &&
+        widthClient > 0 &&
+        widthClient < 250 &&
         product_name.length > 28 && (
           <button
             onClick={() => setIsDescOpen(prev => !prev)}
