@@ -91,9 +91,9 @@ const CartButton = (props: { cartItems: number; theme: 'dark' | 'light' }) => {
     <Link href="/checkout" className="relative flex h-[30px] w-[30px] flex-row items-center justify-center gap-1">
       {props.cartItems > 0 && <span className="absolute right-1 top-1.5 h-2 w-2 rounded-full bg-red"></span>}
 
-      <Icons.basket className="h-6 w-32 text-black" />
+      <Icons.basket className="h-6 w-6 text-black" />
       {props.cartItems > 0 && (
-        <span className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 transform text-center text-[11px] font-normal leading-[15px]">
+        <span className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 transform text-center text-[10px] font-black leading-[12px]">
           {props.cartItems}
         </span>
       )}
