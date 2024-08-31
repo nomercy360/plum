@@ -98,7 +98,7 @@ const CartButton = (props: { cartItems: number; theme: 'dark' | 'light' }) => {
 
       <Icons.basket className="h-6 w-6 text-black" />
       {props.cartItems > 0 && (
-        <span className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 transform text-center text-[10px] font-black leading-[12px]">
+        <span className="absolute left-1/2 top-[calc(50%+3px)] -translate-x-1/2 -translate-y-1/2 transform text-center text-[10px] font-black leading-[12px] sm:top-1/2">
           {props.cartItems}
         </span>
       )}
