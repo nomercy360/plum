@@ -1,6 +1,6 @@
 import Icons from './Icons';
 import { CartContext } from '@/context/cart-provider';
-import { useContext, useEffect, useState } from 'react';
+import { use, useContext, useEffect, useState } from 'react';
 import Link from '@/components/Link';
 // import LanguageSwitchLink from '@/components/LanguageSwitchButton';
 import { useRouter } from 'next/router';
@@ -25,6 +25,15 @@ export default function Navbar() {
       document.body.style.overflow = '';
     }
   }, [isDisplayMenu]);
+  useEffect(() => {
+    const userAgent = navigator.userAgent.toLowerCase();
+    const isMobile = /mobile|iphone|ipad|ipod|android|blackberry|mini|windows\sce|palm/i.test(userAgent);
+    if (isMobile || /^((?!chrome|android|mozilla).)*safari/i.test(navigator.userAgent)) {
+      localStorage.setItem('isMobilePhone', 'true');
+    } else {
+      localStorage.setItem('isMobilePhone', 'false');
+    }
+  }, []);
 
   return (
     <>
@@ -98,7 +107,9 @@ const CartButton = (props: { cartItems: number; theme: 'dark' | 'light' }) => {
 
       <Icons.basket className="h-6 w-6 text-black" />
       {props.cartItems > 0 && (
-        <span className="absolute left-1/2 top-[calc(50%+3px)] -translate-x-1/2 -translate-y-1/2 transform text-center text-[10px] font-black leading-[12px] sm:top-1/2">
+        <span
+          className={`absolute left-1/2 ${localStorage.getItem('isMobilePhone') === 'true' ? 'top-[calc(50%+3px)]' : 'top-1/2'} -translate-x-1/2 -translate-y-1/2 transform text-center text-[10px] font-black leading-[12px]`}
+        >
           {props.cartItems}
         </span>
       )}
