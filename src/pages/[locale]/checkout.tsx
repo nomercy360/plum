@@ -15,6 +15,7 @@ import countries from '@/lib/countries.json';
 import { sendGTMEvent } from '@next/third-parties/google';
 import { NavbarCart } from '@/components/Navbar';
 import Head from 'next/head';
+import local from 'next/font/local';
 
 export const cartItemsToGTM = (items: CartItem[]) => {
   return items.map(item => {
@@ -151,6 +152,7 @@ export default function Checkout() {
     // update cart with email
     saveCartCustomer(email);
     setStep('deliveryInfo');
+    localStorage.setItem('cartDelivery', 'deliveryInfo');
   }
 
   useEffect(() => {
@@ -320,7 +322,7 @@ export default function Checkout() {
             <NavbarCart backButtonVisible={step === 'deliveryInfo'} onBackButtonClick={() => setStep('bag')} />
             <main className="mt-8 flex w-full items-start justify-center bg-transparent">
               {step == 'bag' && (
-                <div className="flex min-h-[calc(100vh-112px)] w-full max-w-2xl flex-col items-center justify-between bg-white sm:rounded-t-xl sm:pb-10">
+                <div className="flex min-h-[calc(100vh-112px)] w-full max-w-2xl flex-col items-center justify-between rounded-t-xl bg-white sm:pb-10">
                   <div className="w-full">
                     <div className="flex flex-row items-center justify-between px-5 pt-5">
                       <p className="text-base uppercase">
@@ -341,9 +343,9 @@ export default function Checkout() {
                               width={40}
                               height={40}
                             />
-                            <div className="flex grow flex-col">
+                            <div className="relative flex grow flex-col">
                               <div
-                                className={`relative overflow-hidden ${isDescOpen ? '' : 'max-h-[19px] lg:max-h-[21px]'}`}
+                                className={`relative flex flex-row overflow-hidden ${isDescOpen ? '' : 'max-h-[19px] lg:max-h-[21px]'}`}
                                 ref={ref}
                               >
                                 <p className="text-sm sm:text-base">
@@ -352,8 +354,8 @@ export default function Checkout() {
 
                                 {!isDescOpen &&
                                   // @ts-ignore
-                                  ref.current?.clientWidth < '450' &&
-                                  item.product_name.length > 33 && (
+                                  ref.current?.clientWidth < '270' &&
+                                  item.product_name.length > 28 && (
                                     <button
                                       onClick={() => setIsDescOpen(prev => !prev)}
                                       className="absolute bottom-0 right-0 mx-[5px] bg-[linear-gradient(90.00deg,rgba(254,254,254,0),rgb(255,255,255)_54.444%)] text-right leading-4"
