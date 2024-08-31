@@ -20,7 +20,7 @@ export default function BurgerMenu({ display }: IPropsBurgerMenu) {
   };
 
   const burgerMenuClasses = clsx(
-    'w-full h-[calc(100%-65px)] mt-[65px] flex flex-col items-center justify-between p-8 bg-white fixed top-0 z-50 transition-opacity duration-300 ease-in-out',
+    'w-full h-[calc(100%-65px)] mt-[65px] flex flex-col items-center justify-center  p-8 bg-white fixed top-0 z-50 transition-opacity duration-300 ease-in-out',
     {
       'opacity-100': display,
       'opacity-0 pointer-events-none': !display,
@@ -41,7 +41,7 @@ export default function BurgerMenu({ display }: IPropsBurgerMenu) {
           ))}
         </ul>
       </nav>
-      <div className="max-w-[450px]">
+      {/* <div className="max-w-[450px]">
         <ul className="mb-5 flex justify-center gap-2">
           {currencyList.map((item, i) => (
             <li key={i}>
@@ -64,7 +64,7 @@ export default function BurgerMenu({ display }: IPropsBurgerMenu) {
           ))}
         </ul>
         <p className="text-balance text-center text-sm text-gray-light">{t('warningPayment')}</p>
-      </div>
+      </div> */}
     </div>
   );
 }
