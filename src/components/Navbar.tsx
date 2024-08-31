@@ -71,7 +71,6 @@ export function NavbarCart(props: { backButtonVisible: boolean; onBackButtonClic
     await router.push('/');
     localStorage.setItem('cartDelivery', '');
   };
-  console.log(props.backButtonVisible);
 
   return (
     <header className="flex h-14 w-full items-center justify-between bg-transparent px-4 text-base text-black sm:h-20 sm:px-7">
