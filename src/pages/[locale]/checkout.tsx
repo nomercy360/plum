@@ -16,6 +16,7 @@ import { NavbarCart } from '@/components/Navbar';
 import Head from 'next/head';
 import PaypalButtons from '@/components/paypal-buttons';
 import local from 'next/font/local';
+import { CheckoutDots } from '@/components/checkoutDots';
 
 export const cartItemsToGTM = (items: CartItem[]) => {
   return items.map(item => {
@@ -56,8 +57,7 @@ const priceString = (currencySymbol: string, price: number) =>
 
 export default function Checkout() {
   const ref = useRef(null);
-  const { cart, getCartItems, clearCart, updateCartItem, applyDiscount, saveCartCustomer, updateCurrency } =
-    useContext(CartContext);
+  const { cart, getCartItems, clearCart, updateCartItem, applyDiscount, saveCartCustomer } = useContext(CartContext);
 
   const { currentLanguage } = useContext(LocaleContext);
 
@@ -100,8 +100,6 @@ export default function Checkout() {
   const [isFormValid, setIsFormValid] = useState(false);
   const [isEmailValid, setIsEmailValid] = useState(false);
   const [isFormLoading, setIsFormLoading] = useState(false);
-  const [isDescOpen, setIsDescOpen] = useState(false);
-  const [elementWidth, elementWidthSet] = useState('');
 
   const router = useRouter();
 
@@ -410,48 +408,6 @@ export default function Checkout() {
                                     <button
                                       onClick={() => setIsDescOpen(prev => !prev)}
                                       className="absolute bottom-0 right-0 mx-[5px] bg-[linear-gradient(90.00deg,rgba(254,254,254,0),rgb(255,255,255)_54.444%)] text-right leading-4"
-                                    >
-                                      ...
-                                    </button>
-                                  )}
-                              </div>
-                            <div className="flex grow flex-col">
-                              <div
-                                className={`relative overflow-hidden ${isDescOpen ? '' : 'max-h-[19px] lg:max-h-[21px]'}`}
-                                ref={ref}
-                              >
-                                <p className="text-sm sm:text-base">
-                                  {item.product_name} {item.quantity > 1 && `x ${item.quantity}`}
-                                </p>
-
-                                {!isDescOpen &&
-                                  // @ts-ignore
-                                  ref.current?.clientWidth < '250' &&
-                                  item.product_name?.length > 33 && (
-                                    <button
-                                      onClick={() => setIsDescOpen(prev => !prev)}
-                                      className="absolute bottom-0 right-0 bg-[linear-gradient(90.00deg,rgba(254,254,254,0),rgb(255,255,255)_54.444%)] text-right leading-4"
-                                    >
-                                      ...
-                                    </button>
-                                  )}
-                              </div>
-                            <div className="flex grow flex-col">
-                              <div
-                                className={`relative overflow-hidden ${isDescOpen ? '' : 'max-h-[19px] lg:max-h-[21px]'}`}
-                                ref={ref}
-                              >
-                                <p className="text-sm sm:text-base">
-                                  {item.product_name} {item.quantity > 1 && `x ${item.quantity}`}
-                                </p>
-
-                                {!isDescOpen &&
-                                  // @ts-ignore
-                                  ref.current?.clientWidth < '250' &&
-                                  item.product_name?.length > 33 && (
-                                    <button
-                                      onClick={() => setIsDescOpen(prev => !prev)}
-                                      className="absolute bottom-0 right-0 bg-[linear-gradient(90.00deg,rgba(254,254,254,0),rgb(255,255,255)_54.444%)] text-right leading-4"
                                     >
                                       ...
                                     </button>
