@@ -314,13 +314,13 @@ export default function Checkout() {
         <meta name="og:image" content="https://plumplum.co/images/og.png" />
         <meta name="description" content="Dresses & things" />
       </Head>
-      <div className="h-full min-h-screen overflow-x-hidden bg-lighter-gray">
+      <div className="relative h-full min-h-screen overflow-x-hidden bg-lighter-gray">
         {cart.count > 0 ? (
           <div>
             <NavbarCart backButtonVisible={step === 'deliveryInfo'} onBackButtonClick={() => setStep('bag')} />
             <main className="mt-8 flex w-full items-start justify-center bg-transparent">
               {step == 'bag' && (
-                <div className="flex h-[calc(100%-65px)] w-full max-w-2xl flex-col items-start justify-between rounded-t-xl bg-white sm:pb-10">
+                <div className="flex min-h-[calc(100vh-112px)] w-full max-w-2xl flex-col items-start justify-between rounded-t-xl bg-white sm:pb-10">
                   <div className="w-full">
                     <div className="flex flex-row items-center justify-between px-5 pt-5">
                       <p className="text-base uppercase">
@@ -393,26 +393,30 @@ export default function Checkout() {
                       />
                     </div>
                   </div>
-                  <div className="mt-8 flex w-full flex-col items-center justify-center gap-5 text-center sm:max-w-md">
-                    <div className="flex justify-center px-5 sm:hidden">
-                      <TermsAndConditions />
-                    </div>
-                    <button
-                      className="flex h-24 w-full flex-row items-start justify-center gap-1 bg-black px-4 pt-5 text-white disabled:cursor-not-allowed disabled:opacity-35 sm:static sm:h-11 sm:w-[280px] sm:items-center sm:justify-between sm:rounded-3xl sm:pt-0"
-                      onClick={() => toDeliveryInfo()}
-                      disabled={!isEmailValid}
-                    >
-                      {t('continue')}
-                      <span className="text-gray">{priceString(cart?.currency_symbol, cart?.total)}</span>
-                    </button>
-                    <div className="hidden w-full sm:flex">
-                      <TermsAndConditions />
+
+                  <div className="flex w-full flex-row justify-center">
+                    <div className="mt-8 flex w-full flex-col items-center justify-center gap-5 text-center sm:max-w-md">
+                      <div className="flex justify-center px-5 sm:hidden">
+                        <TermsAndConditions />
+                      </div>
+                      <button
+                        className="mt-4 flex h-24 w-full flex-row items-start justify-center gap-1 bg-black px-4 pt-5 text-white disabled:cursor-not-allowed disabled:opacity-35 sm:h-11 sm:w-[280px] sm:items-center sm:justify-between sm:rounded-3xl sm:pt-0"
+                        onClick={() => toDeliveryInfo()}
+                        disabled={!isEmailValid}
+                      >
+                        {t('continue')}
+                        <span className="text-gray">{priceString(cart?.currency_symbol, cart?.total)}</span>
+                      </button>
+                      <div className="hidden w-full sm:flex lg:pb-5">
+                        <TermsAndConditions />
+                      </div>
                     </div>
                   </div>
                 </div>
               )}
+
               {step == 'deliveryInfo' && (
-                <div className="flex min-h-[calc(100vh-112px)] w-full max-w-2xl flex-col items-start justify-between bg-white text-start sm:rounded-t-xl">
+                <div className="flex min-h-[calc(100vh-112px)] w-full max-w-2xl flex-col items-start justify-between rounded-t-xl bg-white text-start">
                   <p className="mb-1 px-5 pt-5 uppercase text-black">{t('addDeliveryInfo')}</p>
                   <p className="mb-8 px-5 text-xs leading-snug text-gray-light">{t('addDeliveryInfoDescription')}</p>
                   <form
@@ -503,9 +507,9 @@ export default function Checkout() {
                   <Divider></Divider>
                   <div className="flex w-full flex-col items-center">
                     <TotalCostInfo cart={cart} />
-                    <div className="sm:fixed sm:bottom-0 sm:m-[5px]">
+                    <div className="sm:m-[5px]">
                       <button
-                        className="flex h-24 w-[100vw] flex-row items-start justify-center gap-1 bg-black px-4 pt-5 text-white disabled:cursor-not-allowed disabled:opacity-35 sm:static sm:h-11 sm:w-[280px] sm:items-center sm:justify-between sm:rounded-3xl sm:pt-0"
+                        className="flex h-24 w-[100vw] flex-row items-start justify-center gap-1 bg-black px-4 pt-5 text-white disabled:cursor-not-allowed disabled:opacity-35 sm:h-11 sm:w-[280px] sm:items-center sm:justify-between sm:rounded-3xl sm:pt-0"
                         disabled={!isFormValid || isFormLoading}
                         onClick={() => placeOrder()}
                       >
