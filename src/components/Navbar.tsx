@@ -7,6 +7,7 @@ import { useRouter } from 'next/router';
 // import { step } from 'next/dist/experimental/testmode/playwright/step';
 import BurgerMenu from './BurgerMenu';
 import { useTranslation } from 'react-i18next';
+import { usePathname } from 'next/navigation';
 // import { handleClientScriptLoad } from 'next/script';
 
 export default function Navbar() {
@@ -54,7 +55,9 @@ export function NavbarCart(props: { backButtonVisible: boolean; onBackButtonClic
 
   const close = async () => {
     await router.push('/');
+    localStorage.setItem('cartDelivery', '');
   };
+  console.log(props.backButtonVisible);
 
   return (
     <header className="flex h-14 w-full items-center justify-between bg-transparent px-4 text-base text-black sm:h-20 sm:px-7">
@@ -70,7 +73,9 @@ export function NavbarCart(props: { backButtonVisible: boolean; onBackButtonClic
       </div>
       <Link href="/" className="flex justify-center text-center">
         <Icons.logo className="mx-auto h-6 w-32 text-black" />
-        {<span className="ml-1 flex self-start text-[21px]">{t('checkoutName')}</span>}
+        {localStorage.getItem('cartDelivery') === 'deliveryInfo' && (
+          <span className="ml-1 place-self-start text-[21px]">{t('checkoutName')}</span>
+        )}
       </Link>
       <div className="flex flex-1 justify-end">
         <button onClick={() => close()} className="flex size-5 items-center justify-center rounded-full bg-black/5">

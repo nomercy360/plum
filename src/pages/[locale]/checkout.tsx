@@ -15,6 +15,7 @@ import countries from '@/lib/countries.json';
 import { NavbarCart } from '@/components/Navbar';
 import Head from 'next/head';
 import PaypalButtons from '@/components/paypal-buttons';
+import local from 'next/font/local';
 
 export const cartItemsToGTM = (items: CartItem[]) => {
   return items.map(item => {
@@ -150,6 +151,13 @@ export default function Checkout() {
       }));
     }
   }, [cart.customer]);
+
+  async function toDeliveryInfo() {
+    // update cart with email
+    saveCartCustomer(email);
+    setStep('deliveryInfo');
+    localStorage.setItem('cartDelivery', 'deliveryInfo');
+  }
 
   useEffect(() => {
     const script = document.createElement('script');
@@ -364,7 +372,6 @@ export default function Checkout() {
             <main className="mt-8 flex w-full items-start justify-center bg-transparent">
               {step == 'bag' && (
                 <div className="flex min-h-[calc(100vh-112px)] w-full max-w-2xl flex-col items-center justify-between bg-white sm:rounded-t-xl sm:pb-10">
-                <div className="flex min-h-[calc(100vh-112px)] w-full max-w-2xl flex-col items-center justify-between bg-white sm:rounded-t-xl sm:pb-10">
                   <div className="w-full">
                     <div className="flex flex-row items-center justify-between px-5 pt-5">
                       <p className="text-base uppercase">
@@ -387,6 +394,27 @@ export default function Checkout() {
                               width={40}
                               height={40}
                             />
+                            <div className="relative flex grow flex-col">
+                              <div
+                                className={`relative flex flex-row overflow-hidden ${isDescOpen ? '' : 'max-h-[19px] lg:max-h-[21px]'}`}
+                                ref={ref}
+                              >
+                                <p className="text-sm sm:text-base">
+                                  {item.product_name} {item.quantity > 1 && `x ${item.quantity}`}
+                                </p>
+
+                                {!isDescOpen &&
+                                  // @ts-ignore
+                                  ref.current?.clientWidth < '270' &&
+                                  item.product_name.length > 28 && (
+                                    <button
+                                      onClick={() => setIsDescOpen(prev => !prev)}
+                                      className="absolute bottom-0 right-0 mx-[5px] bg-[linear-gradient(90.00deg,rgba(254,254,254,0),rgb(255,255,255)_54.444%)] text-right leading-4"
+                                    >
+                                      ...
+                                    </button>
+                                  )}
+                              </div>
                             <div className="flex grow flex-col">
                               <div
                                 className={`relative overflow-hidden ${isDescOpen ? '' : 'max-h-[19px] lg:max-h-[21px]'}`}
@@ -398,11 +426,11 @@ export default function Checkout() {
 
                                 {!isDescOpen &&
                                   // @ts-ignore
-                                  ref.current?.clientWidth < '450' &&
-                                  item.product_name.length > 33 && (
+                                  ref.current?.clientWidth < '250' &&
+                                  item.product_name?.length > 33 && (
                                     <button
                                       onClick={() => setIsDescOpen(prev => !prev)}
-                                      className="absolute bottom-0 right-0 mx-[5px] bg-[linear-gradient(90.00deg,rgba(254,254,254,0),rgb(255,255,255)_54.444%)] text-right leading-4"
+                                      className="absolute bottom-0 right-0 bg-[linear-gradient(90.00deg,rgba(254,254,254,0),rgb(255,255,255)_54.444%)] text-right leading-4"
                                     >
                                       ...
                                     </button>
