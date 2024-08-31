@@ -362,8 +362,7 @@ export default function Checkout() {
         <meta name="og:image" content="https://plumplum.co/images/og.png" />
         <meta name="description" content="Dresses & things" />
       </Head>
-      <div className="h-full min-h-screen overflow-x-hidden bg-lighter-gray">
-      <div className="h-full min-h-screen overflow-x-hidden bg-lighter-gray">
+      <div className="relative h-full min-h-screen overflow-x-hidden bg-lighter-gray">
         {cart.count > 0 ? (
           <div>
             <NavbarCart backButtonVisible={step === 'deliveryInfo'} onBackButtonClick={() => setStep('bag')} />
@@ -502,9 +501,9 @@ export default function Checkout() {
                   </div>
                 </div>
               )}
+
               {step == 'deliveryInfo' && (
-                <div className="flex min-h-[calc(100vh-112px)] w-full max-w-2xl flex-col items-start justify-between bg-white text-start sm:rounded-t-xl">
-                <div className="flex min-h-[calc(100vh-112px)] w-full max-w-2xl flex-col items-start justify-between bg-white text-start sm:rounded-t-xl">
+                <div className="flex min-h-[calc(100vh-112px)] w-full max-w-2xl flex-col items-start justify-between rounded-t-xl bg-white text-start">
                   <p className="mb-1 px-5 pt-5 uppercase text-black">{t('addDeliveryInfo')}</p>
                   <p className="mb-8 px-5 text-xs leading-snug text-gray-light">{t('addDeliveryInfoDescription')}</p>
                   <div className="mb-8 flex w-full flex-col gap-4 px-5">
@@ -599,9 +598,9 @@ export default function Checkout() {
                   <div className="flex w-full flex-col items-center">
                     <TotalCostInfo cart={cart} />
                     {paymentMethod === 'bepaid' && (
-                      <div className="sm:fixed sm:bottom-0 sm:m-[5px]">
+                      <div className="sm:m-[5px]">
                         <button
-                          className="flex h-24 w-[100vw] flex-row items-start justify-center gap-1 bg-black px-4 pt-5 text-white disabled:cursor-not-allowed disabled:opacity-35 sm:static sm:h-11 sm:w-[280px] sm:items-center sm:justify-between sm:rounded-3xl sm:pt-0"
+                          className="flex h-24 w-[100vw] flex-row items-start justify-center gap-1 bg-black px-4 pt-5 text-white disabled:cursor-not-allowed disabled:opacity-35 sm:h-11 sm:w-[280px] sm:items-center sm:justify-between sm:rounded-3xl sm:pt-0"
                           disabled={!isFormValid || isFormLoading}
                           onClick={() => placeOrder()}
                         >
