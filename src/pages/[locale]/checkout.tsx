@@ -344,7 +344,7 @@ export default function Checkout() {
                             />
                             <div className="relative flex grow flex-col">
                               <CheckoutDots item={item} />
-                              <p className="mt-0.5 text-xs leading-[19px] text-gray-light sm:text-sm">
+                              <p className="mt-0.5 text-xs leading-[15px] text-gray-light sm:text-sm">
                                 Total {priceString(cart.currency_symbol, item.price * item.quantity)} /{' '}
                                 {`Size: ${item.variant_name}`}
                               </p>
