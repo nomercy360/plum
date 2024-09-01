@@ -314,13 +314,14 @@ export default function Checkout() {
         <meta name="og:image" content="https://plumplum.co/images/og.png" />
         <meta name="description" content="Dresses & things" />
       </Head>
-      <div className="relative overflow-x-hidden bg-lighter-gray">
+      <div className="relative h-full overflow-x-hidden bg-lighter-gray">
         {cart.count > 0 ? (
           <div>
             <NavbarCart backButtonVisible={step === 'deliveryInfo'} onBackButtonClick={() => setStep('bag')} />
-            <main className="mt-8 flex w-full items-start justify-center bg-transparent">
+
+            <main className="flex w-full items-start justify-center bg-transparent">
               {step == 'bag' && (
-                <div className="flex min-h-[calc(100vh-112px)] w-full max-w-2xl flex-col items-start justify-between rounded-t-xl bg-white sm:pb-10">
+                <div className="flex min-h-[calc(100vh-112px)] w-full max-w-2xl flex-col items-start justify-between rounded-t-xl bg-white text-start">
                   <div className="w-full">
                     <div className="flex flex-row items-center justify-between px-5 pt-5">
                       <p className="text-base uppercase">
@@ -330,7 +331,7 @@ export default function Checkout() {
                         {t('clearCart')}
                       </button>
                     </div>
-                    <div className="mt-8 flex flex-col gap-5 px-5 pb-5 sm:pb-10">
+                    <div className="mb-8 mt-8 flex flex-col gap-5 px-5 sm:pb-10">
                       {getCartItems().map(item => (
                         <div key={item.variant_id} className="flex flex-row items-center justify-between gap-3">
                           <div className="flex grow flex-row items-center gap-3">
@@ -343,7 +344,7 @@ export default function Checkout() {
                             />
                             <div className="relative flex grow flex-col">
                               <CheckoutDots item={item} />
-                              <p className="mt-0.5 text-xs text-gray-light sm:text-sm">
+                              <p className="mt-0.5 text-xs leading-[19px] text-gray-light sm:text-sm">
                                 Total {priceString(cart.currency_symbol, item.price * item.quantity)} /{' '}
                                 {`Size: ${item.variant_name}`}
                               </p>
@@ -375,7 +376,7 @@ export default function Checkout() {
                       </div>
                     </div>
                     <Divider></Divider>
-                    <div className="mt-8 flex w-full flex-col items-center gap-4 px-5">
+                    <div className="mt-6 flex w-full flex-col items-center gap-4 px-5">
                       <input
                         className="h-11 w-full rounded-lg bg-gray px-3 text-sm focus:outline-neutral-200 sm:text-base"
                         placeholder={t('email')}
@@ -394,20 +395,20 @@ export default function Checkout() {
                     </div>
                   </div>
 
-                  <div className="flex w-full flex-row justify-center">
-                    <div className="mt-8 flex w-full flex-col items-center justify-center gap-5 text-center sm:max-w-md">
-                      <div className="flex justify-center px-5 sm:hidden">
+                  <div className="mt-8 flex w-full flex-row justify-center sm:mt-[82px]">
+                    <div className="flex flex-col items-center justify-center gap-5 text-center sm:max-w-md">
+                      <div className="px-5 sm:hidden">
                         <TermsAndConditions />
                       </div>
                       <button
-                        className="mt-4 flex h-24 w-full flex-row items-start justify-center gap-1 bg-black px-4 pt-5 text-white disabled:cursor-not-allowed disabled:opacity-35 sm:h-11 sm:w-[280px] sm:items-center sm:justify-between sm:rounded-3xl sm:pt-0"
+                        className="flex h-24 w-[100vw] flex-row items-start justify-center gap-1 bg-black px-4 pt-5 text-white disabled:cursor-not-allowed disabled:opacity-35 sm:h-11 sm:w-[280px] sm:items-center sm:justify-between sm:rounded-3xl sm:pt-0"
                         onClick={() => toDeliveryInfo()}
                         disabled={!isEmailValid}
                       >
                         {t('continue')}
                         <span className="text-gray">{priceString(cart?.currency_symbol, cart?.total)}</span>
                       </button>
-                      <div className="hidden w-full sm:flex lg:pb-5">
+                      <div className="hidden w-full sm:flex sm:pb-5">
                         <TermsAndConditions />
                       </div>
                     </div>
