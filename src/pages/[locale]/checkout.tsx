@@ -362,11 +362,12 @@ export default function Checkout() {
         <meta name="og:image" content="https://plumplum.co/images/og.png" />
         <meta name="description" content="Dresses & things" />
       </Head>
-      <div className="relative overflow-x-hidden bg-lighter-gray">
+      <div className="relative h-full overflow-x-hidden bg-lighter-gray">
         {cart.count > 0 ? (
           <div>
             <NavbarCart backButtonVisible={step === 'deliveryInfo'} onBackButtonClick={() => setStep('bag')} />
-            <main className="mt-8 flex w-full items-start justify-center bg-transparent">
+
+            <main className="flex w-full items-start justify-center bg-transparent">
               {step == 'bag' && (
                 <div className="flex min-h-[calc(100vh-112px)] w-full max-w-2xl flex-col items-center justify-between bg-white sm:rounded-t-xl sm:pb-10">
                   <div className="w-full">
@@ -379,7 +380,7 @@ export default function Checkout() {
                         {t('clearCart')}
                       </button>
                     </div>
-                    <div className="mt-8 flex flex-col gap-5 px-5 pb-5 sm:pb-10">
+                    <div className="mb-8 mt-8 flex flex-col gap-5 px-5 sm:pb-10">
                       {getCartItems().map(item => (
                         <div key={item.variant_id} className="flex flex-row items-center justify-between gap-3">
                           <div className="flex grow flex-row items-center gap-3">
@@ -456,7 +457,7 @@ export default function Checkout() {
                       </div>
                     </div>
                     <Divider></Divider>
-                    <div className="mt-8 flex w-full flex-col items-center gap-4 px-5">
+                    <div className="mt-6 flex w-full flex-col items-center gap-4 px-5">
                       <input
                         className="h-11 w-full rounded-lg bg-gray px-3 text-sm focus:outline-neutral-200 sm:text-base"
                         className="h-11 w-full rounded-lg bg-gray px-3 text-sm focus:outline-neutral-200 sm:text-base"

@@ -73,7 +73,7 @@ export function NavbarCart(props: { backButtonVisible: boolean; onBackButtonClic
   };
 
   return (
-    <header className="flex h-14 w-full items-center justify-between bg-transparent px-4 text-base text-black sm:h-20 sm:px-7">
+    <header className="flex h-16 w-full items-center justify-between bg-transparent px-4 text-base text-black sm:h-20 sm:px-7">
       <div className="flex-1">
         {props.backButtonVisible && (
           <button
@@ -84,10 +84,10 @@ export function NavbarCart(props: { backButtonVisible: boolean; onBackButtonClic
           </button>
         )}
       </div>
-      <Link href="/" className="flex justify-center text-center">
-        <Icons.logo className="mx-auto h-6 w-32 text-black" />
+      <Link href="/" className="flex items-center justify-center">
+        <Icons.logo className="mx-auto h-6 w-32 leading-[25px] text-black" />
         {localStorage.getItem('cartDelivery') === 'deliveryInfo' && (
-          <span className="ml-1 place-self-start text-[21px]">{t('checkoutName')}</span>
+          <span className="ml-1 place-self-start text-[21px] leading-[25px]">{t('checkoutName')}</span>
         )}
       </Link>
       <div className="flex flex-1 justify-end">
