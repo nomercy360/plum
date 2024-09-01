@@ -16,7 +16,6 @@ export default function Document() {
         <link rel="icon" href="/favicon.ico" />
         <meta name="facebook-domain-verification" content="bahudlkogyzobajn9gkyr24k91b2iq" />
         <meta name="facebook-domain-verification" content="plqwge8ehbbmvwwvtaxcbhpvs36lc9" />
-        <meta name="theme-color" content="#EBEBEB" />
         <script
           dangerouslySetInnerHTML={{
             __html: `

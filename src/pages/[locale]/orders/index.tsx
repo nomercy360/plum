@@ -95,6 +95,7 @@ function SuccessOrder() {
         <meta name="og:description" content="Dresses & things" />
         <meta name="og:image" content="https://plumplum.co/images/og.png" />
         <meta name="description" content="Dresses & things" />
+        <meta name="theme-color" content="#EBEBEB" />
       </Head>
       <OrderLayout>
         {order.payment_status === 'paid' ? (

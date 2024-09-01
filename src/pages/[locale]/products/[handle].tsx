@@ -102,21 +102,18 @@ export default function ProductPage({ product }: { product: Product }) {
     <div>
       <Head>
         <title>{product.name} | PLUM®</title>
-        <meta
-          name="og:title"
-          content={`PLUM® | ${product.name}. Available for ${price}${currencyCode}`}
-        />
+        <meta name="og:title" content={`PLUM® | ${product.name}. Available for ${price}${currencyCode}`} />
         <meta name="og:description" content={product.description} />
         <meta name="og:image" content={product.images[0]} />
         <meta name="description" content={product.description} />
+        <meta name="theme-color" content="#ffffff" />
       </Head>
       <main className={`mb-12 flex min-h-screen flex-col items-center justify-between bg-white sm:mb-28`}>
         <Navbar />
         <div className="mt-4 flex max-w-[1440px] flex-col gap-10 px-5 sm:mt-14 sm:flex-row sm:px-14">
           {product.images && <PhotoGallery images={product.images} />}
           <div className="flex w-full flex-col items-start text-start text-black sm:w-[360px] sm:min-w-[360px]">
-            <div
-              className="mb-3 flex h-6 items-center justify-center rounded-full bg-violet/10 px-2 pt-px text-xs uppercase tracking-wide text-violet">
+            <div className="mb-3 flex h-6 items-center justify-center rounded-full bg-violet/10 px-2 pt-px text-xs uppercase tracking-wide text-violet">
               {availability &&
                 availability > 1 &&
                 availability < 3 &&
@@ -145,12 +142,11 @@ export default function ProductPage({ product }: { product: Product }) {
                   onClick={() => handleAddToCart()}
                   disabled={isVariantInCart}
                 >
-                  <p className="text-white">{isVariantInCart ? t('alreadyInBag') : t('addToBag')}</p>
+                  <span className="text-white">{isVariantInCart ? t('alreadyInBag') : t('addToBag')}</span>
                   {!isVariantInCart && <p className="text-white">{priceToString(price, currencySymbol)}</p>}
                 </button>
               ) : (
-                <div
-                  className="flex h-11 min-w-[140px] flex-row items-center justify-between gap-2 rounded-full bg-light-green px-3.5 text-base text-white">
+                <div className="flex h-11 min-w-[140px] flex-row items-center justify-between gap-2 rounded-full bg-light-green px-3.5 text-base text-white">
                   <p className="text-white">{t('added')}</p>
                   <p className="text-white">
                     {price}
