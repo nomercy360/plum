@@ -7,7 +7,7 @@ import { useRouter } from 'next/router';
 // import { step } from 'next/dist/experimental/testmode/playwright/step';
 import BurgerMenu from './BurgerMenu';
 import { useTranslation } from 'react-i18next';
-import { usePathname } from 'next/navigation';
+import { IoIosArrowDropleftCircle } from 'react-icons/io';
 // import { handleClientScriptLoad } from 'next/script';
 
 export default function Navbar() {
@@ -45,9 +45,7 @@ export default function Navbar() {
           {isDisplayMenu ? (
             <Icons.close className="h-6 w-32 text-black" />
           ) : (
-            <>
-              <Icons.menu className="h-6 w-32 text-black" />
-            </>
+            <Icons.menu className="h-6 w-32 text-black" />
           )}
         </button>
         <Link href="/">
@@ -80,7 +78,8 @@ export function NavbarCart(props: { backButtonVisible: boolean; onBackButtonClic
             onClick={() => props.onBackButtonClick(false)}
             className="flex size-5 items-center justify-center rounded-full bg-black/5"
           >
-            <Icons.chevronLeft className="size-5 shrink-0 text-black" />
+            <IoIosArrowDropleftCircle className="size-6 shrink-0 text-[#262626]" />
+            {/* <Icons.chevronLeft className="size-5 shrink-0 bg-[#262626] text-[#EBEBEB]" /> */}
           </button>
         )}
       </div>
@@ -92,7 +91,8 @@ export function NavbarCart(props: { backButtonVisible: boolean; onBackButtonClic
       </Link>
       <div className="flex flex-1 justify-end">
         <button onClick={() => close()} className="flex size-5 items-center justify-center rounded-full bg-black/5">
-          <Icons.xmark className="inline-block size-2.5 shrink-0 text-black" />
+          {/* <Icons.xmark className="inline-block size-2.5 shrink-0 text-black" /> */}
+          <Icons.close className="h-6 w-32 text-black" />
         </button>
       </div>
     </header>

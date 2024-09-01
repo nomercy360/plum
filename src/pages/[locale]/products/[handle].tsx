@@ -121,15 +121,18 @@ export default function ProductPage({ product }: { product: Product }) {
       <Head>
         <title>{product.name} | PLUM®</title>
         <meta name="og:title" content={`PLUM® | ${product.name}. Available for ${price}${currencyCode}`} />
+        <meta name="og:title" content={`PLUM® | ${product.name}. Available for ${price}${currencyCode}`} />
         <meta name="og:description" content={product.description} />
         <meta name="og:image" content={product.images[0]} />
         <meta name="description" content={product.description} />
+        <meta name="theme-color" content="#ffffff" />
       </Head>
       <main className={`mb-12 flex min-h-screen flex-col items-center justify-between bg-white sm:mb-28`}>
         <Navbar />
         <div className="mt-4 flex max-w-[1440px] flex-col gap-10 px-5 sm:mt-14 sm:flex-row sm:px-14">
           {product.images && <PhotoGallery images={product.images} />}
           <div className="flex w-full flex-col items-start text-start text-black sm:w-[360px] sm:min-w-[360px]">
+            <div className="mb-3 flex h-6 items-center justify-center rounded-full bg-violet/10 px-2 pt-px text-xs uppercase tracking-wide text-violet">
             <div className="mb-3 flex h-6 items-center justify-center rounded-full bg-violet/10 px-2 pt-px text-xs uppercase tracking-wide text-violet">
               {availability &&
                 availability > 1 &&
