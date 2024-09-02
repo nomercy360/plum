@@ -78,7 +78,10 @@ export function NavbarCart(props: { backButtonVisible: boolean; onBackButtonClic
             onClick={() => props.onBackButtonClick(false)}
             className="flex size-5 items-center justify-center rounded-full bg-black/5"
           >
-            <IoIosArrowDropleftCircle className="size-[21px] shrink-0 text-[#262626]" />
+            <IoIosArrowDropleftCircle
+              onClick={() => localStorage.setItem('cartDelivery', '')}
+              className="size-[21px] shrink-0 text-[#262626]"
+            />
             {/* <Icons.chevronLeft className="size-5 shrink-0 bg-[#262626] text-[#EBEBEB]" /> */}
           </button>
         )}

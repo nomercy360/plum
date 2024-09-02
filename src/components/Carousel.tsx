@@ -55,18 +55,21 @@ const EmblaCarousel = (props: { slides: string[]; options: any }) => {
 
   return (
     <section className="embla">
-      <div className="embla__viewport" ref={emblaRef}>
+      <div className="embla__viewport relative flex justify-center" ref={emblaRef}>
         <div className="embla__container gap-2">
           {slides.map(index => (
             <div className="embla__slide" key={index}>
-              <ExportedImage src={index} width={360} height={640} alt="" className="w-full aspect-[5/7] rounded-lg object-cover" />
+              <ExportedImage
+                src={index}
+                width={360}
+                height={640}
+                alt=""
+                className="aspect-[5/7] w-full rounded-lg object-cover"
+              />
             </div>
           ))}
         </div>
-      </div>
-
-      <div className="mt-2">
-        <div className="flex flex-row items-center justify-center space-x-2">
+        <div className="absolute bottom-5 flex flex-row items-center justify-center space-x-2">
           {scrollSnaps.map((_, index) => (
             <DotButton
               key={index}
