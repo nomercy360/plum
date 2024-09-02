@@ -322,7 +322,7 @@ export default function Checkout() {
 
             <main className="flex w-full items-start justify-center bg-transparent">
               {step == 'bag' && (
-                <div className="flex min-h-[calc(100vh-64px)] w-full max-w-2xl flex-col items-start justify-between rounded-t-xl bg-white text-start sm:min-h-[calc(100vh-80px)]">
+                <div className="flex min-h-[calc(100vh-116px)] w-full max-w-2xl flex-col items-start justify-between rounded-t-xl bg-white text-start">
                   <div className="w-full">
                     <div className="flex flex-row items-center justify-between px-5 pt-5">
                       <p className="text-base uppercase">
