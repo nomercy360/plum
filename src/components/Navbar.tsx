@@ -88,9 +88,9 @@ export function NavbarCart(props: { backButtonVisible: boolean; onBackButtonClic
       </div>
       <Link href="/" className="flex items-center justify-center">
         <Icons.logo className="mx-auto h-6 w-32 leading-[25px] text-black" />
-        {localStorage.getItem('checkOutStorage') === 'checkOut' && (
+        {/* {localStorage.getItem('checkOutStorage') === 'checkOut' && (
           <span className="ml-1 place-self-start text-[21px] leading-[25px]">{t('checkoutName')}</span>
-        )}
+        )} */}
       </Link>
       <div className="flex flex-1 justify-end">
         <button onClick={() => close()} className="flex size-5 items-center justify-center rounded-full bg-black/5">

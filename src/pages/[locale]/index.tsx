@@ -62,10 +62,11 @@ export default function Home({ products }: { products: Product[] }) {
             <video
               className="h-full w-full object-cover"
               src="/video/plum_ad_two_1160.mp4"
-              controls
+              controls={false}
               autoPlay
               loop
               muted
+              playsInline
             />
           </div>
         </div>
