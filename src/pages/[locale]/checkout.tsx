@@ -418,7 +418,7 @@ export default function Checkout() {
               )}
 
               {step == 'deliveryInfo' && (
-                <div className="flex min-h-[calc(100vh-112px)] w-full max-w-2xl flex-col items-start justify-between rounded-t-xl bg-white text-start">
+                <div className="realtive flex min-h-[calc(100vh-112px)] w-full max-w-2xl flex-col items-start justify-between rounded-t-xl bg-white text-start">
                   <p className="mb-1 px-5 pt-5 uppercase text-black">{t('addDeliveryInfo')}</p>
                   <p className="mb-8 px-5 text-xs leading-snug text-gray-light">{t('addDeliveryInfoDescription')}</p>
                   <form
@@ -509,7 +509,7 @@ export default function Checkout() {
                   <Divider></Divider>
                   <div className="flex w-full flex-col items-center">
                     <TotalCostInfo cart={cart} />
-                    <div className="sm:pb-5">
+                    <div className="sm:fixed sm:bottom-0 sm:pb-5">
                       <button
                         className="flex h-[61px] w-[100vw] flex-row items-start justify-center gap-1 bg-black px-4 pt-5 text-white disabled:cursor-not-allowed disabled:opacity-35 sm:h-11 sm:w-[280px] sm:items-center sm:justify-between sm:rounded-3xl sm:pt-0"
                         disabled={!isFormValid || isFormLoading}
