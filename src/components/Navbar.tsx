@@ -67,7 +67,7 @@ export function NavbarCart(props: { backButtonVisible: boolean; onBackButtonClic
 
   const close = async () => {
     await router.push('/');
-    localStorage.setItem('cartDelivery', '');
+    localStorage.setItem('checkOutStorage', '');
   };
 
   return (
@@ -79,7 +79,7 @@ export function NavbarCart(props: { backButtonVisible: boolean; onBackButtonClic
             className="flex size-5 items-center justify-center rounded-full bg-black/5"
           >
             <IoIosArrowDropleftCircle
-              onClick={() => localStorage.setItem('cartDelivery', '')}
+              onClick={() => localStorage.setItem('checkOutStorage', 'checkOut')}
               className="size-[21px] shrink-0 text-[#262626]"
             />
             {/* <Icons.chevronLeft className="size-5 shrink-0 bg-[#262626] text-[#EBEBEB]" /> */}
@@ -88,7 +88,7 @@ export function NavbarCart(props: { backButtonVisible: boolean; onBackButtonClic
       </div>
       <Link href="/" className="flex items-center justify-center">
         <Icons.logo className="mx-auto h-6 w-32 leading-[25px] text-black" />
-        {localStorage.getItem('cartDelivery') === 'deliveryInfo' && (
+        {localStorage.getItem('checkOutStorage') === 'checkOut' && (
           <span className="ml-1 place-self-start text-[21px] leading-[25px]">{t('checkoutName')}</span>
         )}
       </Link>
@@ -103,18 +103,23 @@ export function NavbarCart(props: { backButtonVisible: boolean; onBackButtonClic
 }
 
 const CartButton = (props: { cartItems: number; theme: 'dark' | 'light' }) => {
+  const onUpdateLocalStorage = () => {
+    localStorage?.setItem('checkOutStorage', 'checkOut');
+  };
   return (
-    <Link href="/checkout" className="relative flex h-[30px] w-[30px] flex-row items-center justify-center gap-1">
-      {props.cartItems > 0 && <span className="absolute right-1 top-1.5 h-2 w-2 rounded-full bg-red"></span>}
+    <div onClick={() => onUpdateLocalStorage()}>
+      <Link href="/checkout" className="relative flex h-[30px] w-[30px] flex-row items-center justify-center gap-1">
+        {props.cartItems > 0 && <span className="absolute right-1 top-1.5 h-2 w-2 rounded-full bg-red"></span>}
 
-      <Icons.basket className="h-6 w-6 text-black" />
-      {props.cartItems > 0 && (
-        <span
-          className={`absolute left-1/2 ${localStorage.getItem('isMobilePhone') === 'true' ? 'top-[calc(50%+3px)]' : 'top-1/2'} -translate-x-1/2 -translate-y-1/2 transform text-[10px] font-black leading-[12px]`}
-        >
-          {props.cartItems}
-        </span>
-      )}
-    </Link>
+        <Icons.basket className="h-6 w-6 text-black" />
+        {props.cartItems > 0 && (
+          <span
+            className={`absolute left-1/2 ${localStorage.getItem('isMobilePhone') === 'true' ? 'top-[calc(50%+3px)]' : 'top-1/2'} -translate-x-1/2 -translate-y-1/2 transform text-[10px] font-black leading-[12px]`}
+          >
+            {props.cartItems}
+          </span>
+        )}
+      </Link>
+    </div>
   );
 };
