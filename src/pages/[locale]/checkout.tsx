@@ -152,9 +152,10 @@ export default function Checkout() {
 
   async function toDeliveryInfo() {
     // update cart with email
+    localStorage.setItem('checkOutStorage', '');
     saveCartCustomer(email);
     setStep('deliveryInfo');
-    localStorage.setItem('cartDelivery', 'deliveryInfo');
+    console.log('click');
   }
 
   useEffect(() => {
@@ -162,7 +163,6 @@ export default function Checkout() {
     script.src = 'https://js.bepaid.by/widget/be_gateway.js';
     script.defer = true;
     document.body.appendChild(script);
-
     return () => {
       document.body.removeChild(script);
     };
@@ -594,7 +594,7 @@ export default function Checkout() {
                   <div className="flex w-full flex-col items-center">
                     <TotalCostInfo cart={cart} />
                     {paymentMethod === 'bepaid' && (
-                      <div className="sm:fixed sm:bottom-0 sm:pb-5">
+                      <div className="fixed bottom-0 sm:pb-5">
                         <button
                           className="flex h-[61px] w-[100vw] flex-row items-start justify-center gap-1 bg-black px-4 pt-5 text-white disabled:cursor-not-allowed disabled:opacity-35 sm:h-11 sm:w-[280px] sm:items-center sm:justify-between sm:rounded-3xl sm:pt-0"
                           disabled={!isFormValid || isFormLoading}
