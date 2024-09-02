@@ -460,8 +460,7 @@ export default function Checkout() {
                     <Divider></Divider>
                     <div className="mt-6 flex w-full flex-col items-center gap-4 px-5">
                       <input
-                        className="h-11 w-full rounded-lg bg-gray px-3 text-sm focus:outline-neutral-200 sm:text-base"
-                        className="h-11 w-full rounded-lg bg-gray px-3 text-sm focus:outline-neutral-200 sm:text-base"
+                        className="h-11 w-full rounded-lg bg-gray px-3 text-[16px] focus:outline-neutral-200"
                         placeholder={t('email')}
                         type="email"
                         autoComplete="email"
@@ -510,8 +509,7 @@ export default function Checkout() {
                   <p className="mb-8 px-5 text-xs leading-snug text-gray-light">{t('addDeliveryInfoDescription')}</p>
                   <div className="mb-8 flex w-full flex-col gap-4 px-5">
                     <input
-                      className="h-11 w-full rounded-lg bg-gray px-3 text-sm focus:outline-neutral-200 sm:text-base"
-                      className="h-11 w-full rounded-lg bg-gray px-3 text-sm focus:outline-neutral-200 sm:text-base"
+                      className="h-11 w-full rounded-lg bg-gray px-3 text-[16px] focus:outline-neutral-200"
                       type="tel"
                       autoComplete="tel"
                       placeholder={t('phone')}
@@ -522,7 +520,7 @@ export default function Checkout() {
                     <div className="flex w-full flex-row gap-4">
                       <div className="flex w-full flex-row items-center justify-start rounded-lg bg-gray">
                         <select
-                          className="h-11 w-full bg-transparent px-3 text-sm focus:outline-neutral-200 sm:text-base"
+                          className="h-11 w-full bg-transparent px-3 text-[16px] focus:outline-neutral-200"
                           onChange={e => setCheckoutData({ ...checkoutData, country: e.currentTarget.value })}
                           value={checkoutData.country}
                         >
@@ -535,8 +533,7 @@ export default function Checkout() {
                         </select>
                       </div>
                       <input
-                        className="h-11 w-40 rounded-lg bg-gray px-3 text-sm focus:outline-neutral-200 sm:text-base"
-                        className="h-11 w-40 rounded-lg bg-gray px-3 text-sm focus:outline-neutral-200 sm:text-base"
+                        className="h-11 w-40 rounded-lg bg-gray px-3 text-[16px] focus:outline-neutral-200"
                         placeholder={t('zip')}
                         autoFocus
                         type="text"
@@ -550,8 +547,7 @@ export default function Checkout() {
                       <input
                         type="text"
                         autoComplete="street-address"
-                        className="h-11 w-full bg-transparent px-3 text-sm focus:outline-neutral-200 sm:text-base"
-                        className="h-11 w-full bg-transparent px-3 text-sm focus:outline-neutral-200 sm:text-base"
+                        className="h-11 w-full bg-transparent px-3 text-[16px] focus:outline-neutral-200"
                         placeholder={t('address')}
                         value={checkoutData.address}
                         name="address"
@@ -559,8 +555,7 @@ export default function Checkout() {
                       />
                     </div>
                     <input
-                      className="h-11 w-full rounded-lg bg-gray px-3 text-sm focus:outline-neutral-200 sm:text-base"
-                      className="h-11 w-full rounded-lg bg-gray px-3 text-sm focus:outline-neutral-200 sm:text-base"
+                      className="h-11 w-full rounded-lg bg-gray px-3 text-[16px] focus:outline-neutral-200"
                       placeholder={t('name')}
                       autoFocus
                       type="text"
@@ -571,8 +566,7 @@ export default function Checkout() {
                     />
                     <label>
                       <input
-                        className="h-11 w-full rounded-lg bg-gray px-3 text-sm focus:outline-neutral-200 sm:text-base"
-                        className="h-11 w-full rounded-lg bg-gray px-3 text-sm focus:outline-neutral-200 sm:text-base"
+                        className="h-11 w-full rounded-lg bg-gray px-3 text-[16px] focus:outline-neutral-200"
                         placeholder={t('comment')}
                         autoFocus
                         type="text"
@@ -642,7 +636,7 @@ const PromoCode = (props: {
             className={`flex h-11 w-full flex-row items-center justify-between rounded-lg bg-gray px-3 ${props.fetchStatus === 'error' ? 'bg-red/5 text-red' : ''}`}
           >
             <input
-              className="h-full w-full bg-transparent focus:outline-none"
+              className="h-full w-full bg-transparent text-[16px] focus:outline-none"
               placeholder={t('addPromoCode')}
               type="text"
               value={props.promoCode}
