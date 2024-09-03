@@ -83,7 +83,7 @@ const navList = [
     name: 'instagram',
   },
   {
-    href: '/about',
+    href: '/contacts',
     name: 'contacts',
   },
 ];

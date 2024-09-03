@@ -4,7 +4,6 @@ import { useRouter } from 'next/router';
 import { useContext } from 'react';
 import { CartContext } from '@/context/cart-provider';
 import Navbar from '@/components/Navbar';
-import Navbar from '@/components/Navbar';
 
 export default function EmptyCart() {
   const { t } = useTranslation('checkout');

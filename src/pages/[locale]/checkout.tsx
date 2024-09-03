@@ -2,7 +2,7 @@ import Icons from '@/components/Icons';
 import Divider from '@/components/Divider';
 import EmptyCart from '@/components/EmptyCart';
 import StepperButton from '@/components/StepperButton';
-import React, { useContext, useEffect, useRef, useRef, useState } from 'react';
+import { useContext, useEffect, useRef, useState } from 'react';
 import { Cart, CartContext, CartItem } from '@/context/cart-provider';
 import { useTranslation } from 'next-i18next';
 import { getStaticPaths, makeStaticProps } from '@/lib/getStatic';
@@ -110,12 +110,6 @@ export default function Checkout() {
       checkoutData.country !== '' &&
       checkoutData.zip !== '' &&
       checkoutData.phone !== '';
-    const isValid =
-      checkoutData.name !== '' &&
-      checkoutData.address !== '' &&
-      checkoutData.country !== '' &&
-      checkoutData.zip !== '' &&
-      checkoutData.phone !== '';
     setIsFormValid(isValid);
   }, [checkoutData]);
 
@@ -152,6 +146,7 @@ export default function Checkout() {
 
   async function toDeliveryInfo() {
     // update cart with email
+    localStorage.setItem('checkOutStorage', '');
     localStorage.setItem('checkOutStorage', '');
     saveCartCustomer(email);
     setStep('deliveryInfo');
@@ -362,17 +357,23 @@ export default function Checkout() {
         <meta name="og:image" content="https://plumplum.co/images/og.png" />
         <meta name="description" content="Dresses & things" />
         <meta name="theme-color" content="#EBEBEB" />
+        <meta name="theme-color" content="#EBEBEB" />
       </Head>
+      <div className="relative h-full overflow-x-hidden bg-lighter-gray">
       <div className="relative h-full overflow-x-hidden bg-lighter-gray">
         {cart.count > 0 ? (
           <div>
             <NavbarCart backButtonVisible={step === 'deliveryInfo'} onBackButtonClick={() => setStep('bag')} />
 
             <main className="flex w-full items-start justify-center bg-transparent">
+
+            <main className="flex w-full items-start justify-center bg-transparent">
               {step == 'bag' && (
+                <div className="flex min-h-[calc(100vh-116px)] w-full max-w-2xl flex-col items-start justify-between rounded-t-xl bg-white text-start">
                 <div className="flex min-h-[calc(100vh-116px)] w-full max-w-2xl flex-col items-start justify-between rounded-t-xl bg-white text-start">
                   <div className="w-full">
                     <div className="flex flex-row items-center justify-between px-5 pt-5">
+                      <p className="text-base uppercase">
                       <p className="text-base uppercase">
                       <p className="text-base uppercase">
                         {priceString(cart.currency_symbol, cart.total)} {getTranslation('yourBag', cart.count)}
@@ -382,9 +383,9 @@ export default function Checkout() {
                       </button>
                     </div>
                     <div className="mb-8 mt-8 flex flex-col gap-5 px-5 sm:pb-10">
+                    <div className="mb-8 mt-8 flex flex-col gap-5 px-5 sm:pb-10">
                       {getCartItems().map(item => (
                         <div key={item.variant_id} className="flex flex-row items-center justify-between gap-3">
-                          <div className="flex grow flex-row items-center gap-3">
                           <div className="flex grow flex-row items-center gap-3">
                             <ExportedImage
                               alt=""
@@ -394,39 +395,10 @@ export default function Checkout() {
                               height={40}
                             />
                             <div className="relative flex grow flex-col">
-                              <div
-                                className={`relative flex flex-row overflow-hidden ${isDescOpen ? '' : 'max-h-[19px] lg:max-h-[21px]'}`}
-                                ref={ref}
-                              >
-                                <p className="text-sm sm:text-base">
-                                  {item.product_name} {item.quantity > 1 && `x ${item.quantity}`}
-                                </p>
-
-                                {!isDescOpen &&
-                                  // @ts-ignore
-                                  ref.current?.clientWidth < '270' &&
-                                  item.product_name.length > 28 && (
-                                    <button
-                                      onClick={() => setIsDescOpen(prev => !prev)}
-                                      className="absolute bottom-0 right-0 mx-[5px] bg-[linear-gradient(90.00deg,rgba(254,254,254,0),rgb(255,255,255)_54.444%)] text-right leading-4"
-                                    >
-                                      ...
-                                    </button>
-                                  )}
-                              </div>
-                              <p className="mt-0.5 text-xs text-gray-light sm:text-sm">
-                                Total{' '}
-                                {item.sale_price ? (
-                                  <>
-                                    {priceString(cart.currency_symbol, item.sale_price)}{' '}
-                                    <span className="line-through">
-                                      {priceString(cart.currency_symbol, item.price)}
-                                    </span>
-                                  </>
-                                ) : (
-                                  priceString(cart.currency_symbol, item.price)
-                                )}{' '}
-                                / {`Size: ${item.variant_name}`}
+                              <CheckoutDots item={item} />
+                              <p className="mt-0.5 text-xs leading-[15px] text-gray-light sm:text-sm">
+                                Total {priceString(cart.currency_symbol, item.price * item.quantity)} /{' '}
+                                {`Size: ${item.variant_name}`}
                               </p>
                             </div>
                           </div>
@@ -443,8 +415,6 @@ export default function Checkout() {
                         <div>
                           <p className="text-sm sm:text-base">{t('addMeasurements')}</p>
                           <p className="mt-0.5 text-xs text-gray-light">{t('addMeasurementsDescription')}</p>
-                          <p className="text-sm sm:text-base">{t('addMeasurements')}</p>
-                          <p className="mt-0.5 text-xs text-gray-light">{t('addMeasurementsDescription')}</p>
                         </div>
                       </div>
                       <div className="flex flex-row items-center justify-start gap-3">
@@ -459,7 +429,9 @@ export default function Checkout() {
                     </div>
                     <Divider></Divider>
                     <div className="mt-6 flex w-full flex-col items-center gap-4 px-5">
+                    <div className="mt-6 flex w-full flex-col items-center gap-4 px-5">
                       <input
+                        className="h-11 w-full rounded-lg bg-gray px-3 text-[16px] focus:outline-neutral-200"
                         className="h-11 w-full rounded-lg bg-gray px-3 text-[16px] focus:outline-neutral-200"
                         placeholder={t('email')}
                         type="email"
@@ -476,39 +448,37 @@ export default function Checkout() {
                       />
                     </div>
                   </div>
-                  <div className="mt-8 flex w-full flex-col items-center justify-center gap-5 text-center sm:max-w-md">
-                    <div className="flex justify-center px-5 sm:hidden">
-                      <TermsAndConditions />
-                    </div>
-                    <div className="flex justify-center px-5 sm:hidden">
-                      <TermsAndConditions />
-                    </div>
-                    <button
-                      className="flex h-24 w-full flex-row items-start justify-center gap-1 bg-black px-4 pt-5 text-white disabled:cursor-not-allowed disabled:opacity-35 sm:static sm:h-11 sm:w-[280px] sm:items-center sm:justify-between sm:rounded-3xl sm:pt-0"
-                      className="flex h-24 w-full flex-row items-start justify-center gap-1 bg-black px-4 pt-5 text-white disabled:cursor-not-allowed disabled:opacity-35 sm:static sm:h-11 sm:w-[280px] sm:items-center sm:justify-between sm:rounded-3xl sm:pt-0"
-                      onClick={() => toDeliveryInfo()}
-                      disabled={!isEmailValid}
-                    >
-                      {t('continue')}
-                      <span className="text-gray">{priceString(cart?.currency_symbol, cart?.total)}</span>
-                      <span className="text-gray">{priceString(cart?.currency_symbol, cart?.total)}</span>
-                    </button>
-                    <div className="hidden w-full sm:flex">
-                      <TermsAndConditions />
-                    </div>
-                    <div className="hidden w-full sm:flex">
-                      <TermsAndConditions />
+
+                  <div className="mt-8 flex w-full flex-row justify-center sm:mt-[82px]">
+                    <div className="flex flex-col items-center justify-center gap-5 text-center sm:max-w-md">
+                      <div className="px-5 sm:hidden">
+                        <TermsAndConditions />
+                      </div>
+                      <button
+                        className="flex h-[61px] w-[100vw] flex-row items-start justify-center gap-1 bg-black px-4 pt-5 text-white disabled:cursor-not-allowed disabled:opacity-35 sm:h-11 sm:w-[280px] sm:items-center sm:justify-between sm:rounded-3xl sm:pt-0"
+                        onClick={() => toDeliveryInfo()}
+                        disabled={!isEmailValid}
+                      >
+                        {t('continue')}
+                        <span className="text-gray">{priceString(cart?.currency_symbol, cart?.total)}</span>
+                      </button>
+                      <div className="hidden w-full sm:flex sm:pb-5">
+                        <TermsAndConditions />
+                      </div>
                     </div>
                   </div>
                 </div>
               )}
 
+
               {step == 'deliveryInfo' && (
+                <div className="realtive flex min-h-[calc(100vh-112px)] w-full max-w-2xl flex-col items-start justify-between rounded-t-xl bg-white text-start">
                 <div className="realtive flex min-h-[calc(100vh-112px)] w-full max-w-2xl flex-col items-start justify-between rounded-t-xl bg-white text-start">
                   <p className="mb-1 px-5 pt-5 uppercase text-black">{t('addDeliveryInfo')}</p>
                   <p className="mb-8 px-5 text-xs leading-snug text-gray-light">{t('addDeliveryInfoDescription')}</p>
                   <div className="mb-8 flex w-full flex-col gap-4 px-5">
                     <input
+                      className="h-11 w-full rounded-lg bg-gray px-3 text-[16px] focus:outline-neutral-200"
                       className="h-11 w-full rounded-lg bg-gray px-3 text-[16px] focus:outline-neutral-200"
                       type="tel"
                       autoComplete="tel"
@@ -520,6 +490,7 @@ export default function Checkout() {
                     <div className="flex w-full flex-row gap-4">
                       <div className="flex w-full flex-row items-center justify-start rounded-lg bg-gray">
                         <select
+                          className="h-11 w-full bg-transparent px-3 text-[16px] focus:outline-neutral-200"
                           className="h-11 w-full bg-transparent px-3 text-[16px] focus:outline-neutral-200"
                           onChange={e => setCheckoutData({ ...checkoutData, country: e.currentTarget.value })}
                           value={checkoutData.country}
@@ -533,6 +504,7 @@ export default function Checkout() {
                         </select>
                       </div>
                       <input
+                        className="h-11 w-40 rounded-lg bg-gray px-3 text-[16px] focus:outline-neutral-200"
                         className="h-11 w-40 rounded-lg bg-gray px-3 text-[16px] focus:outline-neutral-200"
                         placeholder={t('zip')}
                         autoFocus
@@ -548,6 +520,7 @@ export default function Checkout() {
                         type="text"
                         autoComplete="street-address"
                         className="h-11 w-full bg-transparent px-3 text-[16px] focus:outline-neutral-200"
+                        className="h-11 w-full bg-transparent px-3 text-[16px] focus:outline-neutral-200"
                         placeholder={t('address')}
                         value={checkoutData.address}
                         name="address"
@@ -555,6 +528,7 @@ export default function Checkout() {
                       />
                     </div>
                     <input
+                      className="h-11 w-full rounded-lg bg-gray px-3 text-[16px] focus:outline-neutral-200"
                       className="h-11 w-full rounded-lg bg-gray px-3 text-[16px] focus:outline-neutral-200"
                       placeholder={t('name')}
                       autoFocus
@@ -567,6 +541,7 @@ export default function Checkout() {
                     <label>
                       <input
                         className="h-11 w-full rounded-lg bg-gray px-3 text-[16px] focus:outline-neutral-200"
+                        className="h-11 w-full rounded-lg bg-gray px-3 text-[16px] focus:outline-neutral-200"
                         placeholder={t('comment')}
                         autoFocus
                         type="text"
@@ -576,35 +551,29 @@ export default function Checkout() {
                         onChange={handleChange}
                       />
                       <p className="pt-2.5 text-xs text-gray-light">{t('commentDescription')}</p>
-                      <p className="pt-2.5 text-xs text-gray-light">{t('commentDescription')}</p>
                     </label>
+                  </form>
+                  <div className="flex w-full flex-col">
+                    <p className="mb-1 min-w-[5] px-5 text-sm text-black">{t('paymentMethod')}</p>
+                    <p className="mb-5 px-5 text-[13px] leading-snug text-gray-light">
+                      {t('paymentMethodDescription')}
+                    </p>
                   </div>
-                  <p className="mb-1 px-5 text-sm text-black">{t('paymentMethod')}</p>
-                  <p className="mb-5 px-5 text-[13px] leading-snug text-gray-light">{t('paymentMethodDescription')}</p>
-                  <PaymentMethodSelector paymentMethod={paymentMethod} setPaymentMethod={onPaymentMethodChange} />
-                  {paymentMethod === 'paypal' && (
-                    <PaypalButtons
-                      disabled={!isFormValid || isFormLoading}
-                      createOrder={() => placeOrder('paypal')}
-                      onApprove={onPaypalApprove}
-                      forceReRender={[checkoutData]}
-                    />
-                  )}
+
+                  <PaymentMethodSelector paymentMethod={paymentMethod} setPaymentMethod={setPaymentMethod} />
                   <Divider></Divider>
                   <div className="flex w-full flex-col items-center">
                     <TotalCostInfo cart={cart} />
-                    {paymentMethod === 'bepaid' && (
-                      <div className="fixed bottom-0 sm:pb-5">
-                        <button
-                          className="flex h-[61px] w-[100vw] flex-row items-start justify-center gap-1 bg-black px-4 pt-5 text-white disabled:cursor-not-allowed disabled:opacity-35 sm:h-11 sm:w-[280px] sm:items-center sm:justify-between sm:rounded-3xl sm:pt-0"
-                          disabled={!isFormValid || isFormLoading}
-                          onClick={() => placeOrder()}
-                        >
-                          {t('continue')}{' '}
-                          <span className="text-gray">{priceString(cart.currency_symbol, cart.total)}</span>
-                        </button>
-                      </div>
-                    )}
+                    <div className="fixed bottom-0 sm:pb-5">
+                      <button
+                        className="flex h-[61px] w-[100vw] flex-row items-start justify-center gap-1 bg-black px-4 pt-5 text-white disabled:cursor-not-allowed disabled:opacity-35 sm:h-11 sm:w-[280px] sm:items-center sm:justify-between sm:rounded-3xl sm:pt-0"
+                        disabled={!isFormValid || isFormLoading}
+                        onClick={() => placeOrder()}
+                      >
+                        {t('continue')}{' '}
+                        <span className="text-gray">{priceString(cart.currency_symbol, cart.total)}</span>
+                      </button>
+                    </div>
                   </div>
                 </div>
               )}
@@ -637,6 +606,7 @@ const PromoCode = (props: {
           >
             <input
               className="h-full w-full bg-transparent text-[16px] focus:outline-none"
+              className="h-full w-full bg-transparent text-[16px] focus:outline-none"
               placeholder={t('addPromoCode')}
               type="text"
               value={props.promoCode}
@@ -644,7 +614,6 @@ const PromoCode = (props: {
             />
             {props.fetchStatus === 'idle' ? (
               <button
-                className="h-6 rounded-xl bg-black px-3.5 text-center text-xs uppercase text-white disabled:cursor-not-allowed disabled:bg-lighter-gray disabled:text-dark-gray"
                 className="h-6 rounded-xl bg-black px-3.5 text-center text-xs uppercase text-white disabled:cursor-not-allowed disabled:bg-lighter-gray disabled:text-dark-gray"
                 onClick={() => props.fetchDiscount()}
                 disabled={!props.promoCode}

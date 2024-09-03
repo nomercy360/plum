@@ -4,7 +4,6 @@ import ExportedImage from 'next-image-export-optimizer';
 import { LocaleContext } from '@/context/locale-provider';
 import { Product } from '@/pages/[locale]';
 import { CartContext } from '@/context/cart-provider';
-import { CartContext } from '@/context/cart-provider';
 
 export default function ProductRecommendations(props: { productID: number }) {
   const [products, setProducts] = useState<Product[]>([]);
@@ -47,7 +46,7 @@ export default function ProductRecommendations(props: { productID: number }) {
 
 const ProductCard = ({ product }: { product: Product }) => {
   const { currency } = useContext(CartContext);
-  const price = useMemo(() => product.variants[0].prices.find(price => price.currency_code === currency), [currency]);
+  const price = useMemo(() => product.prices.find(price => price.currency_code === currency), [currency]);
   const priceString = price
     ? price.currency_symbol === '$'
       ? `$${price.price}`

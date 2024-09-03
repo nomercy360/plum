@@ -10,8 +10,6 @@ import Navbar from '@/components/Navbar';
 import Head from 'next/head';
 import { useContext, useMemo } from 'react';
 import { CartContext } from '@/context/cart-provider';
-import { useContext, useMemo } from 'react';
-import { CartContext } from '@/context/cart-provider';
 
 export type Product = {
   id: number;
@@ -32,11 +30,6 @@ export type Product = {
   }[];
   image: string;
   images: string[];
-  prices: {
-    currency_code: string;
-    currency_symbol: string;
-    price: number;
-  }[];
   prices: {
     currency_code: string;
     currency_symbol: string;
@@ -84,12 +77,6 @@ export default function Home({ products }: { products: Product[] }) {
           </div>
         </div>
         <div className="mb-20 mt-10 hidden grid-cols-2 gap-10 px-12 lg:grid">
-        <div className="flex min-h-[520px] w-full px-5 lg:max-h-[600px] lg:px-12">
-          <div className="flex w-full justify-center overflow-hidden rounded-2xl lg:rounded-xl">
-            <video className="h-full w-full object-cover" src="/video/plum_ad_two_1160.mp4" autoPlay loop muted />
-          </div>
-        </div>
-        <div className="mb-20 mt-10 hidden grid-cols-2 gap-10 px-12 lg:grid">
           <div className="grid grid-cols-2 gap-10">
             {productsFirstSection.map(product => (
               <ProductCard key={product.id} product={product} />
@@ -127,9 +114,6 @@ export default function Home({ products }: { products: Product[] }) {
         <div className="mb-10 mt-4 grid grid-cols-2 gap-4 px-5 lg:hidden">
           {products.map(product =>
             // every fifth product
-            product.id % 5 <= 3 ? (
-              <ProductCard key={product.id} product={product} />
-            ) : (
             product.id % 5 <= 3 ? (
               <ProductCard key={product.id} product={product} />
             ) : (
