@@ -12,9 +12,9 @@ import { LocaleContext } from '@/context/locale-provider';
 import Link from '@/components/Link';
 
 import countries from '@/lib/countries.json';
-import { sendGTMEvent } from '@next/third-parties/google';
 import { NavbarCart } from '@/components/Navbar';
 import Head from 'next/head';
+import PaypalButtons from '@/components/paypal-buttons';
 
 export const cartItemsToGTM = (items: CartItem[]) => {
   return items.map(item => {
@@ -23,14 +23,14 @@ export const cartItemsToGTM = (items: CartItem[]) => {
       item_name: item.product_name,
       item_category: 'Dresses',
       item_brand: 'Plum',
-      price: item.price,
+      price: item.sale_price ? item.sale_price : item.price,
       quantity: item.quantity,
     };
   });
 };
 
 async function checkoutRequest(data: any, locale: string = 'en') {
-  const response = await fetch(process.env.NEXT_PUBLIC_API_URL + '/checkout', {
+  return await fetch(process.env.NEXT_PUBLIC_API_URL + '/checkout', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -38,12 +38,16 @@ async function checkoutRequest(data: any, locale: string = 'en') {
     },
     body: JSON.stringify(data),
   });
+}
 
-  if (response.status === 201) {
-    return response.json();
-  } else {
-    throw new Error('Error fetching checkout');
-  }
+async function paypalCaptureRequest(orderID: string) {
+  return await fetch(process.env.NEXT_PUBLIC_API_URL + '/paypal/capture', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ order_id: orderID }),
+  });
 }
 
 const priceString = (currencySymbol: string, price: number) =>
@@ -51,7 +55,8 @@ const priceString = (currencySymbol: string, price: number) =>
 
 export default function Checkout() {
   const ref = useRef(null);
-  const { cart, getCartItems, clearCart, updateCartItem, applyDiscount, saveCartCustomer } = useContext(CartContext);
+  const { cart, getCartItems, clearCart, updateCartItem, applyDiscount, saveCartCustomer, updateCurrency } =
+    useContext(CartContext);
 
   const { currentLanguage } = useContext(LocaleContext);
 
@@ -60,24 +65,17 @@ export default function Checkout() {
   const [promoCode, setPromoCode] = useState('');
   const [promoStatus, setPromoStatus] = useState<'error' | 'idle' | 'fetching'>('idle');
 
-  const fetchDiscount = async () => {
-    setPromoStatus('fetching');
-    try {
-      await applyDiscount(promoCode);
-      setPromoStatus('idle');
-    } catch (e) {
-      setPromoStatus('error');
-    }
-  };
-
-  const updatePromoCode = (value: string) => {
-    setPromoCode(value);
-    setPromoStatus('idle');
-  };
-
   const [email, setEmail] = useState('');
 
   const [paymentMethod, setPaymentMethod] = useState<'bepaid' | 'paypal'>('paypal');
+
+  const [step, setStep] = useState<'bag' | 'deliveryInfo'>('bag');
+
+  const [isFormValid, setIsFormValid] = useState(false);
+  const [isEmailValid, setIsEmailValid] = useState(false);
+  const [isFormLoading, setIsFormLoading] = useState(false);
+  const [isDescOpen, setIsDescOpen] = useState(false);
+  const [elementWidth, elementWidthSet] = useState('');
 
   const [checkoutData, setCheckoutData] = useState({
     name: '',
@@ -87,22 +85,6 @@ export default function Checkout() {
     phone: '',
     comment: '',
   });
-
-  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = event.target;
-    setCheckoutData(prevState => ({
-      ...prevState,
-      [name]: value,
-    }));
-  };
-
-  const [step, setStep] = useState<'bag' | 'deliveryInfo'>('bag');
-
-  const [isFormValid, setIsFormValid] = useState(false);
-  const [isEmailValid, setIsEmailValid] = useState(false);
-  const [isFormLoading, setIsFormLoading] = useState(false);
-  const [isDescOpen, setIsDescOpen] = useState(false);
-  const [elementWidth, elementWidthSet] = useState('');
 
   const router = useRouter();
 
@@ -147,12 +129,6 @@ export default function Checkout() {
     }
   }, [cart.customer]);
 
-  async function toDeliveryInfo() {
-    // update cart with email
-    saveCartCustomer(email);
-    setStep('deliveryInfo');
-  }
-
   useEffect(() => {
     const script = document.createElement('script');
     script.src = 'https://js.bepaid.by/widget/be_gateway.js';
@@ -164,31 +140,43 @@ export default function Checkout() {
     };
   }, []);
 
-  const payment = function (token: string, order: any, language: string, currency: string) {
+  const fetchDiscount = async () => {
+    setPromoStatus('fetching');
+    try {
+      await applyDiscount(promoCode);
+      setPromoStatus('idle');
+    } catch (e) {
+      setPromoStatus('error');
+    }
+  };
+
+  const updatePromoCode = (value: string) => {
+    setPromoCode(value);
+    setPromoStatus('idle');
+  };
+
+  async function onPaymentMethodChange(method: 'bepaid' | 'paypal') {
+    setPaymentMethod(method);
+    updateCurrency(method === 'bepaid' ? 'BYN' : 'USD');
+  }
+
+  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = event.target;
+    setCheckoutData(prevState => ({
+      ...prevState,
+      [name]: value,
+    }));
+  };
+
+  async function toDeliveryInfo() {
+    // update cart with email
+    saveCartCustomer(email);
+    setStep('deliveryInfo');
+  }
+
+  const bepaidPayment = function (token: string, order: any, language: string, currency: string) {
     const params = {
-      checkout_url: 'https://checkout.bepaid.by',
       token: token,
-      checkout: {
-        iframe: true,
-        test: false,
-        transaction_type: 'payment',
-        order: {
-          amount: 100 * order.total,
-          currency: currency,
-          description: JSON.stringify(order.items),
-          tracking_id: order.id,
-        },
-        settings: {
-          language: language,
-          style: {
-            widget: {
-              backgroundColor: '#262626',
-              buttonsColor: '#262626',
-              backgroundType: 2,
-            },
-          },
-        },
-      },
       closeWidget: function (status: any) {
         console.debug('close widget callback');
       },
@@ -197,18 +185,33 @@ export default function Checkout() {
     return new window.BeGateway(params).createWidget();
   };
 
-  const placeOrder = async () => {
+  const onPaypalApprove = async (data: any) => {
+    try {
+      const response = await paypalCaptureRequest(data.orderID);
+
+      const orderData = await response.json();
+      // clear cart
+      clearCart();
+      await router.push(`/${currentLanguage}/orders?orderId=${orderData.id}`);
+    } catch (error) {
+      console.error('Error capturing paypal:', error);
+    }
+  };
+
+  const placeOrder = async (provider: 'paypal' | 'bepaid' = 'bepaid') => {
     try {
       setIsFormLoading(true);
       const order = {
         email,
-        provider: 'bepaid',
+        payment_provider: provider,
         cart_id: cart.id,
         customer_id: cart.customer?.id,
         ...checkoutData,
       };
 
       const resp = await checkoutRequest(order, currentLanguage);
+      const respData = await resp.json();
+
       // get payment_link and redirect to it in new tab
       window.dataLayer.push({
         event: 'begin_checkout',
@@ -218,12 +221,17 @@ export default function Checkout() {
         },
       });
 
-      const url = new URL(resp.payment_link);
-      const params = new URLSearchParams(url.search);
-      const token = params.get('token');
+      if (provider === 'bepaid') {
+        const url = new URL(respData.payment_link);
+        const params = new URLSearchParams(url.search);
+        const token = params.get('token');
 
-      if (token) {
-        payment(token, resp.order, currentLanguage, 'BYN');
+        if (token) {
+          bepaidPayment(token, respData.order, currentLanguage, 'BYN');
+        }
+        return;
+      } else {
+        return respData.order.payment_id;
       }
       // window.location.href = resp.payment_link;
       // window.open(resp.payment_link, '_blank');
@@ -267,7 +275,7 @@ export default function Checkout() {
               item_name: product.product_name,
               item_category: 'Dresses',
               item_brand: 'Plum',
-              price: product.price,
+              price: product.sale_price ? product.sale_price : product.price,
               quantity: 1,
             },
           ],
@@ -363,8 +371,12 @@ export default function Checkout() {
                                   )}
                               </div>
                               <p className="mt-0.5 text-xs text-gray-light sm:text-sm">
-                                Total {priceString(cart.currency_symbol, item.price * item.quantity)} /{' '}
-                                {`Size: ${item.variant_name}`}
+                                Total{' '}
+                                {priceString(
+                                  cart.currency_symbol,
+                                  item.sale_price ? item.sale_price : item.price * item.quantity,
+                                )}{' '}
+                                / {`Size: ${item.variant_name}`}
                               </p>
                             </div>
                           </div>
@@ -508,20 +520,29 @@ export default function Checkout() {
                   </form>
                   <p className="mb-1 px-5 text-sm text-black">{t('paymentMethod')}</p>
                   <p className="mb-5 px-5 text-[13px] leading-snug text-gray-light">{t('paymentMethodDescription')}</p>
-                  <PaymentMethodSelector paymentMethod={paymentMethod} setPaymentMethod={setPaymentMethod} />
+                  <PaymentMethodSelector paymentMethod={paymentMethod} setPaymentMethod={onPaymentMethodChange} />
+                  {paymentMethod === 'paypal' && (
+                    <PaypalButtons
+                      disabled={!isFormValid || isFormLoading}
+                      createOrder={() => placeOrder('paypal')}
+                      onApprove={onPaypalApprove}
+                    />
+                  )}
                   <Divider></Divider>
                   <div className="flex w-full flex-col items-center">
                     <TotalCostInfo cart={cart} />
-                    <div className="sm:fixed sm:bottom-0 sm:m-[5px]">
-                      <button
-                        className="flex h-24 w-[100vw] flex-row items-start justify-center gap-1 bg-black px-4 pt-5 text-white disabled:cursor-not-allowed disabled:opacity-35 sm:static sm:h-11 sm:w-[280px] sm:items-center sm:justify-between sm:rounded-3xl sm:pt-0"
-                        disabled={!isFormValid || isFormLoading}
-                        onClick={() => placeOrder()}
-                      >
-                        {t('continue')}{' '}
-                        <span className="text-gray">{priceString(cart.currency_symbol, cart.total)}</span>
-                      </button>
-                    </div>
+                    {paymentMethod === 'bepaid' && (
+                      <div className="sm:fixed sm:bottom-0 sm:m-[5px]">
+                        <button
+                          className="flex h-24 w-[100vw] flex-row items-start justify-center gap-1 bg-black px-4 pt-5 text-white disabled:cursor-not-allowed disabled:opacity-35 sm:static sm:h-11 sm:w-[280px] sm:items-center sm:justify-between sm:rounded-3xl sm:pt-0"
+                          disabled={!isFormValid || isFormLoading}
+                          onClick={() => placeOrder()}
+                        >
+                          {t('continue')}{' '}
+                          <span className="text-gray">{priceString(cart.currency_symbol, cart.total)}</span>
+                        </button>
+                      </div>
+                    )}
                   </div>
                 </div>
               )}

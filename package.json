@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@next/third-parties": "^14.2.3",
+    "@paypal/react-paypal-js": "^8.6.0",
     "clsx": "^2.1.1",
     "embla-carousel-react": "^8.1.5",
     "i18next": "^23.11.2",
