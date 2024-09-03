@@ -105,7 +105,7 @@ function SuccessOrder() {
               <p>{t('textOrderSuccess', { email: order.customer.email })}</p>
             </div>
             <a
-              href="https://www.instagram.com/plumplum.brand"
+              href="https://www.instagram.com/plumplum.co"
               className="mt-5 flex h-11 w-56 items-center justify-center rounded-3xl bg-black text-center text-white"
             >
               {t('subscribeInstagramButton')}
