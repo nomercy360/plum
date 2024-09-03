@@ -15,6 +15,7 @@ import countries from '@/lib/countries.json';
 import { NavbarCart } from '@/components/Navbar';
 import Head from 'next/head';
 import PaypalButtons from '@/components/paypal-buttons';
+import { CheckoutDots } from '@/components/checkoutDots';
 
 export const cartItemsToGTM = (items: CartItem[]) => {
   return items.map(item => {
@@ -193,7 +194,7 @@ export default function Checkout() {
         console.debug('close widget callback');
       },
     };
-
+    //@ts-ignore
     return new window.BeGateway(params).createWidget();
   };
 
@@ -333,14 +334,15 @@ export default function Checkout() {
         <meta name="og:description" content="Dresses & things" />
         <meta name="og:image" content="https://plumplum.co/images/og.png" />
         <meta name="description" content="Dresses & things" />
+        <meta name="theme-color" content="#EBEBEB" />
       </Head>
-      <div className="h-full min-h-screen overflow-x-hidden bg-lighter-gray">
+      <div className="relative h-[100vh] overflow-x-hidden bg-lighter-gray">
         {cart.count > 0 ? (
           <div>
             <NavbarCart backButtonVisible={step === 'deliveryInfo'} onBackButtonClick={() => setStep('bag')} />
-            <main className="mt-8 flex w-full items-start justify-center bg-transparent">
+            <main className="flex h-full w-full items-start justify-center bg-transparent">
               {step == 'bag' && (
-                <div className="flex min-h-[calc(100vh-112px)] w-full max-w-2xl flex-col items-center justify-between bg-white sm:rounded-t-xl sm:pb-10">
+                <div className="flex min-h-[calc(100vh-64px)] w-full max-w-2xl flex-col items-start justify-between rounded-t-xl bg-white text-start sm:min-h-[calc(100vh-80px)]">
                   <div className="w-full">
                     <div className="flex flex-row items-center justify-between px-5 pt-5">
                       <p className="text-base uppercase">
@@ -362,26 +364,7 @@ export default function Checkout() {
                               height={40}
                             />
                             <div className="flex grow flex-col">
-                              <div
-                                className={`relative overflow-hidden ${isDescOpen ? '' : 'max-h-[19px] lg:max-h-[21px]'}`}
-                                ref={ref}
-                              >
-                                <p className="text-sm sm:text-base">
-                                  {item.product_name} {item.quantity > 1 && `x ${item.quantity}`}
-                                </p>
-
-                                {!isDescOpen &&
-                                  // @ts-ignore
-                                  ref.current?.clientWidth < '250' &&
-                                  item.product_name?.length > 33 && (
-                                    <button
-                                      onClick={() => setIsDescOpen(prev => !prev)}
-                                      className="absolute bottom-0 right-0 bg-[linear-gradient(90.00deg,rgba(254,254,254,0),rgb(255,255,255)_54.444%)] text-right leading-4"
-                                    >
-                                      ...
-                                    </button>
-                                  )}
-                              </div>
+                              <CheckoutDots item={item} />
                               <p className="mt-0.5 text-xs text-gray-light sm:text-sm">
                                 Total{' '}
                                 {item.sale_price ? (
@@ -426,7 +409,7 @@ export default function Checkout() {
                     <Divider></Divider>
                     <div className="mt-8 flex w-full flex-col items-center gap-4 px-5">
                       <input
-                        className="h-11 w-full rounded-lg bg-gray px-3 text-sm focus:outline-neutral-200 sm:text-base"
+                        className="h-11 w-full rounded-lg bg-gray px-3 text-[16px] leading-[19px] focus:outline-neutral-200"
                         placeholder={t('email')}
                         type="email"
                         autoComplete="email"
@@ -442,31 +425,41 @@ export default function Checkout() {
                       />
                     </div>
                   </div>
-                  <div className="mt-8 flex w-full flex-col items-center justify-center gap-5 text-center sm:max-w-md">
-                    <div className="flex justify-center px-5 sm:hidden">
-                      <TermsAndConditions />
+
+                  <div className="mt-8 flex w-full flex-row justify-center sm:hidden">
+                    <div className="flex flex-col items-center justify-center gap-5 text-center sm:max-w-md">
+                      <div className="px-5 pb-[90x]">
+                        <TermsAndConditions />
+                      </div>
                     </div>
-                    <button
-                      className="flex h-24 w-full flex-row items-start justify-center gap-1 bg-black px-4 pt-5 text-white disabled:cursor-not-allowed disabled:opacity-35 sm:static sm:h-11 sm:w-[280px] sm:items-center sm:justify-between sm:rounded-3xl sm:pt-0"
-                      onClick={() => toDeliveryInfo()}
-                      disabled={!isEmailValid}
-                    >
-                      {t('continue')}
-                      <span className="text-gray">{priceString(cart?.currency_symbol, cart?.total)}</span>
-                    </button>
-                    <div className="hidden w-full sm:flex">
+                  </div>
+                  <div className="flex w-full flex-col items-center">
+                    <div className="flex w-full flex-col gap-3 px-5 pb-24"> </div>
+                    <div className="fixed bottom-0 sm:pb-20">
+                      <button
+                        className="flex h-[61px] w-[100vw] flex-row items-start justify-center gap-1 bg-black px-4 pt-5 text-white disabled:cursor-not-allowed disabled:opacity-35 sm:h-11 sm:w-[280px] sm:items-center sm:justify-between sm:rounded-3xl sm:pt-0"
+                        onClick={() => toDeliveryInfo()}
+                        disabled={!isEmailValid}
+                      >
+                        {t('continue')}{' '}
+                        <span className="text-gray">{priceString(cart.currency_symbol, cart.total)}</span>
+                      </button>
+                    </div>
+                  </div>
+                  <div className="mt-8 hidden w-full flex-row justify-center sm:flex">
+                    <div className="max-w-[360px] sm:max-w-[451px] sm:pb-5">
                       <TermsAndConditions />
                     </div>
                   </div>
                 </div>
               )}
               {step == 'deliveryInfo' && (
-                <div className="flex min-h-[calc(100vh-112px)] w-full max-w-2xl flex-col items-start justify-between bg-white text-start sm:rounded-t-xl">
+                <div className="relative flex min-h-[calc(100vh-112px)] w-full max-w-2xl flex-col items-start justify-between bg-white text-start sm:rounded-t-xl">
                   <p className="mb-1 px-5 pt-5 uppercase text-black">{t('addDeliveryInfo')}</p>
                   <p className="mb-8 px-5 text-xs leading-snug text-gray-light">{t('addDeliveryInfoDescription')}</p>
                   <div className="mb-8 flex w-full flex-col gap-4 px-5">
                     <input
-                      className="h-11 w-full rounded-lg bg-gray px-3 text-sm focus:outline-neutral-200 sm:text-base"
+                      className="h-11 w-full rounded-lg bg-gray px-3 text-[16px] text-sm focus:outline-neutral-200"
                       type="tel"
                       autoComplete="tel"
                       placeholder={t('phone')}
@@ -477,7 +470,7 @@ export default function Checkout() {
                     <div className="flex w-full flex-row gap-4">
                       <div className="flex w-full flex-row items-center justify-start rounded-lg bg-gray">
                         <select
-                          className="h-11 w-full bg-transparent px-3 text-sm focus:outline-neutral-200 sm:text-base"
+                          className="h-11 w-full bg-transparent px-3 text-base focus:outline-neutral-200"
                           onChange={e => setCheckoutData({ ...checkoutData, country: e.currentTarget.value })}
                           value={checkoutData.country}
                         >
@@ -490,7 +483,7 @@ export default function Checkout() {
                         </select>
                       </div>
                       <input
-                        className="h-11 w-40 rounded-lg bg-gray px-3 text-sm focus:outline-neutral-200 sm:text-base"
+                        className="h-11 w-40 rounded-lg bg-gray px-3 text-[16px] focus:outline-neutral-200"
                         placeholder={t('zip')}
                         autoFocus
                         type="text"
@@ -504,7 +497,7 @@ export default function Checkout() {
                       <input
                         type="text"
                         autoComplete="street-address"
-                        className="h-11 w-full bg-transparent px-3 text-sm focus:outline-neutral-200 sm:text-base"
+                        className="h-11 w-full bg-transparent px-3 text-[16px] leading-[19px] focus:outline-neutral-200"
                         placeholder={t('address')}
                         value={checkoutData.address}
                         name="address"
@@ -512,7 +505,7 @@ export default function Checkout() {
                       />
                     </div>
                     <input
-                      className="h-11 w-full rounded-lg bg-gray px-3 text-sm focus:outline-neutral-200 sm:text-base"
+                      className="h-11 w-full rounded-lg bg-gray px-3 text-[16px] leading-[19px] focus:outline-neutral-200"
                       placeholder={t('name')}
                       autoFocus
                       type="text"
@@ -523,7 +516,7 @@ export default function Checkout() {
                     />
                     <label>
                       <input
-                        className="h-11 w-full rounded-lg bg-gray px-3 text-sm focus:outline-neutral-200 sm:text-base"
+                        className="h-11 w-full rounded-lg bg-gray px-3 text-[16px] leading-[19px] focus:outline-neutral-200"
                         placeholder={t('comment')}
                         autoFocus
                         type="text"
@@ -549,18 +542,16 @@ export default function Checkout() {
                   <Divider></Divider>
                   <div className="flex w-full flex-col items-center">
                     <TotalCostInfo cart={cart} />
-                    {paymentMethod === 'bepaid' && (
-                      <div className="sm:fixed sm:bottom-0 sm:m-[5px]">
-                        <button
-                          className="flex h-24 w-[100vw] flex-row items-start justify-center gap-1 bg-black px-4 pt-5 text-white disabled:cursor-not-allowed disabled:opacity-35 sm:static sm:h-11 sm:w-[280px] sm:items-center sm:justify-between sm:rounded-3xl sm:pt-0"
-                          disabled={!isFormValid || isFormLoading}
-                          onClick={() => placeOrder()}
-                        >
-                          {t('continue')}{' '}
-                          <span className="text-gray">{priceString(cart.currency_symbol, cart.total)}</span>
-                        </button>
-                      </div>
-                    )}
+                    <div className="fixed bottom-0 sm:pb-5">
+                      <button
+                        className="flex h-[61px] w-[100vw] flex-row items-start justify-center gap-1 bg-black px-4 pt-5 text-white disabled:cursor-not-allowed disabled:opacity-35 sm:h-11 sm:w-[280px] sm:items-center sm:justify-between sm:rounded-3xl sm:pt-0"
+                        disabled={!isFormValid || isFormLoading}
+                        onClick={() => placeOrder()}
+                      >
+                        {t('continue')}{' '}
+                        <span className="text-gray">{priceString(cart.currency_symbol, cart.total)}</span>
+                      </button>
+                    </div>
                   </div>
                 </div>
               )}
@@ -592,7 +583,7 @@ const PromoCode = (props: {
             className={`flex h-11 w-full flex-row items-center justify-between rounded-lg bg-gray px-3 ${props.fetchStatus === 'error' ? 'bg-red/5 text-red' : ''}`}
           >
             <input
-              className="h-full w-full bg-transparent focus:outline-none"
+              className="h-full w-full bg-transparent text-[16px] focus:outline-none"
               placeholder={t('addPromoCode')}
               type="text"
               value={props.promoCode}
@@ -723,7 +714,7 @@ const TermsAndConditions = (props: any) => {
   const { t } = useTranslation('checkout');
 
   return (
-    <div className="flex w-full flex-row items-center justify-center gap-2">
+    <div className="flex w-[95%] flex-row items-center justify-center gap-2 sm:w-full">
       <p className="text-start text-xs text-gray-light sm:text-center">{t('agree')}</p>
       <Link href="/terms">
         <Icons.infoCircle className="size-3.5 shrink-0" />

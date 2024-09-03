@@ -45,7 +45,7 @@ export default function SubscribeForm(props: { style: 'dark' | 'light' }) {
             type="email"
             placeholder={t('email')}
             onInput={(e: any) => setEmail(e.target.value)}
-            className="w-full bg-transparent text-black focus:outline-none"
+            className="w-full bg-transparent text-[16px] leading-[19px] text-black focus:outline-none"
           />
           {email && (
             <button className="text-base uppercase text-dark-gray" onClick={subscribe}>

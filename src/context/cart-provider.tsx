@@ -62,6 +62,7 @@ interface ICart {
   getCartItems: () => Array<CartItem>;
   restoreCart: () => void;
   saveCartCustomer: (email: string) => void;
+
   currency: 'USD' | 'BYN';
   currencySign: '$' | 'byn';
   updateCurrency: (currency: string) => void;
@@ -263,6 +264,7 @@ const CartProvider = ({ children }: { children: React.ReactNode }) => {
 
     localStorage.setItem('plum-currency-code', currency);
 
+    console.log('updateCartCurrency', currency);
     const resp = await fetchAPI({
       endpoint: `cart/${cart.id}/currency`,
       method: 'POST',

@@ -5,7 +5,7 @@ import { useRouter } from 'next/router';
 import { getStaticPaths, makeStaticProps } from '@/lib/getStatic';
 import { Product } from '@/pages/[locale]';
 import { useSearchParams } from 'next/navigation';
-import { sendGTMEvent } from '@next/third-parties/google';
+// import { sendGTMEvent } from '@next/third-parties/google';
 import { cartItemsToGTM } from '@/pages/[locale]/checkout';
 import { NavbarCart } from '@/components/Navbar';
 import Head from 'next/head';
@@ -95,6 +95,7 @@ function SuccessOrder() {
         <meta name="og:description" content="Dresses & things" />
         <meta name="og:image" content="https://plumplum.co/images/og.png" />
         <meta name="description" content="Dresses & things" />
+        <meta name="theme-color" content="#EBEBEB" />
       </Head>
       <OrderLayout>
         {order.payment_status === 'paid' ? (

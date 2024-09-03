@@ -65,7 +65,15 @@ export default function Home({ products }: { products: Product[] }) {
         <Navbar />
         <div className="flex min-h-[520px] w-full px-5 lg:max-h-[600px] lg:px-12">
           <div className="flex w-full justify-center overflow-hidden rounded-2xl lg:rounded-xl">
-            <video className="h-full w-full object-cover" src="/video/plum_ad_two_1160.mp4" autoPlay loop muted />
+            <video
+              className="h-full w-full object-cover"
+              src="/video/plum_ad_two_1160.mp4"
+              controls={false}
+              autoPlay
+              loop
+              muted
+              playsInline
+            />
           </div>
         </div>
         <div className="mb-20 mt-10 hidden grid-cols-2 gap-10 px-12 lg:grid">

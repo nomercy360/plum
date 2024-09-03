@@ -11,6 +11,7 @@ export default function EmptyCart() {
   const router = useRouter();
 
   const { restoreCart, cart } = useContext(CartContext);
+  const cartID = typeof localStorage !== 'undefined' ? localStorage.getItem('plum-restore-cart-id') || false : false;
 
   return (
     <>

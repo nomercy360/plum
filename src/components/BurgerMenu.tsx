@@ -20,7 +20,7 @@ export default function BurgerMenu({ display }: IPropsBurgerMenu) {
   };
 
   const burgerMenuClasses = clsx(
-    'w-full h-[calc(100%-65px)] mt-[65px] flex flex-col items-center justify-between p-8 bg-white fixed top-0 z-50 transition-opacity duration-300 ease-in-out',
+    'w-full h-[calc(100%-65px)] mt-[65px] flex flex-col items-center justify-between  p-8 bg-white fixed top-0 z-50 transition-opacity duration-300 ease-in-out',
     {
       'opacity-100': display,
       'opacity-0 pointer-events-none': !display,
@@ -83,7 +83,7 @@ const navList = [
     name: 'instagram',
   },
   {
-    href: '/about',
+    href: '/contacts',
     name: 'contacts',
   },
 ];

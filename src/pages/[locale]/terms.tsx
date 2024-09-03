@@ -15,6 +15,7 @@ export default function Terms(props: any) {
         <meta name="og:description" content="Dresses & things" />
         <meta name="og:image" content="https://plumplum.co/images/og.png" />
         <meta name="description" content="Dresses & things" />
+        <meta name="theme-color" content="#ffffff" />
       </Head>
       <main className={`flex min-h-screen flex-col items-center justify-between bg-white`}>
         <Navbar />

@@ -31,8 +31,7 @@ export default function SecretStore(props: { isOpen: boolean; setIsOpen: (value:
             }}
           />
         </div>
-        <div
-          className="relative flex h-full min-h-fit w-full flex-col items-center justify-center bg-cover bg-center px-5 py-7 sm:rounded-t-2xl">
+        <div className="relative flex h-full min-h-fit w-full flex-col items-center justify-center bg-cover bg-center px-5 py-7 sm:rounded-t-2xl">
           <button onClick={router.back} className="absolute right-5 top-5">
             <Icons.close className="size-5 text-white" />
           </button>
