@@ -8,7 +8,7 @@ export default function Footer() {
     <footer className="flex w-full flex-col items-start justify-start gap-14 bg-gray p-5 text-black">
       <div className="flex flex-col items-start justify-start gap-2">
         <Link href="/about">{t('delivery')}</Link>
-        <a href="https://www.instagram.com/plumplum.brand">{t('instagram')}</a>
+        <a href="https://www.instagram.com/plumplum.co">{t('instagram')}</a>
         <Link href="/terms">{t('policy')}</Link>
         <Link href="/gift-card">{t('gift')}</Link>
       </div>

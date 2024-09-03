@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "NEXT_PUBLIC_PAYPAL_CLIENT_ID=AWULcyDAI-rJl4RtQiRGpS-df_fMhBoiWX9ZvIyXwH1iv2nyAecqpWwdDCfvPar2FweiAzHoApM02yPu NEXT_PUBLIC_API_URL=https://clan-api.mxksim.dev/api next build && next-image-export-optimizer --nextConfigPath ./next.config.mjs",
+    "build": "NEXT_PUBLIC_PAYPAL_CLIENT_ID=AS_qZmxoulwrdK86MCh_bO_IbSlAkl7Wp_XOxOXKXuWdoRNHBN4HaxXHM_urFWExEdCrCY8FFb0oRl3i NEXT_PUBLIC_API_URL=https://clan-api.mxksim.dev/api next build && next-image-export-optimizer --nextConfigPath ./next.config.mjs",
     "start": "serve out",
     "lint": "next lint"
   },
