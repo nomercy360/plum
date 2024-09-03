@@ -176,7 +176,19 @@ export default function Checkout() {
 
   const bepaidPayment = function (token: string, order: any, language: string, currency: string) {
     const params = {
+      checkout_url: 'https://checkout.bepaid.by',
       token: token,
+      checkout: {
+        iframe: true,
+        test: false,
+        transaction_type: 'payment',
+      },
+      order: {
+        amount: 100 * cart.total,
+        currency: currency,
+        description: JSON.stringify(cart.items),
+        tracking_id: cart.id,
+      },
       closeWidget: function (status: any) {
         console.debug('close widget callback');
       },
@@ -372,9 +384,15 @@ export default function Checkout() {
                               </div>
                               <p className="mt-0.5 text-xs text-gray-light sm:text-sm">
                                 Total{' '}
-                                {priceString(
-                                  cart.currency_symbol,
-                                  item.sale_price ? item.sale_price : item.price * item.quantity,
+                                {item.sale_price ? (
+                                  <>
+                                    {priceString(cart.currency_symbol, item.sale_price)}{' '}
+                                    <span className="line-through">
+                                      {priceString(cart.currency_symbol, item.price)}
+                                    </span>
+                                  </>
+                                ) : (
+                                  priceString(cart.currency_symbol, item.price)
                                 )}{' '}
                                 / {`Size: ${item.variant_name}`}
                               </p>
