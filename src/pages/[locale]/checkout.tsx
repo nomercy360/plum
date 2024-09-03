@@ -194,7 +194,7 @@ export default function Checkout() {
         console.debug('close widget callback');
       },
     };
-
+    //@ts-ignore
     return new window.BeGateway(params).createWidget();
   };
 

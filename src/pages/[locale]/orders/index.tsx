@@ -5,7 +5,7 @@ import { useRouter } from 'next/router';
 import { getStaticPaths, makeStaticProps } from '@/lib/getStatic';
 import { Product } from '@/pages/[locale]';
 import { useSearchParams } from 'next/navigation';
-import { sendGTMEvent } from '@next/third-parties/google';
+// import { sendGTMEvent } from '@next/third-parties/google';
 import { cartItemsToGTM } from '@/pages/[locale]/checkout';
 import { NavbarCart } from '@/components/Navbar';
 import Head from 'next/head';
