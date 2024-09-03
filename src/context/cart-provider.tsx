@@ -8,6 +8,7 @@ export type CartItem = {
   variant_id: number;
   variant_name: string;
   price: number;
+  sale_price?: number;
   product_name: string;
   image_url: string;
 };
@@ -66,7 +67,7 @@ interface ICart {
   updateCurrency: (currency: string) => void;
 }
 
-async function fetchAPI({
+export async function fetchAPI({
   endpoint,
   method = 'GET',
   body = null,
@@ -262,7 +263,6 @@ const CartProvider = ({ children }: { children: React.ReactNode }) => {
 
     localStorage.setItem('plum-currency-code', currency);
 
-    console.log('updateCartCurrency', currency);
     const resp = await fetchAPI({
       endpoint: `cart/${cart.id}/currency`,
       method: 'POST',

@@ -21,6 +21,12 @@ export type Product = {
     id: number;
     name: string;
     available: number;
+    prices: {
+      currency_code: string;
+      currency_symbol: string;
+      price: number;
+      sale_price?: number;
+    }[];
   }[];
   image: string;
   images: string[];
@@ -119,22 +125,19 @@ export default function Home({ products }: { products: Product[] }) {
 function ProductCard({ product }: { product: Product }) {
   const { currency } = useContext(CartContext);
 
-  const price = useMemo(() => product.prices.find(price => price.currency_code === currency), [currency]);
+  const price = useMemo(
+    () => product.variants[0].prices.find(price => price.currency_code === currency),
+    [product, currency],
+  );
 
-  const priceString = price
-    ? price.currency_symbol === '$'
-      ? `$${price.price}`
-      : `${price.price} ${price.currency_symbol}`
-    : '';
+  const priceToString = (price: number, currencySymbol: string) => {
+    return currencySymbol === '$' ? `$${price}` : `${price} ${currencySymbol}`;
+  };
+
+  const salePrice = price?.sale_price;
 
   return (
     <>
-      <Head>
-        <meta name="og:title" content="PLUM®" />
-        <meta name="og:description" content="Dresses & things" />
-        <meta name="og:image" content="https://plumplum.co/images/og.png" />
-        <meta name="description" content="Dresses & things" />
-      </Head>
       <Link key={product.id} className="flex flex-col items-start justify-start" href={`/products/${product.handle}`}>
         <ExportedImage
           alt=""
@@ -145,7 +148,16 @@ function ProductCard({ product }: { product: Product }) {
         />
         <div>
           <p className="mb-1 mt-2 text-sm sm:mt-3 sm:text-base">{product.name}</p>
-          <p className="text-xs text-gray-light sm:text-base">{priceString}</p>
+          <p className="text-xs text-gray-light sm:text-base">
+            {salePrice ? (
+              <>
+                {priceToString(salePrice, price!.currency_symbol)}{' '}
+                <span className="line-through">{priceToString(price!.price, price!.currency_symbol)}</span>
+              </>
+            ) : (
+              priceToString(price!.price, price!.currency_symbol)
+            )}
+          </p>
         </div>
       </Link>
     </>

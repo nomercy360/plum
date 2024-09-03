@@ -19,11 +19,15 @@ export default function ProductPage({ product }: { product: Product }) {
 
   const { currency } = useContext(CartContext);
 
-  const [currencyCode, currencySymbol, price] = useMemo(() => {
-    const price = product.prices.find(price => price.currency_code === currency);
-    if (!price) return [product.prices[0].currency_code, product.prices[0].currency_symbol, product.prices[0].price];
-    return [price.currency_code, price.currency_symbol, price.price];
-  }, [product, currency]);
+  const [currencyCode, currencySymbol, price, salePrice] = useMemo(() => {
+    const price = product.variants
+      .find(variant => variant.id === selectedSize)
+      ?.prices.find(price => price.currency_code === currency);
+    if (!price) {
+      return ['', '', 0];
+    }
+    return [price.currency_code, price.currency_symbol, price.price, price.sale_price];
+  }, [product, currency, selectedSize]);
 
   const handleAddToCart = () => {
     const item = {
@@ -102,10 +106,7 @@ export default function ProductPage({ product }: { product: Product }) {
     <div>
       <Head>
         <title>{product.name} | PLUM®</title>
-        <meta
-          name="og:title"
-          content={`PLUM® | ${product.name}. Available for ${price}${currencyCode}`}
-        />
+        <meta name="og:title" content={`PLUM® | ${product.name}. Available for ${price}${currencyCode}`} />
         <meta name="og:description" content={product.description} />
         <meta name="og:image" content={product.images[0]} />
         <meta name="description" content={product.description} />
@@ -115,8 +116,7 @@ export default function ProductPage({ product }: { product: Product }) {
         <div className="mt-4 flex max-w-[1440px] flex-col gap-10 px-5 sm:mt-14 sm:flex-row sm:px-14">
           {product.images && <PhotoGallery images={product.images} />}
           <div className="flex w-full flex-col items-start text-start text-black sm:w-[360px] sm:min-w-[360px]">
-            <div
-              className="mb-3 flex h-6 items-center justify-center rounded-full bg-violet/10 px-2 pt-px text-xs uppercase tracking-wide text-violet">
+            <div className="mb-3 flex h-6 items-center justify-center rounded-full bg-violet/10 px-2 pt-px text-xs uppercase tracking-wide text-violet">
               {availability &&
                 availability > 1 &&
                 availability < 3 &&
@@ -146,14 +146,31 @@ export default function ProductPage({ product }: { product: Product }) {
                   disabled={isVariantInCart}
                 >
                   <p className="text-white">{isVariantInCart ? t('alreadyInBag') : t('addToBag')}</p>
-                  {!isVariantInCart && <p className="text-white">{priceToString(price, currencySymbol)}</p>}
+                  {!isVariantInCart && (
+                    <p className="text-white">
+                      {salePrice ? (
+                        <>
+                          {priceToString(salePrice, currencySymbol)}{' '}
+                          <span className="line-through">{priceToString(price, currencySymbol)}</span>
+                        </>
+                      ) : (
+                        priceToString(price, currencySymbol)
+                      )}
+                    </p>
+                  )}
                 </button>
               ) : (
-                <div
-                  className="flex h-11 min-w-[140px] flex-row items-center justify-between gap-2 rounded-full bg-light-green px-3.5 text-base text-white">
+                <div className="flex h-11 min-w-[140px] flex-row items-center justify-between gap-2 rounded-full bg-light-green px-3.5 text-base text-white">
                   <p className="text-white">{t('added')}</p>
                   <p className="text-white">
-                    {price}
+                    {salePrice ? (
+                      <>
+                        {priceToString(salePrice, currencySymbol)}{' '}
+                        <span className="line-through">{priceToString(price, currencySymbol)}</span>
+                      </>
+                    ) : (
+                      priceToString(price, currencySymbol)
+                    )}
                     {currencySymbol}
                   </p>
                 </div>
