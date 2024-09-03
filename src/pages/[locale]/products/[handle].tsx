@@ -19,14 +19,14 @@ export default function ProductPage({ product }: { product: Product }) {
 
   const { currency } = useContext(CartContext);
 
-  const [currencyCode, currencySymbol, price] = useMemo(() => {
+  const [currencyCode, currencySymbol, price, salePrice] = useMemo(() => {
     const price = product.variants
       .find(variant => variant.id === selectedSize)
       ?.prices.find(price => price.currency_code === currency);
     if (!price) {
       return ['', '', 0];
     }
-    return [price.currency_code, price.currency_symbol, price.price];
+    return [price.currency_code, price.currency_symbol, price.price, price.sale_price];
   }, [product, currency, selectedSize]);
 
   const handleAddToCart = () => {
@@ -146,13 +146,31 @@ export default function ProductPage({ product }: { product: Product }) {
                   disabled={isVariantInCart}
                 >
                   <p className="text-white">{isVariantInCart ? t('alreadyInBag') : t('addToBag')}</p>
-                  {!isVariantInCart && <p className="text-white">{priceToString(price, currencySymbol)}</p>}
+                  {!isVariantInCart && (
+                    <p className="text-white">
+                      {salePrice ? (
+                        <>
+                          {priceToString(salePrice, currencySymbol)}{' '}
+                          <span className="line-through">{priceToString(price, currencySymbol)}</span>
+                        </>
+                      ) : (
+                        priceToString(price, currencySymbol)
+                      )}
+                    </p>
+                  )}
                 </button>
               ) : (
                 <div className="flex h-11 min-w-[140px] flex-row items-center justify-between gap-2 rounded-full bg-light-green px-3.5 text-base text-white">
                   <p className="text-white">{t('added')}</p>
                   <p className="text-white">
-                    {price}
+                    {salePrice ? (
+                      <>
+                        {priceToString(salePrice, currencySymbol)}{' '}
+                        <span className="line-through">{priceToString(price, currencySymbol)}</span>
+                      </>
+                    ) : (
+                      priceToString(price, currencySymbol)
+                    )}
                     {currencySymbol}
                   </p>
                 </div>

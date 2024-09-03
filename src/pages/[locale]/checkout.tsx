@@ -2,7 +2,7 @@ import Icons from '@/components/Icons';
 import Divider from '@/components/Divider';
 import EmptyCart from '@/components/EmptyCart';
 import StepperButton from '@/components/StepperButton';
-import { useContext, useEffect, useRef, useState } from 'react';
+import React, { useContext, useEffect, useRef, useState } from 'react';
 import { Cart, CartContext, CartItem } from '@/context/cart-provider';
 import { useTranslation } from 'next-i18next';
 import { getStaticPaths, makeStaticProps } from '@/lib/getStatic';
@@ -14,7 +14,16 @@ import Link from '@/components/Link';
 import countries from '@/lib/countries.json';
 import { NavbarCart } from '@/components/Navbar';
 import Head from 'next/head';
+import { PayPalButtons, PayPalScriptProvider } from '@paypal/react-paypal-js';
 import PaypalButtons from '@/components/paypal-buttons';
+
+const paypalInitialOptions = {
+  clientId: process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID as string,
+  currency: 'USD',
+  'data-page-type': 'product-details',
+  components: 'buttons',
+  'data-sdk-integration-source': 'developer-studio',
+};
 
 export const cartItemsToGTM = (items: CartItem[]) => {
   return items.map(item => {
@@ -441,13 +450,7 @@ export default function Checkout() {
                 <div className="flex min-h-[calc(100vh-112px)] w-full max-w-2xl flex-col items-start justify-between bg-white text-start sm:rounded-t-xl">
                   <p className="mb-1 px-5 pt-5 uppercase text-black">{t('addDeliveryInfo')}</p>
                   <p className="mb-8 px-5 text-xs leading-snug text-gray-light">{t('addDeliveryInfoDescription')}</p>
-                  <form
-                    className="mb-8 flex w-full flex-col gap-4 px-5"
-                    onSubmit={e => {
-                      e.preventDefault();
-                      placeOrder();
-                    }}
-                  >
+                  <div className="mb-8 flex w-full flex-col gap-4 px-5">
                     <input
                       className="h-11 w-full rounded-lg bg-gray px-3 text-sm focus:outline-neutral-200 sm:text-base"
                       type="tel"
@@ -480,7 +483,7 @@ export default function Checkout() {
                         autoComplete="postal-code"
                         value={checkoutData.zip}
                         name="zip"
-                        onChange={handleChange}
+                        onChange={e => setCheckoutData({ ...checkoutData, zip: e.currentTarget.value })}
                       />
                     </div>
                     <div className="flex w-full flex-row items-center justify-start rounded-lg bg-gray">
@@ -517,7 +520,7 @@ export default function Checkout() {
                       />
                       <p className="pt-2.5 text-xs text-gray-light">{t('commentDescription')}</p>
                     </label>
-                  </form>
+                  </div>
                   <p className="mb-1 px-5 text-sm text-black">{t('paymentMethod')}</p>
                   <p className="mb-5 px-5 text-[13px] leading-snug text-gray-light">{t('paymentMethodDescription')}</p>
                   <PaymentMethodSelector paymentMethod={paymentMethod} setPaymentMethod={onPaymentMethodChange} />
@@ -526,6 +529,7 @@ export default function Checkout() {
                       disabled={!isFormValid || isFormLoading}
                       createOrder={() => placeOrder('paypal')}
                       onApprove={onPaypalApprove}
+                      forceReRender={[checkoutData]}
                     />
                   )}
                   <Divider></Divider>

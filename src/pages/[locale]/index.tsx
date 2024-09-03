@@ -130,11 +130,9 @@ function ProductCard({ product }: { product: Product }) {
     [product, currency],
   );
 
-  const priceString = price
-    ? price.currency_symbol === '$'
-      ? `$${price.price}`
-      : `${price.price} ${price.currency_symbol}`
-    : '';
+  const priceToString = (price: number, currencySymbol: string) => {
+    return currencySymbol === '$' ? `$${price}` : `${price} ${currencySymbol}`;
+  };
 
   const salePrice = price?.sale_price;
 
@@ -153,11 +151,11 @@ function ProductCard({ product }: { product: Product }) {
           <p className="text-xs text-gray-light sm:text-base">
             {salePrice ? (
               <>
-                {price.currency_symbol === '$' ? `$${salePrice}` : `${salePrice} ${price.currency_symbol}`}{' '}
-                <span className="line-through">{priceString}</span>
+                {priceToString(salePrice, price!.currency_symbol)}{' '}
+                <span className="line-through">{priceToString(price!.price, price!.currency_symbol)}</span>
               </>
             ) : (
-              priceString
+              priceToString(price!.price, price!.currency_symbol)
             )}
           </p>
         </div>

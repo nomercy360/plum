@@ -1,14 +1,15 @@
-import React, { useState } from 'react';
-import { PayPalScriptProvider, PayPalButtons } from '@paypal/react-paypal-js';
+import React, { useEffect, useState } from 'react';
+import { PayPalScriptProvider, PayPalButtons, usePayPalScriptReducer } from '@paypal/react-paypal-js';
 import { useRouter } from 'next/router';
 
 type PaypalButtonsProps = {
   createOrder: () => Promise<string>;
   onApprove: (data: any, actions: any) => Promise<void>;
   disabled: boolean;
+  forceReRender: unknown[];
 };
 
-function PaypalButtons({ createOrder, onApprove, disabled }: PaypalButtonsProps) {
+function PaypalButtons({ forceReRender, createOrder, onApprove, disabled }: PaypalButtonsProps) {
   const initialOptions = {
     clientId: process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID as string,
     currency: 'USD',
@@ -34,6 +35,7 @@ function PaypalButtons({ createOrder, onApprove, disabled }: PaypalButtonsProps)
           }}
           createOrder={createOrder}
           onApprove={onApprove}
+          forceReRender={forceReRender}
         />
       </PayPalScriptProvider>
     </div>
