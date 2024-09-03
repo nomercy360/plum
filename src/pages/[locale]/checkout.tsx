@@ -14,16 +14,7 @@ import Link from '@/components/Link';
 import countries from '@/lib/countries.json';
 import { NavbarCart } from '@/components/Navbar';
 import Head from 'next/head';
-import { PayPalButtons, PayPalScriptProvider } from '@paypal/react-paypal-js';
 import PaypalButtons from '@/components/paypal-buttons';
-
-const paypalInitialOptions = {
-  clientId: process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID as string,
-  currency: 'USD',
-  'data-page-type': 'product-details',
-  components: 'buttons',
-  'data-sdk-integration-source': 'developer-studio',
-};
 
 export const cartItemsToGTM = (items: CartItem[]) => {
   return items.map(item => {
