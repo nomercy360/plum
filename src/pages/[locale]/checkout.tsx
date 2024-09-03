@@ -336,13 +336,13 @@ export default function Checkout() {
         <meta name="description" content="Dresses & things" />
         <meta name="theme-color" content="#EBEBEB" />
       </Head>
-      <div className="relative h-full overflow-x-hidden bg-lighter-gray">
+      <div className="relative h-[100vh] overflow-x-hidden bg-lighter-gray">
         {cart.count > 0 ? (
           <div>
             <NavbarCart backButtonVisible={step === 'deliveryInfo'} onBackButtonClick={() => setStep('bag')} />
-            <main className="flex w-full items-start justify-center bg-transparent">
+            <main className="flex h-full w-full items-start justify-center bg-transparent">
               {step == 'bag' && (
-                <div className="flex min-h-[calc(100vh-116px)] w-full max-w-2xl flex-col items-start justify-between rounded-t-xl bg-white text-start">
+                <div className="flex min-h-[calc(100vh-64px)] w-full max-w-2xl flex-col items-start justify-between rounded-t-xl bg-white text-start sm:min-h-[calc(100vh-80px)]">
                   <div className="w-full">
                     <div className="flex flex-row items-center justify-between px-5 pt-5">
                       <p className="text-base uppercase">
@@ -425,22 +425,30 @@ export default function Checkout() {
                       />
                     </div>
                   </div>
-                  <div className="mt-8 flex w-full flex-row justify-center sm:mt-[82px]">
+
+                  <div className="mt-8 flex w-full flex-row justify-center sm:hidden">
                     <div className="flex flex-col items-center justify-center gap-5 text-center sm:max-w-md">
-                      <div className="px-5 sm:hidden">
+                      <div className="px-5 pb-[90x]">
                         <TermsAndConditions />
                       </div>
+                    </div>
+                  </div>
+                  <div className="flex w-full flex-col items-center">
+                    <div className="flex w-full flex-col gap-3 px-5 pb-24"> </div>
+                    <div className="fixed bottom-0 sm:pb-20">
                       <button
                         className="flex h-[61px] w-[100vw] flex-row items-start justify-center gap-1 bg-black px-4 pt-5 text-white disabled:cursor-not-allowed disabled:opacity-35 sm:h-11 sm:w-[280px] sm:items-center sm:justify-between sm:rounded-3xl sm:pt-0"
                         onClick={() => toDeliveryInfo()}
                         disabled={!isEmailValid}
                       >
-                        {t('continue')}
-                        <span className="text-gray">{priceString(cart?.currency_symbol, cart?.total)}</span>
+                        {t('continue')}{' '}
+                        <span className="text-gray">{priceString(cart.currency_symbol, cart.total)}</span>
                       </button>
-                      <div className="hidden w-full sm:flex sm:pb-5">
-                        <TermsAndConditions />
-                      </div>
+                    </div>
+                  </div>
+                  <div className="mt-8 hidden w-full flex-row justify-center sm:flex">
+                    <div className="max-w-[360px] sm:max-w-[451px] sm:pb-5">
+                      <TermsAndConditions />
                     </div>
                   </div>
                 </div>
