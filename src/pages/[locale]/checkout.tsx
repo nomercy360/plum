@@ -2,7 +2,7 @@ import Icons from '@/components/Icons';
 import Divider from '@/components/Divider';
 import EmptyCart from '@/components/EmptyCart';
 import StepperButton from '@/components/StepperButton';
-import { useContext, useEffect, useRef, useState } from 'react';
+import React, { useContext, useEffect, useRef, useState } from 'react';
 import { Cart, CartContext, CartItem } from '@/context/cart-provider';
 import { useTranslation } from 'next-i18next';
 import { getStaticPaths, makeStaticProps } from '@/lib/getStatic';
@@ -15,7 +15,6 @@ import countries from '@/lib/countries.json';
 import { NavbarCart } from '@/components/Navbar';
 import Head from 'next/head';
 import PaypalButtons from '@/components/paypal-buttons';
-import local from 'next/font/local';
 import { CheckoutDots } from '@/components/checkoutDots';
 
 export const cartItemsToGTM = (items: CartItem[]) => {
@@ -57,7 +56,8 @@ const priceString = (currencySymbol: string, price: number) =>
 
 export default function Checkout() {
   const ref = useRef(null);
-  const { cart, getCartItems, clearCart, updateCartItem, applyDiscount, saveCartCustomer } = useContext(CartContext);
+  const { cart, getCartItems, clearCart, updateCartItem, applyDiscount, saveCartCustomer, updateCurrency } =
+    useContext(CartContext);
 
   const { currentLanguage } = useContext(LocaleContext);
 
@@ -86,20 +86,6 @@ export default function Checkout() {
     phone: '',
     comment: '',
   });
-
-  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = event.target;
-    setCheckoutData(prevState => ({
-      ...prevState,
-      [name]: value,
-    }));
-  };
-
-  const [step, setStep] = useState<'bag' | 'deliveryInfo'>('bag');
-
-  const [isFormValid, setIsFormValid] = useState(false);
-  const [isEmailValid, setIsEmailValid] = useState(false);
-  const [isFormLoading, setIsFormLoading] = useState(false);
 
   const router = useRouter();
 
@@ -144,20 +130,12 @@ export default function Checkout() {
     }
   }, [cart.customer]);
 
-  async function toDeliveryInfo() {
-    // update cart with email
-    localStorage.setItem('checkOutStorage', '');
-    localStorage.setItem('checkOutStorage', '');
-    saveCartCustomer(email);
-    setStep('deliveryInfo');
-    console.log('click');
-  }
-
   useEffect(() => {
     const script = document.createElement('script');
     script.src = 'https://js.bepaid.by/widget/be_gateway.js';
     script.defer = true;
     document.body.appendChild(script);
+
     return () => {
       document.body.removeChild(script);
     };
@@ -357,24 +335,16 @@ export default function Checkout() {
         <meta name="og:image" content="https://plumplum.co/images/og.png" />
         <meta name="description" content="Dresses & things" />
         <meta name="theme-color" content="#EBEBEB" />
-        <meta name="theme-color" content="#EBEBEB" />
       </Head>
-      <div className="relative h-full overflow-x-hidden bg-lighter-gray">
       <div className="relative h-full overflow-x-hidden bg-lighter-gray">
         {cart.count > 0 ? (
           <div>
             <NavbarCart backButtonVisible={step === 'deliveryInfo'} onBackButtonClick={() => setStep('bag')} />
-
-            <main className="flex w-full items-start justify-center bg-transparent">
-
             <main className="flex w-full items-start justify-center bg-transparent">
               {step == 'bag' && (
                 <div className="flex min-h-[calc(100vh-116px)] w-full max-w-2xl flex-col items-start justify-between rounded-t-xl bg-white text-start">
-                <div className="flex min-h-[calc(100vh-116px)] w-full max-w-2xl flex-col items-start justify-between rounded-t-xl bg-white text-start">
                   <div className="w-full">
                     <div className="flex flex-row items-center justify-between px-5 pt-5">
-                      <p className="text-base uppercase">
-                      <p className="text-base uppercase">
                       <p className="text-base uppercase">
                         {priceString(cart.currency_symbol, cart.total)} {getTranslation('yourBag', cart.count)}
                       </p>
@@ -382,8 +352,7 @@ export default function Checkout() {
                         {t('clearCart')}
                       </button>
                     </div>
-                    <div className="mb-8 mt-8 flex flex-col gap-5 px-5 sm:pb-10">
-                    <div className="mb-8 mt-8 flex flex-col gap-5 px-5 sm:pb-10">
+                    <div className="mt-8 flex flex-col gap-5 px-5 pb-5 sm:pb-10">
                       {getCartItems().map(item => (
                         <div key={item.variant_id} className="flex flex-row items-center justify-between gap-3">
                           <div className="flex grow flex-row items-center gap-3">
@@ -394,11 +363,21 @@ export default function Checkout() {
                               width={40}
                               height={40}
                             />
-                            <div className="relative flex grow flex-col">
+                            <div className="flex grow flex-col">
                               <CheckoutDots item={item} />
-                              <p className="mt-0.5 text-xs leading-[15px] text-gray-light sm:text-sm">
-                                Total {priceString(cart.currency_symbol, item.price * item.quantity)} /{' '}
-                                {`Size: ${item.variant_name}`}
+                              <p className="mt-0.5 text-xs text-gray-light sm:text-sm">
+                                Total{' '}
+                                {item.sale_price ? (
+                                  <>
+                                    {priceString(cart.currency_symbol, item.sale_price)}{' '}
+                                    <span className="line-through">
+                                      {priceString(cart.currency_symbol, item.price)}
+                                    </span>
+                                  </>
+                                ) : (
+                                  priceString(cart.currency_symbol, item.price)
+                                )}{' '}
+                                / {`Size: ${item.variant_name}`}
                               </p>
                             </div>
                           </div>
@@ -428,11 +407,9 @@ export default function Checkout() {
                       </div>
                     </div>
                     <Divider></Divider>
-                    <div className="mt-6 flex w-full flex-col items-center gap-4 px-5">
-                    <div className="mt-6 flex w-full flex-col items-center gap-4 px-5">
+                    <div className="mt-8 flex w-full flex-col items-center gap-4 px-5">
                       <input
-                        className="h-11 w-full rounded-lg bg-gray px-3 text-[16px] focus:outline-neutral-200"
-                        className="h-11 w-full rounded-lg bg-gray px-3 text-[16px] focus:outline-neutral-200"
+                        className="h-11 w-full rounded-lg bg-gray px-3 text-[16px] leading-[19px] focus:outline-neutral-200"
                         placeholder={t('email')}
                         type="email"
                         autoComplete="email"
@@ -448,7 +425,6 @@ export default function Checkout() {
                       />
                     </div>
                   </div>
-
                   <div className="mt-8 flex w-full flex-row justify-center sm:mt-[82px]">
                     <div className="flex flex-col items-center justify-center gap-5 text-center sm:max-w-md">
                       <div className="px-5 sm:hidden">
@@ -469,17 +445,13 @@ export default function Checkout() {
                   </div>
                 </div>
               )}
-
-
               {step == 'deliveryInfo' && (
-                <div className="realtive flex min-h-[calc(100vh-112px)] w-full max-w-2xl flex-col items-start justify-between rounded-t-xl bg-white text-start">
-                <div className="realtive flex min-h-[calc(100vh-112px)] w-full max-w-2xl flex-col items-start justify-between rounded-t-xl bg-white text-start">
+                <div className="relative flex min-h-[calc(100vh-112px)] w-full max-w-2xl flex-col items-start justify-between bg-white text-start sm:rounded-t-xl">
                   <p className="mb-1 px-5 pt-5 uppercase text-black">{t('addDeliveryInfo')}</p>
                   <p className="mb-8 px-5 text-xs leading-snug text-gray-light">{t('addDeliveryInfoDescription')}</p>
                   <div className="mb-8 flex w-full flex-col gap-4 px-5">
                     <input
-                      className="h-11 w-full rounded-lg bg-gray px-3 text-[16px] focus:outline-neutral-200"
-                      className="h-11 w-full rounded-lg bg-gray px-3 text-[16px] focus:outline-neutral-200"
+                      className="h-11 w-full rounded-lg bg-gray px-3 text-[16px] text-sm focus:outline-neutral-200"
                       type="tel"
                       autoComplete="tel"
                       placeholder={t('phone')}
@@ -490,8 +462,7 @@ export default function Checkout() {
                     <div className="flex w-full flex-row gap-4">
                       <div className="flex w-full flex-row items-center justify-start rounded-lg bg-gray">
                         <select
-                          className="h-11 w-full bg-transparent px-3 text-[16px] focus:outline-neutral-200"
-                          className="h-11 w-full bg-transparent px-3 text-[16px] focus:outline-neutral-200"
+                          className="h-11 w-full bg-transparent px-3 text-base focus:outline-neutral-200"
                           onChange={e => setCheckoutData({ ...checkoutData, country: e.currentTarget.value })}
                           value={checkoutData.country}
                         >
@@ -504,7 +475,6 @@ export default function Checkout() {
                         </select>
                       </div>
                       <input
-                        className="h-11 w-40 rounded-lg bg-gray px-3 text-[16px] focus:outline-neutral-200"
                         className="h-11 w-40 rounded-lg bg-gray px-3 text-[16px] focus:outline-neutral-200"
                         placeholder={t('zip')}
                         autoFocus
@@ -519,8 +489,7 @@ export default function Checkout() {
                       <input
                         type="text"
                         autoComplete="street-address"
-                        className="h-11 w-full bg-transparent px-3 text-[16px] focus:outline-neutral-200"
-                        className="h-11 w-full bg-transparent px-3 text-[16px] focus:outline-neutral-200"
+                        className="h-11 w-full bg-transparent px-3 text-[16px] leading-[19px] focus:outline-neutral-200"
                         placeholder={t('address')}
                         value={checkoutData.address}
                         name="address"
@@ -528,8 +497,7 @@ export default function Checkout() {
                       />
                     </div>
                     <input
-                      className="h-11 w-full rounded-lg bg-gray px-3 text-[16px] focus:outline-neutral-200"
-                      className="h-11 w-full rounded-lg bg-gray px-3 text-[16px] focus:outline-neutral-200"
+                      className="h-11 w-full rounded-lg bg-gray px-3 text-[16px] leading-[19px] focus:outline-neutral-200"
                       placeholder={t('name')}
                       autoFocus
                       type="text"
@@ -540,8 +508,7 @@ export default function Checkout() {
                     />
                     <label>
                       <input
-                        className="h-11 w-full rounded-lg bg-gray px-3 text-[16px] focus:outline-neutral-200"
-                        className="h-11 w-full rounded-lg bg-gray px-3 text-[16px] focus:outline-neutral-200"
+                        className="h-11 w-full rounded-lg bg-gray px-3 text-[16px] leading-[19px] focus:outline-neutral-200"
                         placeholder={t('comment')}
                         autoFocus
                         type="text"
@@ -552,15 +519,18 @@ export default function Checkout() {
                       />
                       <p className="pt-2.5 text-xs text-gray-light">{t('commentDescription')}</p>
                     </label>
-                  </form>
-                  <div className="flex w-full flex-col">
-                    <p className="mb-1 min-w-[5] px-5 text-sm text-black">{t('paymentMethod')}</p>
-                    <p className="mb-5 px-5 text-[13px] leading-snug text-gray-light">
-                      {t('paymentMethodDescription')}
-                    </p>
                   </div>
-
-                  <PaymentMethodSelector paymentMethod={paymentMethod} setPaymentMethod={setPaymentMethod} />
+                  <p className="mb-1 px-5 text-sm text-black">{t('paymentMethod')}</p>
+                  <p className="mb-5 px-5 text-[13px] leading-snug text-gray-light">{t('paymentMethodDescription')}</p>
+                  <PaymentMethodSelector paymentMethod={paymentMethod} setPaymentMethod={onPaymentMethodChange} />
+                  {paymentMethod === 'paypal' && (
+                    <PaypalButtons
+                      disabled={!isFormValid || isFormLoading}
+                      createOrder={() => placeOrder('paypal')}
+                      onApprove={onPaypalApprove}
+                      forceReRender={[checkoutData]}
+                    />
+                  )}
                   <Divider></Divider>
                   <div className="flex w-full flex-col items-center">
                     <TotalCostInfo cart={cart} />
@@ -605,7 +575,6 @@ const PromoCode = (props: {
             className={`flex h-11 w-full flex-row items-center justify-between rounded-lg bg-gray px-3 ${props.fetchStatus === 'error' ? 'bg-red/5 text-red' : ''}`}
           >
             <input
-              className="h-full w-full bg-transparent text-[16px] focus:outline-none"
               className="h-full w-full bg-transparent text-[16px] focus:outline-none"
               placeholder={t('addPromoCode')}
               type="text"
@@ -737,7 +706,7 @@ const TermsAndConditions = (props: any) => {
   const { t } = useTranslation('checkout');
 
   return (
-    <div className="flex w-full flex-row items-center justify-center gap-2">
+    <div className="flex w-[95%] flex-row items-center justify-center gap-2 sm:w-full">
       <p className="text-start text-xs text-gray-light sm:text-center">{t('agree')}</p>
       <Link href="/terms">
         <Icons.infoCircle className="size-3.5 shrink-0" />
@@ -778,47 +747,10 @@ const PaymentMethodSelector = (props: {
           </div>
           <div className="invisible flex size-5 items-center justify-center rounded-full border border-black group-has-[:checked]:visible">
             <div className="size-1.5 rounded-full bg-black"></div>
-    <div className="mb-8 flex w-full flex-col space-y-2.5 px-5">
-      <div className="flex h-11 w-full items-center justify-between rounded-lg border border-lighter-gray has-[:checked]:border-2 has-[:checked]:border-black">
-        <label className="group flex h-11 w-full items-center justify-between px-2.5">
-          <div className="flex w-full items-center">
-            <input
-              type="radio"
-              name="payment"
-              value="bepaid"
-              checked={selected === 'bepaid'}
-              onChange={() => handleChange('bepaid')}
-              className="radio radio-primary"
-            />
-            <div className="flex items-center space-x-2">
-              <VisaIcon />
-              <span>{t('creditCardViaBePaid')}</span>
-            </div>
-          </div>
-          <div className="invisible flex size-5 items-center justify-center rounded-full border border-black group-has-[:checked]:visible">
-            <div className="size-1.5 rounded-full bg-black"></div>
           </div>
         </label>
       </div>
 
-      <div className="flex h-11 w-full items-center justify-between rounded-lg border border-lighter-gray has-[:checked]:border-2 has-[:checked]:border-black">
-        <label className="group flex h-11 w-full items-center justify-between px-2.5">
-          <div className="flex w-full items-center">
-            <input
-              type="radio"
-              name="payment"
-              value="paypal"
-              checked={selected === 'paypal'}
-              onChange={() => handleChange('paypal')}
-              className="radio radio-primary"
-            />
-            <div className="flex items-center space-x-2">
-              <PaypalIcon />
-              <span>{t('paypal')}</span>
-            </div>
-          </div>
-          <div className="invisible flex size-5 items-center justify-center rounded-full border border-black group-has-[:checked]:visible">
-            <div className="size-1.5 rounded-full bg-black"></div>
       <div className="flex h-11 w-full items-center justify-between rounded-lg border border-lighter-gray has-[:checked]:border-2 has-[:checked]:border-black">
         <label className="group flex h-11 w-full items-center justify-between px-2.5">
           <div className="flex w-full items-center">

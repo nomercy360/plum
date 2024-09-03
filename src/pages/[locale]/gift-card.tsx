@@ -58,22 +58,22 @@ export default function GiftCard(props: { isOpen: boolean; setIsOpen: (value: bo
               <Icons.logo className="h-6 w-24 text-white sm:w-32" />
               <span className="text-xl">{t('gift')}</span>
             </div>
-            <p className="mt-2.5 text-sm text-white sm:text-base">{t('giftCardDescription')}</p>
+            <p className="mt-2.5 text-[16px] leading-[19px] text-white">{t('giftCardDescription')}</p>
             <div className="mt-14 flex w-[280px] flex-col items-center gap-4">
               <input
-                className="h-11 w-full rounded-lg bg-gray px-3 text-sm focus:outline-neutral-200 sm:text-base"
+                className="h-11 w-full rounded-lg bg-gray px-3 text-[16px] leading-[19px] focus:outline-neutral-200"
                 placeholder={t('yourEmail')}
                 value={email}
                 onInput={e => setEmail(e.currentTarget.value)}
               />
               <input
-                className="h-11 w-full rounded-lg bg-gray px-3 text-sm focus:outline-neutral-200 sm:text-base"
+                className="h-11 w-full rounded-lg bg-gray px-3 text-[16px] leading-[19px] focus:outline-neutral-200"
                 placeholder={t('recipientEmail')}
                 value={recipientEmail}
                 onInput={e => setRecipientEmail(e.currentTarget.value)}
               />
               <input
-                className="h-11 w-full rounded-lg bg-gray px-3 text-sm focus:outline-neutral-200 sm:text-base"
+                className="h-11 w-full rounded-lg bg-gray px-3 text-[16px] leading-[19px] focus:outline-neutral-200"
                 placeholder={t('receivingDate')}
                 value={receivingDate}
                 onInput={e => setReceivingDate(e.currentTarget.value)}

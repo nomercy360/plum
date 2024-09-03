@@ -60,7 +60,6 @@ export default function Navbar() {
     </>
   );
 }
-
 export function NavbarCart(props: { backButtonVisible: boolean; onBackButtonClick: (value: boolean) => void }) {
   const router = useRouter();
   const { t } = useTranslation(['checkout', 'common']);
