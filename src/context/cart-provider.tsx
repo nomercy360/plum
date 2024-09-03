@@ -292,12 +292,6 @@ const CartProvider = ({ children }: { children: React.ReactNode }) => {
         currency,
         currencySign,
         updateCurrency: updateCartCurrency,
-        currency,
-        currencySign,
-        updateCurrency: updateCartCurrency,
-        currency,
-        currencySign,
-        updateCurrency: updateCartCurrency,
       }}
     >
       {children}

@@ -1,6 +1,6 @@
 import Icons from './Icons';
 import { CartContext } from '@/context/cart-provider';
-import { use, useContext, useEffect, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import Link from '@/components/Link';
 // import LanguageSwitchLink from '@/components/LanguageSwitchButton';
 import { useRouter } from 'next/router';
