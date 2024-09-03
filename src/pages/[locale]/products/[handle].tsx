@@ -19,11 +19,15 @@ export default function ProductPage({ product }: { product: Product }) {
 
   const { currency } = useContext(CartContext);
 
-  const [currencyCode, currencySymbol, price] = useMemo(() => {
-    const price = product.prices.find(price => price.currency_code === currency);
-    if (!price) return [product.prices[0].currency_code, product.prices[0].currency_symbol, product.prices[0].price];
-    return [price.currency_code, price.currency_symbol, price.price];
-  }, [product, currency]);
+  const [currencyCode, currencySymbol, price, salePrice] = useMemo(() => {
+    const price = product.variants
+      .find(variant => variant.id === selectedSize)
+      ?.prices.find(price => price.currency_code === currency);
+    if (!price) {
+      return ['', '', 0];
+    }
+    return [price.currency_code, price.currency_symbol, price.price, price.sale_price];
+  }, [product, currency, selectedSize]);
 
   const handleAddToCart = () => {
     const item = {
@@ -106,7 +110,6 @@ export default function ProductPage({ product }: { product: Product }) {
         <meta name="og:description" content={product.description} />
         <meta name="og:image" content={product.images[0]} />
         <meta name="description" content={product.description} />
-        <meta name="theme-color" content="#ffffff" />
       </Head>
       <main className={`mb-12 flex min-h-screen flex-col items-center justify-between bg-white sm:mb-28`}>
         <Navbar />
@@ -157,7 +160,6 @@ export default function ProductPage({ product }: { product: Product }) {
                   )}
                 </button>
               ) : (
-                <div className="flex h-11 min-w-[140px] flex-row items-center justify-between gap-2 rounded-full bg-light-green px-3.5 text-base text-white">
                 <div className="flex h-11 min-w-[140px] flex-row items-center justify-between gap-2 rounded-full bg-light-green px-3.5 text-base text-white">
                   <p className="text-white">{t('added')}</p>
                   <p className="text-white">
