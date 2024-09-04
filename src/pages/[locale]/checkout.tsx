@@ -119,14 +119,23 @@ export default function Checkout() {
   useEffect(() => {
     if (cart.customer && cart.customer.email) {
       setEmail(cart.customer.email || '');
-      setCheckoutData(prevState => ({
-        ...prevState,
-        name: cart.customer!.name || '',
-        address: cart.customer!.address || '',
-        country: cart.customer!.country || '',
-        zip: cart.customer!.zip || '',
-        phone: cart.customer!.phone || '',
-      }));
+    }
+
+    if (cart.customer &&
+      cart.customer.name &&
+      cart.customer.address &&
+      cart.customer.zip &&
+      cart.customer.phone &&
+      cart.customer.country
+    ) {
+      setCheckoutData({
+        name: cart.customer.name,
+        address: cart.customer.address,
+        country: cart.customer.country,
+        zip: cart.customer.zip,
+        phone: cart.customer.phone,
+        comment: '',
+      });
     }
   }, [cart.customer]);
 
