@@ -34,7 +34,8 @@ export default function ProductRecommendations(props: { productID: number }) {
       {isLoading && <LoaderSkeleton />}
       {products.length === 0 && !isLoading && <div>No related products</div>}
       {!isLoading && products.length > 0 && (
-        <div className="flex w-screen flex-row gap-3 overflow-x-auto p-5 sm:grid sm:w-full sm:grid-cols-4 sm:gap-10 sm:overflow-x-hidden sm:p-14">
+        <div
+          className="flex w-screen flex-row gap-3 overflow-x-auto p-5 sm:grid sm:w-full sm:grid-cols-4 sm:gap-10 sm:overflow-x-hidden sm:p-14">
           {products.map(product => (
             <ProductCard key={product.id} product={product} />
           ))}
@@ -73,7 +74,8 @@ const ProductCard = ({ product }: { product: Product }) => {
 };
 
 const LoaderSkeleton = () => (
-  <div className="flex w-screen flex-row gap-10 overflow-x-auto p-5 sm:grid sm:w-full sm:grid-cols-4 sm:overflow-x-hidden sm:p-14">
+  <div
+    className="flex w-screen flex-row gap-10 overflow-x-auto p-5 sm:grid sm:w-full sm:grid-cols-4 sm:overflow-x-hidden sm:p-14">
     {[1, 2, 3, 4].map(i => (
       <div key={i} className="flex min-w-[170px] flex-col items-start justify-start">
         <div className="h-[420px] w-full animate-pulse rounded-lg bg-gray" />

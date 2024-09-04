@@ -119,14 +119,24 @@ export default function Checkout() {
   useEffect(() => {
     if (cart.customer && cart.customer.email) {
       setEmail(cart.customer.email || '');
-      setCheckoutData(prevState => ({
-        ...prevState,
-        name: cart.customer!.name || '',
-        address: cart.customer!.address || '',
-        country: cart.customer!.country || '',
-        zip: cart.customer!.zip || '',
-        phone: cart.customer!.phone || '',
-      }));
+    }
+
+    if (
+      cart.customer &&
+      cart.customer.name &&
+      cart.customer.address &&
+      cart.customer.zip &&
+      cart.customer.phone &&
+      cart.customer.country
+    ) {
+      setCheckoutData({
+        name: cart.customer.name,
+        address: cart.customer.address,
+        country: cart.customer.country,
+        zip: cart.customer.zip,
+        phone: cart.customer.phone,
+        comment: '',
+      });
     }
   }, [cart.customer]);
 
@@ -370,7 +380,7 @@ export default function Checkout() {
                                 {item.sale_price ? (
                                   <>
                                     {priceString(cart.currency_symbol, item.sale_price)}{' '}
-                                    <span className="line-through">
+                                    <span className="text-xs line-through sm:text-sm">
                                       {priceString(cart.currency_symbol, item.price)}
                                     </span>
                                   </>
@@ -434,7 +444,7 @@ export default function Checkout() {
                     </div>
                   </div>
                   <div className="flex w-full flex-col items-center">
-                    <div className="flex w-full flex-col gap-3 px-5 pb-24"> </div>
+                    <div className="flex w-full flex-col gap-3 px-5 pb-24"></div>
                     <div className="fixed bottom-0 sm:pb-20">
                       <button
                         className="flex h-[61px] w-[100vw] flex-row items-start justify-center gap-1 bg-black px-4 pt-5 text-white disabled:cursor-not-allowed disabled:opacity-35 sm:h-11 sm:w-[280px] sm:items-center sm:justify-between sm:rounded-3xl sm:pt-0"
@@ -542,16 +552,18 @@ export default function Checkout() {
                   <Divider></Divider>
                   <div className="flex w-full flex-col items-center">
                     <TotalCostInfo cart={cart} />
-                    <div className="fixed bottom-0 sm:pb-5">
-                      <button
-                        className="flex h-[61px] w-[100vw] flex-row items-start justify-center gap-1 bg-black px-4 pt-5 text-white disabled:cursor-not-allowed disabled:opacity-35 sm:h-11 sm:w-[280px] sm:items-center sm:justify-between sm:rounded-3xl sm:pt-0"
-                        disabled={!isFormValid || isFormLoading}
-                        onClick={() => placeOrder()}
-                      >
-                        {t('continue')}{' '}
-                        <span className="text-gray">{priceString(cart.currency_symbol, cart.total)}</span>
-                      </button>
-                    </div>
+                    {paymentMethod === 'bepaid' && (
+                      <div className="fixed bottom-0 sm:pb-5">
+                        <button
+                          className="flex h-[61px] w-[100vw] flex-row items-start justify-center gap-1 bg-black px-4 pt-5 text-white disabled:cursor-not-allowed disabled:opacity-35 sm:h-11 sm:w-[280px] sm:items-center sm:justify-between sm:rounded-3xl sm:pt-0"
+                          disabled={!isFormValid || isFormLoading}
+                          onClick={() => placeOrder()}
+                        >
+                          {t('continue')}{' '}
+                          <span className="text-gray">{priceString(cart.currency_symbol, cart.total)}</span>
+                        </button>
+                      </div>
+                    )}
                   </div>
                 </div>
               )}
