@@ -352,7 +352,7 @@ export default function Checkout() {
             <NavbarCart backButtonVisible={step === 'deliveryInfo'} onBackButtonClick={() => setStep('bag')} />
             <main className="flex h-full w-full items-start justify-center bg-transparent">
               {step == 'bag' && (
-                <div className="flex min-h-[calc(100dvh-116px)] w-full max-w-2xl flex-col items-start justify-between rounded-t-xl bg-white text-start sm:min-h-[calc(100vh-80px)]">
+                <div className="flex min-h-[calc(100vh-116px)] w-full max-w-2xl flex-col items-start justify-between rounded-t-xl bg-white text-start sm:min-h-[calc(100vh-80px)]">
                   <div className="w-full">
                     <div className="flex flex-row items-center justify-between px-5 pt-5">
                       <p className="text-base uppercase">
@@ -437,7 +437,7 @@ export default function Checkout() {
                   </div>
 
                   <div className="mt-8 flex w-full flex-row justify-center sm:hidden">
-                    <div className="flex flex-col items-center justify-center gap-5 text-center sm:max-w-md">
+                    <div className="flex flex-col items-center text-center sm:max-w-md">
                       <div className="px-5">
                         <TermsAndConditions />
                       </div>
