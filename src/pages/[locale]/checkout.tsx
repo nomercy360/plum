@@ -371,7 +371,7 @@ export default function Checkout() {
                                 {item.sale_price ? (
                                   <>
                                     {priceString(cart.currency_symbol, item.sale_price)}{' '}
-                                    <span className="line-through">
+                                    <span className="text-xs sm:text-sm line-through">
                                       {priceString(cart.currency_symbol, item.price)}
                                     </span>
                                   </>

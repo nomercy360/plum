@@ -112,9 +112,9 @@ export default function Home({ products }: { products: Product[] }) {
           </div>
         </div>
         <div className="mb-10 mt-4 grid grid-cols-2 gap-4 px-5 lg:hidden">
-          {products.map(product =>
+          {products.map((product, index) =>
             // every fifth product
-            product.id % 5 <= 3 ? (
+            index % 5 <= 3 ? (
               <ProductCard key={product.id} product={product} />
             ) : (
               <div key={product.id} className="col-span-2 row-span-2">
@@ -160,7 +160,8 @@ function ProductCard({ product }: { product: Product }) {
             {salePrice ? (
               <>
                 {priceToString(salePrice, price!.currency_symbol)}{' '}
-                <span className="line-through">{priceToString(price!.price, price!.currency_symbol)}</span>
+                <span
+                  className="text-xs sm:text-base line-through">{priceToString(price!.price, price!.currency_symbol)}</span>
               </>
             ) : (
               priceToString(price!.price, price!.currency_symbol)
