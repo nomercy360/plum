@@ -175,7 +175,7 @@ export default function Checkout() {
     setStep('deliveryInfo');
   }
 
-  const bepaidPayment = function (token: string, order: any, language: string, currency: string) {
+  const bepaidPayment = function(token: string, order: any, language: string, currency: string) {
     const params = {
       checkout_url: 'https://checkout.bepaid.by',
       token: token,
@@ -190,7 +190,7 @@ export default function Checkout() {
         description: JSON.stringify(cart.items),
         tracking_id: cart.id,
       },
-      closeWidget: function (status: any) {
+      closeWidget: function(status: any) {
         console.debug('close widget callback');
       },
     };
@@ -342,7 +342,8 @@ export default function Checkout() {
             <NavbarCart backButtonVisible={step === 'deliveryInfo'} onBackButtonClick={() => setStep('bag')} />
             <main className="flex h-full w-full items-start justify-center bg-transparent">
               {step == 'bag' && (
-                <div className="flex min-h-[calc(100vh-64px)] w-full max-w-2xl flex-col items-start justify-between rounded-t-xl bg-white text-start sm:min-h-[calc(100vh-80px)]">
+                <div
+                  className="flex min-h-[calc(100vh-64px)] w-full max-w-2xl flex-col items-start justify-between rounded-t-xl bg-white text-start sm:min-h-[calc(100vh-80px)]">
                   <div className="w-full">
                     <div className="flex flex-row items-center justify-between px-5 pt-5">
                       <p className="text-base uppercase">
@@ -434,7 +435,7 @@ export default function Checkout() {
                     </div>
                   </div>
                   <div className="flex w-full flex-col items-center">
-                    <div className="flex w-full flex-col gap-3 px-5 pb-24"> </div>
+                    <div className="flex w-full flex-col gap-3 px-5 pb-24"></div>
                     <div className="fixed bottom-0 sm:pb-20">
                       <button
                         className="flex h-[61px] w-[100vw] flex-row items-start justify-center gap-1 bg-black px-4 pt-5 text-white disabled:cursor-not-allowed disabled:opacity-35 sm:h-11 sm:w-[280px] sm:items-center sm:justify-between sm:rounded-3xl sm:pt-0"
@@ -454,7 +455,8 @@ export default function Checkout() {
                 </div>
               )}
               {step == 'deliveryInfo' && (
-                <div className="relative flex min-h-[calc(100vh-112px)] w-full max-w-2xl flex-col items-start justify-between bg-white text-start sm:rounded-t-xl">
+                <div
+                  className="relative flex min-h-[calc(100vh-112px)] w-full max-w-2xl flex-col items-start justify-between bg-white text-start sm:rounded-t-xl">
                   <p className="mb-1 px-5 pt-5 uppercase text-black">{t('addDeliveryInfo')}</p>
                   <p className="mb-8 px-5 text-xs leading-snug text-gray-light">{t('addDeliveryInfoDescription')}</p>
                   <div className="mb-8 flex w-full flex-col gap-4 px-5">
@@ -542,16 +544,18 @@ export default function Checkout() {
                   <Divider></Divider>
                   <div className="flex w-full flex-col items-center">
                     <TotalCostInfo cart={cart} />
-                    <div className="fixed bottom-0 sm:pb-5">
-                      <button
-                        className="flex h-[61px] w-[100vw] flex-row items-start justify-center gap-1 bg-black px-4 pt-5 text-white disabled:cursor-not-allowed disabled:opacity-35 sm:h-11 sm:w-[280px] sm:items-center sm:justify-between sm:rounded-3xl sm:pt-0"
-                        disabled={!isFormValid || isFormLoading}
-                        onClick={() => placeOrder()}
-                      >
-                        {t('continue')}{' '}
-                        <span className="text-gray">{priceString(cart.currency_symbol, cart.total)}</span>
-                      </button>
-                    </div>
+                    {paymentMethod === 'bepaid' && (
+                      <div className="fixed bottom-0 sm:pb-5">
+                        <button
+                          className="flex h-[61px] w-[100vw] flex-row items-start justify-center gap-1 bg-black px-4 pt-5 text-white disabled:cursor-not-allowed disabled:opacity-35 sm:h-11 sm:w-[280px] sm:items-center sm:justify-between sm:rounded-3xl sm:pt-0"
+                          disabled={!isFormValid || isFormLoading}
+                          onClick={() => placeOrder()}
+                        >
+                          {t('continue')}{' '}
+                          <span className="text-gray">{priceString(cart.currency_symbol, cart.total)}</span>
+                        </button>
+                      </div>
+                    )}
                   </div>
                 </div>
               )}
@@ -737,7 +741,8 @@ const PaymentMethodSelector = (props: {
 
   return (
     <div className="mb-8 flex w-full flex-col space-y-2.5 px-5">
-      <div className="flex h-11 w-full items-center justify-between rounded-lg border border-lighter-gray has-[:checked]:border-2 has-[:checked]:border-black">
+      <div
+        className="flex h-11 w-full items-center justify-between rounded-lg border border-lighter-gray has-[:checked]:border-2 has-[:checked]:border-black">
         <label className="group flex h-11 w-full items-center justify-between px-2.5">
           <div className="flex w-full items-center">
             <input
@@ -753,13 +758,15 @@ const PaymentMethodSelector = (props: {
               <span>{t('creditCardViaBePaid')}</span>
             </div>
           </div>
-          <div className="invisible flex size-5 items-center justify-center rounded-full border border-black group-has-[:checked]:visible">
+          <div
+            className="invisible flex size-5 items-center justify-center rounded-full border border-black group-has-[:checked]:visible">
             <div className="size-1.5 rounded-full bg-black"></div>
           </div>
         </label>
       </div>
 
-      <div className="flex h-11 w-full items-center justify-between rounded-lg border border-lighter-gray has-[:checked]:border-2 has-[:checked]:border-black">
+      <div
+        className="flex h-11 w-full items-center justify-between rounded-lg border border-lighter-gray has-[:checked]:border-2 has-[:checked]:border-black">
         <label className="group flex h-11 w-full items-center justify-between px-2.5">
           <div className="flex w-full items-center">
             <input
@@ -775,7 +782,8 @@ const PaymentMethodSelector = (props: {
               <span>{t('paypal')}</span>
             </div>
           </div>
-          <div className="invisible flex size-5 items-center justify-center rounded-full border border-black group-has-[:checked]:visible">
+          <div
+            className="invisible flex size-5 items-center justify-center rounded-full border border-black group-has-[:checked]:visible">
             <div className="size-1.5 rounded-full bg-black"></div>
           </div>
         </label>
