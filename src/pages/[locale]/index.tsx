@@ -4,12 +4,11 @@ import { getI18nProps, getStaticPaths } from '@/lib/getStatic';
 import Footer from '@/components/Footer';
 import Link from '@/components/Link';
 
-import ExportedImage from 'next-image-export-optimizer';
 import SubscribeForm from '@/components/SubscribeForm';
 import Navbar from '@/components/Navbar';
-import Head from 'next/head';
 import { useContext, useMemo } from 'react';
 import { CartContext } from '@/context/cart-provider';
+import Image from 'next/image';
 
 export type Product = {
   id: number;
@@ -51,13 +50,9 @@ export default function Home({ products }: { products: Product[] }) {
   // next 4
   const productsFifthSection = products.slice(10, 14);
   // next 4
-  const productsSixthSection = products.slice(14, 18);
+  const productsSixthSection = products.slice(14, 21);
   // next 4
-  const productsSeventhSection = products.slice(18, 22);
-  // next 1
-  const productsEighthSection = products[22];
-  // next 4
-  const productsNinthSection = products.slice(23, 27);
+  // const productsSeventhSection = products.slice(18, 21);
 
   return (
     <div>
@@ -99,17 +94,6 @@ export default function Home({ products }: { products: Product[] }) {
               <ProductCard key={product.id} product={product} />
             ))}
           </div>
-          <div className="grid grid-cols-2 gap-10">
-            {productsSeventhSection.map(product => (
-              <ProductCard key={product.id} product={product} />
-            ))}
-          </div>
-          <ProductCard product={productsEighthSection} />
-          <div className="col-span-2 grid grid-cols-4 gap-10">
-            {productsNinthSection.map(product => (
-              <ProductCard key={product.id} product={product} />
-            ))}
-          </div>
         </div>
         <div className="mb-10 mt-4 grid grid-cols-2 gap-4 px-5 lg:hidden">
           {products.map((product, index) =>
@@ -147,12 +131,15 @@ function ProductCard({ product }: { product: Product }) {
   return (
     <>
       <Link key={product.id} className="flex flex-col items-start justify-start" href={`/products/${product.handle}`}>
-        <ExportedImage
-          alt=""
-          className="aspect-[5/7] w-full rounded-lg object-cover sm:size-full"
+        <Image
           src={product.image}
-          width={700}
-          height={1200}
+          alt={product.name}
+          width={400}  // Set explicit width
+          height={400} // Set explicit height
+          blurDataURL={product.image}
+          placeholder="blur"
+          className="aspect-[5/7] w-full rounded-lg object-cover sm:size-full"
+          sizes="(max-width: 600px) 100vw, 50vw" // Provide responsive sizes
         />
         <div>
           <p className="mb-1 mt-2 text-sm sm:mt-3 sm:text-base">{product.name}</p>

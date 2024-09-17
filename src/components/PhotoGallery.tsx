@@ -1,5 +1,5 @@
-import ExportedImage from 'next-image-export-optimizer';
 import EmblaCarousel from '@/components/Carousel';
+import Image from 'next/image';
 
 export default function PhotoGallery(props: { images: string[] }) {
   return (
@@ -9,23 +9,25 @@ export default function PhotoGallery(props: { images: string[] }) {
       </div>
       <div className="hidden gap-4 sm:flex">
         {props.images.length === 1 ? (
-          <ExportedImage
-            alt=""
-            className="w-full rounded-lg object-cover"
+          <Image
             src={props.images[0]}
+            alt={props.images[0]}
             width={740}
             height={1040}
+            className="aspect-[5/7] w-full rounded-lg object-cover"
+            sizes="(max-width: 600px) 100vw, 50vw"
           />
         ) : (
           <div className="grid w-full flex-shrink-0 grid-cols-2 gap-4">
             {props.images.map(image => (
-              <ExportedImage
-                key={image}
-                alt=""
-                className="aspect-[5/7] rounded-lg object-cover"
+              <Image
                 src={image}
+                alt={image}
+                key={image}
                 width={370}
                 height={520}
+                className="aspect-[5/7] rounded-lg object-cover"
+                sizes="(max-width: 600px) 100vw, 50vw"
               />
             ))}
           </div>

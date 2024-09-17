@@ -5,8 +5,9 @@ const nextConfig = {
   transpilePackages: ['next-image-export-optimizer'],
   images: {
     loader: 'custom',
-    deviceSizes: [640, 750, 1080, 1920],
-    imageSizes: [100, 640, 750, 1080, 1920],
+    loaderFile: './imageLoader.js',
+    path: 'https://assets.clanplatform.com',
+    formats: ['image/avif', 'image/webp'],
   },
   env: {
     nextImageExportOptimizer_imageFolderPath: 'public/images',

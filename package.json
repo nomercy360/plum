@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "NEXT_PUBLIC_PAYPAL_CLIENT_ID=AS_qZmxoulwrdK86MCh_bO_IbSlAkl7Wp_XOxOXKXuWdoRNHBN4HaxXHM_urFWExEdCrCY8FFb0oRl3i NEXT_PUBLIC_API_URL=https://clan-api.mxksim.dev/api/store next build && next-image-export-optimizer --nextConfigPath ./next.config.mjs",
+    "build": "NEXT_PUBLIC_PAYPAL_CLIENT_ID=AS_qZmxoulwrdK86MCh_bO_IbSlAkl7Wp_XOxOXKXuWdoRNHBN4HaxXHM_urFWExEdCrCY8FFb0oRl3i NEXT_PUBLIC_API_URL=https://clan-api.mxksim.dev/api/store next build",
     "start": "serve out",
     "lint": "next lint"
   },
@@ -16,12 +16,12 @@
     "i18next": "^23.11.2",
     "next": "^14.2.7",
     "next-i18next": "^15.3.0",
-    "next-image-export-optimizer": "^1.12.3",
     "next-language-detector": "^1.1.0",
     "react": "^18",
     "react-dom": "^18",
     "react-i18next": "^14.1.1",
-    "react-icons": "^5.3.0"
+    "react-icons": "^5.3.0",
+    "sharp": "^0.33.5"
   },
   "devDependencies": {
     "@types/node": "^20",

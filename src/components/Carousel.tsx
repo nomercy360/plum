@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 import useEmblaCarousel from 'embla-carousel-react';
-import ExportedImage from 'next-image-export-optimizer';
+import Image from 'next/image';
 
 export const useDotButton = (emblaApi: any) => {
   const [selectedIndex, setSelectedIndex] = useState(0);
@@ -59,12 +59,13 @@ const EmblaCarousel = (props: { slides: string[]; options: any }) => {
         <div className="embla__container gap-2">
           {slides.map(index => (
             <div className="embla__slide" key={index}>
-              <ExportedImage
+              <Image
                 src={index}
+                alt={index}
                 width={360}
                 height={640}
-                alt=""
                 className="aspect-[5/7] w-full rounded-lg object-cover"
+                sizes="(max-width: 600px) 100vw, 50vw"
               />
             </div>
           ))}

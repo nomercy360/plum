@@ -7,7 +7,6 @@ import { Cart, CartContext, CartItem } from '@/context/cart-provider';
 import { useTranslation } from 'next-i18next';
 import { getStaticPaths, makeStaticProps } from '@/lib/getStatic';
 import { useRouter } from 'next/router';
-import ExportedImage from 'next-image-export-optimizer';
 import { LocaleContext } from '@/context/locale-provider';
 import Link from '@/components/Link';
 
@@ -16,6 +15,7 @@ import { NavbarCart } from '@/components/Navbar';
 import Head from 'next/head';
 import PaypalButtons from '@/components/paypal-buttons';
 import { CheckoutDots } from '@/components/checkoutDots';
+import Image from 'next/image';
 
 export const cartItemsToGTM = (items: CartItem[]) => {
   return items.map(item => {
@@ -185,7 +185,7 @@ export default function Checkout() {
     setStep('deliveryInfo');
   }
 
-  const bepaidPayment = function (token: string, order: any, language: string, currency: string) {
+  const bepaidPayment = function(token: string, order: any, language: string, currency: string) {
     const params = {
       checkout_url: 'https://checkout.bepaid.by',
       token: token,
@@ -200,7 +200,7 @@ export default function Checkout() {
         description: JSON.stringify(cart.items),
         tracking_id: cart.id,
       },
-      closeWidget: function (status: any) {
+      closeWidget: function(status: any) {
         console.debug('close widget callback');
       },
     };
@@ -231,6 +231,13 @@ export default function Checkout() {
         customer_id: cart.customer?.id,
         ...checkoutData,
       };
+
+      if (checkoutData.comment !== '') {
+        // @ts-ignore
+        order.metadata = {
+          comment: checkoutData.comment,
+        };
+      }
 
       const resp = await checkoutRequest(order, currentLanguage);
       const respData = await resp.json();
@@ -352,7 +359,8 @@ export default function Checkout() {
             <NavbarCart backButtonVisible={step === 'deliveryInfo'} onBackButtonClick={() => setStep('bag')} />
             <main className="flex h-full w-full items-start justify-center bg-transparent">
               {step == 'bag' && (
-                <div className="flex min-h-[calc(100vh-116px)] w-full max-w-2xl flex-col items-start justify-between rounded-t-xl bg-white text-start sm:min-h-[calc(100vh-80px)]">
+                <div
+                  className="flex min-h-[calc(100vh-116px)] w-full max-w-2xl flex-col items-start justify-between rounded-t-xl bg-white text-start sm:min-h-[calc(100vh-80px)]">
                   <div className="w-full">
                     <div className="flex flex-row items-center justify-between px-5 pt-5">
                       <p className="text-base uppercase">
@@ -366,12 +374,12 @@ export default function Checkout() {
                       {getCartItems().map(item => (
                         <div key={item.variant_id} className="flex flex-row items-center justify-between gap-3">
                           <div className="flex grow flex-row items-center gap-3">
-                            <ExportedImage
+                            <Image
                               alt=""
                               className="size-10 shrink-0 rounded-full object-cover"
                               src={item.image_url}
-                              width={40}
-                              height={40}
+                              width={150}
+                              height={150}
                             />
                             <div className="flex grow flex-col">
                               <CheckoutDots item={item} />
@@ -464,7 +472,8 @@ export default function Checkout() {
                 </div>
               )}
               {step == 'deliveryInfo' && (
-                <div className="relative flex min-h-[calc(100vh-112px)] w-full max-w-2xl flex-col items-start justify-between bg-white text-start sm:rounded-t-xl">
+                <div
+                  className="relative flex min-h-[calc(100vh-112px)] w-full max-w-2xl flex-col items-start justify-between bg-white text-start sm:rounded-t-xl">
                   <p className="mb-1 px-5 pt-5 uppercase text-black">{t('addDeliveryInfo')}</p>
                   <p className="mb-8 px-5 text-xs leading-snug text-gray-light">{t('addDeliveryInfoDescription')}</p>
                   <div className="mb-8 flex w-full flex-col gap-4 px-5">
@@ -749,7 +758,8 @@ const PaymentMethodSelector = (props: {
 
   return (
     <div className="mb-8 flex w-full flex-col space-y-2.5 px-5">
-      <div className="flex h-11 w-full items-center justify-between rounded-lg border border-lighter-gray has-[:checked]:border-2 has-[:checked]:border-black">
+      <div
+        className="flex h-11 w-full items-center justify-between rounded-lg border border-lighter-gray has-[:checked]:border-2 has-[:checked]:border-black">
         <label className="group flex h-11 w-full items-center justify-between px-2.5">
           <div className="flex w-full items-center">
             <input
@@ -765,13 +775,15 @@ const PaymentMethodSelector = (props: {
               <span>{t('creditCardViaBePaid')}</span>
             </div>
           </div>
-          <div className="invisible flex size-5 items-center justify-center rounded-full border border-black group-has-[:checked]:visible">
+          <div
+            className="invisible flex size-5 items-center justify-center rounded-full border border-black group-has-[:checked]:visible">
             <div className="size-1.5 rounded-full bg-black"></div>
           </div>
         </label>
       </div>
 
-      <div className="flex h-11 w-full items-center justify-between rounded-lg border border-lighter-gray has-[:checked]:border-2 has-[:checked]:border-black">
+      <div
+        className="flex h-11 w-full items-center justify-between rounded-lg border border-lighter-gray has-[:checked]:border-2 has-[:checked]:border-black">
         <label className="group flex h-11 w-full items-center justify-between px-2.5">
           <div className="flex w-full items-center">
             <input
@@ -787,7 +799,8 @@ const PaymentMethodSelector = (props: {
               <span>{t('paypal')}</span>
             </div>
           </div>
-          <div className="invisible flex size-5 items-center justify-center rounded-full border border-black group-has-[:checked]:visible">
+          <div
+            className="invisible flex size-5 items-center justify-center rounded-full border border-black group-has-[:checked]:visible">
             <div className="size-1.5 rounded-full bg-black"></div>
           </div>
         </label>

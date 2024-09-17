@@ -1,9 +1,9 @@
-import { Suspense, useContext, useEffect, useMemo, useState } from 'react';
+import { useContext, useEffect, useMemo, useState } from 'react';
 import Link from '@/components/Link';
-import ExportedImage from 'next-image-export-optimizer';
 import { LocaleContext } from '@/context/locale-provider';
 import { Product } from '@/pages/[locale]';
 import { CartContext } from '@/context/cart-provider';
+import Image from 'next/image';
 
 export default function ProductRecommendations(props: { productID: number }) {
   const [products, setProducts] = useState<Product[]>([]);
@@ -60,12 +60,13 @@ const ProductCard = ({ product }: { product: Product }) => {
       className="flex min-w-[170px] flex-col items-start justify-start"
       href={`/products/${product.handle}`}
     >
-      <ExportedImage
-        alt=""
-        className="aspect-[5/7] w-full rounded-lg object-cover"
+      <Image
         src={product.image}
+        alt={product.name}
         width={370}
         height={520}
+        className="aspect-[5/7] w-full rounded-lg object-cover"
+        sizes="(max-width: 600px) 100vw, 50vw"
       />
       <p className="mb-1 mt-2.5 text-sm sm:mt-4 sm:text-base">{product.name}</p>
       <p className="text-xs text-gray-light sm:text-base">{priceString}</p>
