@@ -60,14 +60,13 @@ export default function Home({ products }: { products: Product[] }) {
         <Navbar />
         <div className="flex min-h-[520px] w-full px-5 lg:max-h-[600px] lg:px-12">
           <div className="flex w-full justify-center overflow-hidden rounded-2xl lg:rounded-xl">
-            <video
-              className="h-full w-full object-cover"
-              src="/video/plum_ad_two_1160.mp4"
-              controls={false}
-              autoPlay
-              loop
-              muted
-              playsInline
+            <Image
+              src="/images/hero.jpg"
+              alt="Hero"
+              width={1920}
+              height={1080}
+              className="object-cover w-full rounded-2xl lg:rounded-xl border"
+              sizes="(max-width: 600px) 100vw, 50vw"
             />
           </div>
         </div>

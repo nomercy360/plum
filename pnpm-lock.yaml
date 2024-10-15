@@ -26,9 +26,6 @@ dependencies:
   next-i18next:
     specifier: ^15.3.0
     version: 15.3.0(i18next@23.11.2)(next@14.2.7)(react-i18next@14.1.1)(react@18.3.1)
-  next-image-export-optimizer:
-    specifier: ^1.12.3
-    version: 1.12.3(next@14.2.7)(react@18.3.1)
   next-language-detector:
     specifier: ^1.1.0
     version: 1.1.0
@@ -682,6 +679,7 @@ packages:
   /ansi-regex@5.0.1:
     resolution: {integrity: sha512-quJQXlTSUGL2LH9SUXo8VwsY4soanhgo6LNSm84E1LBcE8s3O0wpdiRzyR9z/ZZJMlMWv37qOOb9pdJlMUEKFQ==}
     engines: {node: '>=8'}
+    dev: true
 
   /ansi-regex@6.0.1:
     resolution: {integrity: sha512-n5M855fKb2SsfMIiFFoVrABHJC8QtHwVx+mHWP3QcEqBHYienj5dHSgjbxtC0WEZXYt4wcD6zrQElDPhFuZgfA==}
@@ -934,13 +932,6 @@ packages:
       fsevents: 2.3.3
     dev: true
 
-  /cli-progress@3.12.0:
-    resolution: {integrity: sha512-tRkV3HJ1ASwm19THiiLIXLO7Im7wlTuKnvkYaTkyoAPefqjNg7W7DHKUlGRxy9vxDvbyCYQkQozvptuMkGCg8A==}
-    engines: {node: '>=4'}
-    dependencies:
-      string-width: 4.2.3
-    dev: false
-
   /client-only@0.0.1:
     resolution: {integrity: sha512-IV3Ou0jSMzZrd3pZ48nLkT9DA7Ag1pnPzaiQhpW7c3RbcqqzvzzVu+L8gfqMp/8IM2MQtSiqaCxrrcfu8I8rMA==}
     dev: false
@@ -1149,6 +1140,7 @@ packages:
 
   /emoji-regex@8.0.0:
     resolution: {integrity: sha512-MSjYzcWNOA0ewAHpz0MxpYFvwg6yjy1NG3xteoqz644VCo/RPgnr1/GGt+ic3iJTzQ8Eu3TdM14SawnVUmGE6A==}
+    dev: true
 
   /emoji-regex@9.2.2:
     resolution: {integrity: sha512-L18DaJsXSUk2+42pv8mLs5jJT2hqFkFE4j21wOmgbUqsZ2hL72NsUU785g9RXgo3s0ZNgVl42TiHp3ZtOv/Vyg==}
@@ -1969,6 +1961,7 @@ packages:
   /is-fullwidth-code-point@3.0.0:
     resolution: {integrity: sha512-zymm5+u+sCsSWyD9qNaejV3DFvhCKclKdizYaJUuHA83RLjb7nSuGnddCHGv0hk+KY7BMAlsWeK4Ueg6EV6XQg==}
     engines: {node: '>=8'}
+    dev: true
 
   /is-generator-function@1.0.10:
     resolution: {integrity: sha512-jsEjy9l3yiXEQ+PsXdmBwEPcOxaXWLspKdplFUVI9vq1iZgIekeC0L167qeu86czQaxed3q/Uzuw0swL0irL8A==}
@@ -2295,21 +2288,6 @@ packages:
       next: 14.2.7(react-dom@18.3.1)(react@18.3.1)
       react: 18.3.1
       react-i18next: 14.1.1(i18next@23.11.2)(react-dom@18.3.1)(react@18.3.1)
-    dev: false
-
-  /next-image-export-optimizer@1.12.3(next@14.2.7)(react@18.3.1):
-    resolution: {integrity: sha512-BQ3LIN6ocooul10g+N/7jJljpionhhqR58RE0Z+uzJ/+NeRcK5hEjNZmmg8BGZB9M4JFLk8LzcvbYOkWPRjrNQ==}
-    engines: {node: '>=16.0.0'}
-    hasBin: true
-    peerDependencies:
-      next: '>=13.1.0'
-      react: ^18.0.0-0
-    dependencies:
-      cli-progress: 3.12.0
-      next: 14.2.7(react-dom@18.3.1)(react@18.3.1)
-      react: 18.3.1
-      sharp: 0.33.5
-      typescript: 5.4.5
     dev: false
 
   /next-language-detector@1.1.0:
@@ -2987,6 +2965,7 @@ packages:
       emoji-regex: 8.0.0
       is-fullwidth-code-point: 3.0.0
       strip-ansi: 6.0.1
+    dev: true
 
   /string-width@5.1.2:
     resolution: {integrity: sha512-HnLOCR3vjcY8beoNLtcjZ5/nxn2afmME6lhrDrebokqMap+XbeW8n9TXpPDOqdGK5qcI3oT0GKTW6wC7EMiVqA==}
@@ -3047,6 +3026,7 @@ packages:
     engines: {node: '>=8'}
     dependencies:
       ansi-regex: 5.0.1
+    dev: true
 
   /strip-ansi@7.1.0:
     resolution: {integrity: sha512-iq6eVVI64nQQTRYq2KtEg2d2uU7LElhTJwsH4YzIHZshxlgZms/wIc4VoDQTlG/IvVIrBKG06CrZnp0qv7hkcQ==}
@@ -3258,6 +3238,7 @@ packages:
     resolution: {integrity: sha512-vcI4UpRgg81oIRUFwR0WSIHKt11nJ7SAVlYNIu+QpqeyXP+gpQJy/Z4+F0aGxSE4MqwjyXvW/TzgkLAx2AGHwQ==}
     engines: {node: '>=14.17'}
     hasBin: true
+    dev: true
 
   /unbox-primitive@1.0.2:
     resolution: {integrity: sha512-61pPlCD9h51VoreyJ0BReideM3MDKMKnh6+V9L08331ipq6Q8OFXZYiqP6n/tbHx4s5I9uRhcye6BrbkizkBDw==}
